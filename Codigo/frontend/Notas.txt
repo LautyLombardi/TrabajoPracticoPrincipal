@@ -1,0 +1,21 @@
+// Comandos
+
+// Instalar dependencias 
+
+npm install
+
+// Correr el proyecto
+
+npm start
+
+// Ir a la aplicacion de Play Store llamada Expo Go
+
+Escanear el QR por consola ó colocar manualmente la url http://{ip}:8081
+
+// Recomendaciones
+
+-- Tener la ultima version de Node instalada
+-- Tener instalado el SDK de android (se instala cuando descargan android studio)
+-- Tener algun dispositivo fisico, en caso de no tener un dispositivo virtual 
+-- Revisar que el puerto 8081 no este siendo usado por alguna otra aplicaciones
+-- Terminar la ejecucion por consola con Ctrl+C (para evitar que quede en background ocupando el puerto)
