@@ -19,3 +19,7 @@ Escanear el QR por consola ó colocar manualmente la url http://{ip}:8081
 -- Tener algun dispositivo fisico, en caso de no tener un dispositivo virtual 
 -- Revisar que el puerto 8081 no este siendo usado por alguna otra aplicaciones
 -- Terminar la ejecucion por consola con Ctrl+C (para evitar que quede en background ocupando el puerto)
+
+// Se instalaron dependencias para probar en web (para simular el tamño de una tablet)
+npx expo install react-native-web react-dom
+@expo/metro-runtime
