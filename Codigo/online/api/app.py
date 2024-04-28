@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 from models.User import db, User
+from models.PersonsImages import db, PersonsImages
 from db.db import init_db
 from utils.faceRecognition import check_face
+from utils.images import image_to_bytes
 
 app = Flask(__name__)
 
@@ -52,6 +54,22 @@ def faceRacognition():
         return jsonify({'message': 'Usuario autorizado'}), 200
     
     return jsonify({'message': 'Usuario no autorizado'}), 400
+
+
+@app.route('/insert_image', methods=['POST'])
+def insert_image():
+    try:
+        # Ejemplo de uso
+        image_path = 'C:/Users/franc/OneDrive/Escritorio/TrabajoPracticoPrincipal/Codigo/online/api/utils/img1.jpg'  # Ruta de la imagen
+        image_bytes = image_to_bytes(image_path)
+        
+        image = PersonsImages(userId=1, photo=image_bytes)
+        db.session.add(image)
+        db.session.commit()
+            
+        return jsonify({'message': 'Imagen insertada correctamente en la base de datos.'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error al insertar la imagen en la base de datos.'}), 400
 
 
 if __name__ == '__main__':
