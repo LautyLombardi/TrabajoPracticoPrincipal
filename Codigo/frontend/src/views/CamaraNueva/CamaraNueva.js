@@ -31,7 +31,7 @@ const CameraNueva = () => {
 
   const handleAuthButtonPress = () => {
     if (!socket) {
-      const newSocket = io('YOUR_SERVER_URL');
+      const newSocket = io('http://127.0.0.1:5000');
       setSocket(newSocket);
     }
     setIsSocketEnabled(true);

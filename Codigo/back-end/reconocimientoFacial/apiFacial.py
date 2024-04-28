@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-from flask_cors import CORS
 
 import base64
 import numpy as np
@@ -12,7 +11,7 @@ from deepface import DeepFace
 db="fotos"
 
 app = Flask(__name__)
-CORS(app)
+app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 TEMP_DIR = 'temp_images'
@@ -22,6 +21,7 @@ def check_face(frame):
     try:
         dff=DeepFace.find(frame,db)
         faceDB=dff[0].get("identity")
+        print(faceDB[0])
         reference_img=cv2.imread(str(faceDB[0])) 
         if DeepFace.verify(frame, reference_img)['verified']:
             return True
@@ -29,6 +29,10 @@ def check_face(frame):
             return False
     except ValueError:
         return False
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @socketio.on('stream')
 def handle_stream(image):
@@ -45,7 +49,6 @@ def handle_stream(image):
     saved_frame = cv2.imread(temp_file_path)
 
     flag=check_face(saved_frame)
-    #socketio.emit('flag',flag)
     print(flag)
 
     # Encode the processed frame back to base64
