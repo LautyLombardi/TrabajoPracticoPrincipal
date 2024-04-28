@@ -7,6 +7,7 @@ import * as NavigationBar from 'expo-navigation-bar';
 import ListUser from './src/views/Dashboard/ListUsers';
 import { colors } from './src/util/Colors';
 
+import CamaraNueva from './src/views/CamaraNueva/CamaraNueva';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,9 +18,9 @@ function App() {
 
   return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Menu' screenOptions={ {headerShown: false}}
+        <Stack.Navigator initialRouteName='Home' screenOptions={ {headerShown: false}}
         >
-          <Stack.Screen name="Home" component={CamaraScreen} />
+          <Stack.Screen name="Home" component={CamaraNueva} />
           <Stack.Screen name="Menu" component={MenuScreen} options={styleOptionsHeader}/>
           <Stack.Screen name="Dashboard" component={ListUser} options={styleOptionsHeader}/>
         </Stack.Navigator>

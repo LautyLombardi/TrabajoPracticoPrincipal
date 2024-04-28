@@ -4,7 +4,6 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import io from 'socket.io-client'; // Importa la librería de cliente de Socket.io
 import { colors } from '../util/Colors';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const SOCKET_URL = 'http://tu_servidor_de_signalizacion:3000'; // Reemplaza con la URL de tu servidor de señalización
 
