@@ -8,7 +8,7 @@ from utils.images import image_to_bytes
 app = Flask(__name__)
 
 # Configurar la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/franc/OneDrive/Escritorio/TrabajoPracticoPrincipal/Codigo/online/api/db/dataBase.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/Pais Gamer/OneDrive/Escritorio/Trabajo Practico final/TrabajoPracticoPrincipal/Codigo/online/api/db/dataBase.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar la base de datos
@@ -56,21 +56,35 @@ def faceRacognition():
     return jsonify({'message': 'Usuario no autorizado'}), 400
 
 
+
 @app.route('/insert_image', methods=['POST'])
 def insert_image():
     try:
-        # Ejemplo de uso
-        image_path = 'C:/Users/franc/OneDrive/Escritorio/TrabajoPracticoPrincipal/Codigo/online/api/utils/img1.jpg'  # Ruta de la imagen
-        image_bytes = image_to_bytes(image_path)
-        
+        # Verifica si el archivo está presente en la solicitud
+        if 'imagen' not in request.files:
+            return jsonify({'message': 'No se encontró ningún archivo en la solicitud.'}), 400
+
+        # Obtengo  el archivo de la solicitud
+        input_image = request.files['imagen']
+
+        # Verifica si el archivo tiene un nombre
+        if input_image.filename == '':
+            return jsonify({'message': 'El archivo no tiene nombre.'}), 400
+
+        # Verifica si el archivo es una imagen
+        if not input_image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+            return jsonify({'message': 'El archivo no es una imagen válida.'}), 400
+
+        image_bytes = input_image.read()
+
+        # Insertar en db 
         image = PersonsImages(userId=1, photo=image_bytes)
         db.session.add(image)
         db.session.commit()
-            
+
         return jsonify({'message': 'Imagen insertada correctamente en la base de datos.'}), 200
     except Exception as e:
-        return jsonify({'message': 'Error al insertar la imagen en la base de datos.'}), 400
-
+        return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
