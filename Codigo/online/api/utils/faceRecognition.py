@@ -1,42 +1,50 @@
-import base64
-import numpy as np
-import os
 import cv2
 from deepface import DeepFace
+import sqlite3
+from PIL import Image
+from io import BytesIO
 
-TEMP_DIR = 'temp_images'
+# Conexión a la base de datos
+conn = sqlite3.connect('dataBase.db')
+cursor = conn.cursor()
 
+# Método para extraer todas las imágenes de la tabla PersonsImages
+def extract_images_from_db():
+    images = []
+    try:
+        cursor.execute("SELECT photo FROM PersonsImages")
+        rows = cursor.fetchall()
+        for row in rows:
+            # Convertir los bytes de la imagen a un objeto de imagen
+            image_bytes = row[0]
+            image = Image.open(BytesIO(image_bytes))
+            images.append(image)
+    except sqlite3.Error as e:
+        print("Error al extraer imágenes de la base de datos:", e)
+    return images
+
+# Integrar las imágenes en la variable db
+db = extract_images_from_db()
+
+# Cerrar la conexión a la base de datos
+conn.close()
+
+#change base de datos por utilsimage
 def check_face(frame):
     try:
-        dff = DeepFace.find(frame, db)
+        dff = DeepFace.find(frame, db) 
         faceDB = dff[0].get("identity")
         reference_img = cv2.imread(str(faceDB[0])) 
         if DeepFace.verify(frame, reference_img)['verified']:
+            print('pablo')
             return True
+        
         else:
+            print("pablon't")
             return False
     except ValueError:
         return False
 
-def handle_stream(image):
-    # Decode base64 image to numpy array
-    image_bytes = base64.b64decode(image.split(',')[1])
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # Save the frame as a temporary image file
-    temp_file_path = os.path.join(TEMP_DIR, 'temp_frame.jpg')
-    cv2.imwrite(temp_file_path, frame)
 
-    # Read the saved frame using cv2.imread
-    saved_frame = cv2.imread(temp_file_path)
 
-    flag = check_face(saved_frame)
-    print(flag)
-
-    # Encode the processed frame back to base64
-    _, encoded_frame = cv2.imencode('.jpg', saved_frame)
-    encoded_image = base64.b64encode(encoded_frame).decode('utf-8')
-
-    # Emit the processed frame back to the client
-    # socketio.emit('processed_frame', encoded_image)  # Esta línea ha sido comentada ya que socketio no está definido aquí

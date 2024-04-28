@@ -42,16 +42,17 @@ def add_user():
 @app.route('/faceRacognition', methods=['POST'])
 def faceRacognition():
     if 'image' not in request.files:
-        return "Error al enviar imagen", 400
+        return jsonify({'message': "Error al enviar imagen"}), 400
 
     image_file = request.files['image']
     if image_file.filename == '':
-        return "No selected image", 400
+        return jsonify({'message': "No selected image"}), 400
     
     if(check_face(image_file)):
-        return "Usuario autorizado", 200
+        return jsonify({'message': 'Usuario autorizado'}), 200
+    
+    return jsonify({'message': 'Usuario no autorizado'}), 400
 
-    return "Usuario no autorizado", 401
 
 if __name__ == '__main__':
     app.run(debug=True)
