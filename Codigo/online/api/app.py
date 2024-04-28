@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from models.User import db, User
 from db.db import init_db
+from utils.faceRecognition import check_face
 
 app = Flask(__name__)
 
@@ -36,6 +37,21 @@ def add_user():
         return jsonify({'message': 'Datos almacenados exitosamente', 'user': user_data}), 201
     else:
         return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500
+
+# Metodo para reconocimiento facial
+@app.route('/faceRacognition', methods=['POST'])
+def faceRacognition():
+    if 'image' not in request.files:
+        return "Error al enviar imagen", 400
+
+    image_file = request.files['image']
+    if image_file.filename == '':
+        return "No selected image", 400
+    
+    if(check_face(image_file)):
+        return "Usuario autorizado", 200
+
+    return "Usuario no autorizado", 401
 
 if __name__ == '__main__':
     app.run(debug=True)

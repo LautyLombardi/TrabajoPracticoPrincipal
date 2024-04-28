@@ -1,5 +1,5 @@
 # Installación
 
 ```bash
-    pip install flask flask_sqlalchemy
+    pip install flask flask_sqlalchemy numpy matplotlib deepface
 ```

@@ -1,28 +1,16 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS
-
 import base64
 import numpy as np
 import os
-
 import cv2
 from deepface import DeepFace
-
-db="fotos"
-
-app = Flask(__name__)
-CORS(app)
-socketio = SocketIO(app)
 
 TEMP_DIR = 'temp_images'
 
 def check_face(frame):
-    global face_match
     try:
-        dff=DeepFace.find(frame,db)
-        faceDB=dff[0].get("identity")
-        reference_img=cv2.imread(str(faceDB[0])) 
+        dff = DeepFace.find(frame, db)
+        faceDB = dff[0].get("identity")
+        reference_img = cv2.imread(str(faceDB[0])) 
         if DeepFace.verify(frame, reference_img)['verified']:
             return True
         else:
@@ -30,7 +18,6 @@ def check_face(frame):
     except ValueError:
         return False
 
-@socketio.on('stream')
 def handle_stream(image):
     # Decode base64 image to numpy array
     image_bytes = base64.b64decode(image.split(',')[1])
@@ -44,8 +31,7 @@ def handle_stream(image):
     # Read the saved frame using cv2.imread
     saved_frame = cv2.imread(temp_file_path)
 
-    flag=check_face(saved_frame)
-    #socketio.emit('flag',flag)
+    flag = check_face(saved_frame)
     print(flag)
 
     # Encode the processed frame back to base64
@@ -53,7 +39,4 @@ def handle_stream(image):
     encoded_image = base64.b64encode(encoded_frame).decode('utf-8')
 
     # Emit the processed frame back to the client
-    socketio.emit('processed_frame', encoded_image)
-
-if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    # socketio.emit('processed_frame', encoded_image)  # Esta línea ha sido comentada ya que socketio no está definido aquí
