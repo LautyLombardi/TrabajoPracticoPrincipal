@@ -1,2 +1,2 @@
-export const URL = "http://192.168.0.11:5000"
+export const URL = "http://{ip_your_computer}:5000"
 
