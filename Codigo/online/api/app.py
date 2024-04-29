@@ -79,8 +79,10 @@ def insert_image():
         db.session.add(image)
         db.session.commit()
 
+
         return jsonify({'message': 'Imagen insertada correctamente en la base de datos.'}), 200
     except Exception as e:
+        return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
         return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
 
 if __name__ == '__main__':
