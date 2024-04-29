@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Camera, CameraType, getCameraPermissionsAsync } from "expo-camera";
+import { Camera } from "expo-camera";
 import {
   Button,
   SafeAreaView,
