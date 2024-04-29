@@ -10,11 +10,15 @@ app = Flask(__name__)
 
 # Configurar la base de datos
 current_directory = os.path.dirname(os.path.realpath(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, 'db', 'dataBase.db')}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, "db", "dataBase.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar la base de datos
 init_db(app)
+
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({'message':'listening...'}),200
 
 # Método POST para agregar un usuario
 @app.route('/user', methods=['POST'])
@@ -85,4 +89,4 @@ def insert_image():
         return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
