@@ -20,6 +20,34 @@ init_db(app)
 def index():
     return jsonify({'message':'listening...'}),200
 
+@app.route('/user', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_dict = {
+            'id': user.id,
+            'name': user.name,
+            'lastname': user.lastname
+            # Agrega más campos si es necesario
+        }
+        user_list.append(user_dict)
+    return jsonify(user_list)
+
+# Método DELETE para eliminar todos los usuarios solo para desarrolladores
+@app.route('/user', methods=['DELETE'])
+def delete_all_users():
+    try:
+        # Elimina todos los usuarios
+        num_deleted = db.session.query(User).delete()
+        db.session.commit()
+        
+        return jsonify({'message': f'{num_deleted} usuarios eliminados exitosamente'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar usuarios', 'details': str(e)}), 500
+
+
 # Método POST para agregar un usuario
 @app.route('/user', methods=['POST'])
 def add_user():
