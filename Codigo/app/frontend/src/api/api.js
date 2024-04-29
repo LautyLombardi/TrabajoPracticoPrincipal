@@ -1,2 +1,3 @@
-export const URL = "http://{ip_your_computer}:5000"
+const IP = "http://tuip"
+export const URL = `${IP}:5000`
 

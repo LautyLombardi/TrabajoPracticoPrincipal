@@ -3,6 +3,7 @@ import { Camera, CameraType, getCameraPermissionsAsync } from "expo-camera";
 import {
   Button,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -28,15 +29,15 @@ const CamaraScreen = () => {
       try {
         // Realizar una solicitud GET al endpoint /test_connection del backend
         const response = await fetch(`${URL}/test`);
-        
+
         // Verificar si la solicitud fue exitosa
         if (response.ok) {
           // Obtener el cuerpo de la respuesta como JSON
           const data = await response.json();
-          
+
           // Imprimir el resultado por consola
           console.log("Conexión establecida:", data.connection);
-          
+
           // Alternativamente, mostrar el resultado en pantalla
           // alert(`Conexión establecida: ${data.connection}`);
         } else {
@@ -80,123 +81,156 @@ const CamaraScreen = () => {
   // Send image to backend
   const cameraRef = useRef(null);
   const [autorizado, setAutorizado] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+
   const handleAuthentication = async () => {
     setLoading(true);
     try {
-      const results = [];
-      for (let i = 0; i < 3; i++) {
-        if (cameraRef.current) {
-          const photo = await cameraRef.current.takePictureAsync({ base64: true });
-          results.push(await sendImageToBackend(photo.base64));
-          await sleep(2000); 
-        }
+      if (cameraRef.current) {
+        let options = {
+          quality: 0.7,
+          base64: false,
+          exif: false,
+          skipProcessing: true,
+        };
+        const photo = await cameraRef.current.takePictureAsync(options);
+        await sendImageToBackend(photo.uri);
       }
-      //MOCK
-      handleResult(results);
     } catch (error) {
-      console.error('Error al autenticar:', error);
+      console.error("Error al autenticar:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const sendImageToBackend = async (base64Image) => {
+  const sendImageToBackend = async (photoUri) => {
     try {
+      const formData = new FormData();
+      formData.append("image", {
+        uri: photoUri,
+        name: "photoTEST.jpg",
+        type: "image/jpeg",
+      });
+
       const response = await fetch(`${URL}/faceRecognition`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ image: base64Image }),
+        body: formData,
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        return data.resultado;
+        console.log(data.message);
+        setAutorizado(
+          data.message === "Usuario autorizado"
+        );
+        clearAutorizado()
       } else {
         const errorData = await response.json();
         console.error("Error del servidor:", errorData.error);
-        return false;
       }
     } catch (error) {
       console.error("Error al enviar la imagen al backend:", error);
-      return false;
     }
   };
-  
-  
 
-  const handleResult = (results) => {
-    if (results.includes(true)) {
-      setAutorizado(true);
-    } else {
+  const clearAutorizado = () => {
+    setTimeout(() => {
       setAutorizado(false);
-    }
-  };
-
-  const sleep = (milliseconds) => {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    }, 3000); 
   };
 
   return (
-    <View style={styles.container}>
-      {autorizado !== null && (
-        <View style={[styles.autorizadoContainer, { backgroundColor: autorizado ? 'green' : 'red' }]}>
-          <Text style={styles.autorizadoText}>{autorizado ? 'Autorizado' : 'No autorizado'}</Text>
-        </View>
-      )}
+    <View style={styles.container} >
       {cameraPermission && focused ? (
-        <Camera style={styles.camera} type={Camera.Constants.Type.front} ratio={'16:9'} zoom={0.0} ref={cameraRef}>
+        <Camera
+          style={styles.camera}
+          type={Camera.Constants.Type.front}
+          ratio={"16:9"}
+          zoom={0.0}
+          ref={cameraRef}
+        >
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleAuthentication} disabled={loading}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleAuthentication}
+              disabled={loading}
+            >
               <Text style={styles.text}>Autenticar</Text>
             </TouchableOpacity>
           </View>
+
+          <View
+            style={{
+              position: "absolute",
+              top: 30,
+              left: 0,
+              right: 0,
+              alignItems: "center",
+              paddingVertical: 12,
+              backgroundColor: autorizado ? "#00ff00" : "#ff0000",
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 20 }}>{autorizado ? "Autorizado" : "No Autorizado"}</Text>
+          </View>
         </Camera>
       ) : (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', gap: 4 }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "white",
+            gap: 4,
+          }}
+        >
           <Text style={styles.text}>Sin acceso a la cámara</Text>
-          <Button onPress={() => setCameraPermission(Camera.requestCameraPermissionsAsync())} title="Permitir Cámara" />
+          <Button
+            onPress={() =>
+              setCameraPermission(Camera.requestCameraPermissionsAsync())
+            }
+            title="Permitir Cámara"
+          />
         </View>
       )}
+
+      <StatusBar type=""/>
     </View>
   );
 };
 
 const styles = {
   container: {
-    flex: 1,
+    flex: 1
   },
   camera: {
     flex: 1,
   },
   buttonContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     left: 0,
     right: 0,
-    alignItems: 'center',
+    alignItems: "center",
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     padding: 20,
     borderRadius: 10,
   },
   text: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
   },
   autorizadoContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 20, // Colocar arriba
     left: 0,
     right: 0,
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 10,
   },
   autorizadoText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
   },
 };
