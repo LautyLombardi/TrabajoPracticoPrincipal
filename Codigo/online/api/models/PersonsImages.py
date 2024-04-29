@@ -1,6 +1,5 @@
 from db.db import db
 
-
 # Model para la tabla 'persons_images'
 class PersonsImages(db.Model):
     id = db.Column(db.Integer, primary_key=True)

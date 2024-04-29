@@ -2,7 +2,6 @@ import io
 import numpy as np
 from PIL import Image
 
-
 def image_to_bytes(image_path):
 
     with open(image_path, 'rb') as file:

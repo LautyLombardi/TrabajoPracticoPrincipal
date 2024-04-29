@@ -14,27 +14,25 @@ def check_face(frame, db):
         filepath = os.path.join(save_folder, f"photo_{image.id}.jpg")
         cv2.imwrite(filepath, photo)
 
-    
     try:
+        # Decodificar la imagenes
         if hasattr(frame, 'read'):
-            frame_data = frame.read()  # Leer los datos del archivo
-            nparr = np.fromstring(frame_data, np.uint8)  # Convertir los datos en una matriz numpy
-            frame_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Decodificar la imagen
+            frame_data = frame.read() 
+            nparr = np.fromstring(frame_data, np.uint8)  
+            frame_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  
             frame = frame_np
         else:
             # Si frame no es un objeto FileStorage, asumimos que es una ruta de archivo
             frame = cv2.imread(frame)
         
-        dff = DeepFace.find(frame, save_folder)  # Pasar la lista de rutas de archivo
+        dff = DeepFace.find(frame, save_folder)  
         faceDB = dff[0].get("identity")
         reference_img = cv2.imread(str(faceDB[0])) 
         if DeepFace.verify(frame, reference_img)['verified']:
-            print('pablo')
             return True
         
     except Exception as error:
-        print("pablon't exception ", error)
-        print()
+        print(error)
         return False
-    print("pablon't")
+    
     return False
