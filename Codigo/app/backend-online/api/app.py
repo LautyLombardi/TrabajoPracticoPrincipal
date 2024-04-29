@@ -50,35 +50,25 @@ def add_user():
         return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500
 
 # Metodo para reconocimiento facial
-@app.route('/faceRacognition', methods=['POST'])
-def faceRacognition():
-
+@app.route('/faceRecognition', methods=['POST'])
+def faceRecognition():
     try:
-      console.log(request.json())
-     # Obtener la imagen en formato base64 del cuerpo de la solicitud
-      image_base64 = request.json.get('image')
+        if 'image' not in request.files:
+            return jsonify({'message': "Error al enviar imagen"}), 400
+
+        image_file = request.files['image']
+        if image_file.filename == '':
+            return jsonify({'message': "No selected image"}), 400
         
-     # Decodificar la imagen base64
-      image_data = base64.b64decode(image_base64)
-
-    # # Excepciones
-    # if 'image' not in request.files:
-    #     return jsonify({'message': "Error al enviar imagen"}), 400
-
-    # ##image_file = request.files['image']
-    # image_file = bytes_to_image(request.files['image'])
-
-    # if image_file.filename == '':
-    #     return jsonify({'message': "No selected image"}), 400
-    
-      images = PersonsImages.query.all()
-    
-    ## cambio image_file por image_data
-      if(check_face(image_data,images)):
-          return jsonify({'message': 'Usuario autorizado', 'resultado': True}), 200
-    
-    except Exception as e:
-      return jsonify({'error': str(e)}), 400
+        images = PersonsImages.query.all()
+        
+        if check_face(image_file, images):
+            return jsonify({'message': 'Usuario autorizado'}), 200
+        
+        return jsonify({'message': 'Usuario no autorizado'}), 400
+    except Exception as error:
+        print("Error:", error)
+        return jsonify({'message': 'Error en el servidor'}), 500
 
 
 # Metodo para guardar usuario en db
