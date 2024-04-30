@@ -65,7 +65,7 @@ def faceRecognition():
         if check_face(image_file, images):
             return jsonify({'message': 'Usuario autorizado'}), 200
         
-        return jsonify({'message': 'Usuario no autorizado'}), 400
+        return jsonify({'message': 'Usuario no autorizado'}), 200
     except Exception as error:
         print("Error:", error)
         return jsonify({'message': 'Error en el servidor'}), 500

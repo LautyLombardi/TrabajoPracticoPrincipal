@@ -80,7 +80,7 @@ const CamaraScreen = () => {
 
   // Send image to backend
   const cameraRef = useRef(null);
-  const [autorizado, setAutorizado] = useState(false);
+  const [autorizado, setAutorizado] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleAuthentication = async () => {
@@ -135,7 +135,7 @@ const CamaraScreen = () => {
 
   const clearAutorizado = () => {
     setTimeout(() => {
-      setAutorizado(false);
+      setAutorizado(null);
     }, 3000); 
   };
 
@@ -159,19 +159,23 @@ const CamaraScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <View
-            style={{
-              position: "absolute",
-              top: 30,
-              left: 0,
-              right: 0,
-              alignItems: "center",
-              paddingVertical: 12,
-              backgroundColor: autorizado ? "#00ff00" : "#ff0000",
-            }}
-          >
-            <Text style={{ color: "white", fontSize: 20 }}>{autorizado ? "Autorizado" : "No Autorizado"}</Text>
-          </View>
+        {autorizado == null ?
+           null                
+           :
+           <View
+           style={{
+             position: "absolute",
+             top: 30,
+             left: 0,
+             right: 0,
+             alignItems: "center",
+             paddingVertical: 12,
+             backgroundColor: autorizado ? "#00ff00" : "#ff0000",
+           }}
+         >
+           <Text style={{ color: "white", fontSize: 20 }}>{autorizado ? "Autorizado" : "No Autorizado"}</Text>
+         </View>           
+          }
         </Camera>
       ) : (
         <View
