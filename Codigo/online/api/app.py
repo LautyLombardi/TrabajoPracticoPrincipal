@@ -10,11 +10,43 @@ app = Flask(__name__)
 
 # Configurar la base de datos
 current_directory = os.path.dirname(os.path.realpath(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, 'db', 'dataBase.db')}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, "db", "dataBase.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar la base de datos
 init_db(app)
+
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({'message':'listening...'}),200
+
+@app.route('/user', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_dict = {
+            'id': user.id,
+            'name': user.name,
+            'lastname': user.lastname
+            # Agrega más campos si es necesario
+        }
+        user_list.append(user_dict)
+    return jsonify(user_list)
+
+# Método DELETE para eliminar todos los usuarios solo para desarrolladores
+@app.route('/user', methods=['DELETE'])
+def delete_all_users():
+    try:
+        # Elimina todos los usuarios
+        num_deleted = db.session.query(User).delete()
+        db.session.commit()
+        
+        return jsonify({'message': f'{num_deleted} usuarios eliminados exitosamente'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar usuarios', 'details': str(e)}), 500
+
 
 # Método POST para agregar un usuario
 @app.route('/user', methods=['POST'])
@@ -85,4 +117,4 @@ def insert_image():
         return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
