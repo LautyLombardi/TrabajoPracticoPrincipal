@@ -1,3 +1,4 @@
 /online/api/env
+/offline/api/env
 *.jpg
 *.pkl
