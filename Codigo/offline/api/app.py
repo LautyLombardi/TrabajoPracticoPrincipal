@@ -1,7 +1,7 @@
 import os, json
 from flask import Flask, request, jsonify
 from models.User import db, User
-from models.PersonsImages import db, PersonsImages
+from Codigo.offline.api.models.Image import db, Image
 from db.db import init_db
 
 app = Flask(__name__)
@@ -85,7 +85,7 @@ def insert_image():
         
         # Insertar en db 
         image_bytes = input_image.read()
-        image = PersonsImages(userId=1, photo=image_bytes)
+        image = Image(userId=1, visitorId=None, photo=image_bytes)
         db.session.add(image)
         db.session.commit()
 
