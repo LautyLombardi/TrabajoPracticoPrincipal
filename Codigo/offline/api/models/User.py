@@ -6,5 +6,5 @@ class User(db.Model):
     name = db.Column(db.Text)
     lastname = db.Column(db.Text)
     password = db.Column(db.Text)
-    type = db.Column(db.Text)
+    rol = db.Column(db.Text)
     DNI = db.Column(db.Integer)
