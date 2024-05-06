@@ -1,3 +1,4 @@
+from models import User, Image, Visitor, Place
 from db.db import db
 
 # Modelo para la tabla 'visitor'
@@ -6,5 +7,3 @@ class Visitor(db.Model):
     name = db.Column(db.Text)
     lastname = db.Column(db.Text)
     
-    # Relación uno a muchos con la tabla Image
-    images = db.relationship('Image', backref='visitor', lazy=True)

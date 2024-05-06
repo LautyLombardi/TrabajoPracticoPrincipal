@@ -1,8 +1,8 @@
 import os, json
 from flask import Flask, request, jsonify
-from models.User import db, User
-from Codigo.offline.api.models.Image import db, Image
-from db.db import init_db
+from models.User import User
+from models.Image import Image
+from db.db import init_db, db
 
 app = Flask(__name__)
 
