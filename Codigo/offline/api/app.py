@@ -1,9 +1,7 @@
 import os, json
 from flask import Flask, request, jsonify
-from models.User import User
-from models.Image import Image
-from db.db import init_db, db
-from models.Category import Category
+from db.db import init_db, db, Image, User
+from services.placeService import savePlace, updatePlace
 
 app = Flask(__name__)
 
@@ -95,6 +93,37 @@ def insert_image():
     except Exception as e:
         return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
 
+
+@app.route('/place', methods=['POST'])
+def create_category():
+    data = request.json
+    
+    if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+
+    response = savePlace(data)
+    if response == True:
+        return jsonify({'message': 'Lugar Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear lugar', 'error': str(response)}), 400
+
+
+
+@app.route('/place/<int:id>', methods=['PUT'])
+def update_category(id):     
+    data = request.json
+
+    if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+
+    response = updatePlace(id, data)
+    
+    if response == 200:
+        return jsonify({'message': 'Lugar Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Categoría no encontrada'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400        
 
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
