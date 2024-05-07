@@ -2,6 +2,7 @@ import os, json
 from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
 from services.placeService import savePlace, updatePlace
+from services.categoryService import saveCategory, updateCategory
 
 app = Flask(__name__)
 
@@ -71,7 +72,6 @@ def add_user():
 @app.route('/insert_image', methods=['POST'])
 def insert_image():
     try:
-        # Excepciones
         if 'image' not in request.files:
             return jsonify({'message': 'No se encontró ningún archivo en la solicitud.'}), 400
 
@@ -95,7 +95,7 @@ def insert_image():
 
 
 @app.route('/place', methods=['POST'])
-def create_category():
+def create_place():
     data = request.json
     
     if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
@@ -110,7 +110,7 @@ def create_category():
 
 
 @app.route('/place/<int:id>', methods=['PUT'])
-def update_category(id):     
+def update_place(id):     
     data = request.json
 
     if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
@@ -121,62 +121,53 @@ def update_category(id):
     if response == 200:
         return jsonify({'message': 'Lugar Guardado'}), 200
     elif response == 404:
-        return jsonify({'error': 'Categoría no encontrada'}), 404
+        return jsonify({'error': 'Lugar no encontrada'}), 404
     else:
-        return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400        
+        return jsonify({'message': 'Error al modificar lugar', 'error': str(response)}), 400        
 
-def load_config(env):
-    with open(os.path.join(current_directory,'./config.json')) as f:
-        config = json.load(f)
-        return config.get(env, {})
+
 
 
 
 @app.route('/category', methods=['POST'])
 def create_category():
-    try:
-        name = request.json.get('name')
-        description = request.json.get('description')
+    data = request.json
 
-        # Verificar si name y description contienen solo espacios en blanco
-        if not name.strip() or not description.strip():
-            return jsonify({'error': 'Error al crear categoria debido a que name o descripcion están vacíos'}), 400
+    if not data.get('name').strip() or not data.get('description').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
-        new_category = Category(name=name, description=description)
-        db.session.add(new_category)
-        db.session.commit()
-
-        return jsonify({'message': 'Categoria registrada exitosamente'}), 201
-    except Exception as e:
-            return jsonify({'message': 'Error al crear categoria', 'error': str(e)}), 400
+    response = saveCategory(data)
+        
+    if response == True:
+        return jsonify({'message': 'Categoria Registrada'}), 201
+    else:
+        return jsonify({'message': 'Error al crear categoria', 'error': str(response)}), 400
 
 
 
 @app.route('/category/<int:id>', methods=['PUT'])
 def update_category(id):
-    try:
-        category = Category.query.get(id)
+    data = request.json
 
-        if not category:
-            return jsonify({'error': 'Categoría no encontrada'}), 404
+    if not data.get('name').strip() or not data.get('description').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
-        new_name = request.json.get('name')
-        new_description = request.json.get('description')
+    response= updateCategory(id,data)
 
-        if not new_name.strip() or not new_description.strip():
-            return jsonify({'error': 'El nombre y la descripción no pueden estar vacíos'}), 400
-
-        #Se inserta en db
-        category.name = new_name
-        category.description = new_description
-        db.session.commit()
-
-        return jsonify({'message': 'Categoría Guardada'}), 200
-    except Exception as e:
-        return jsonify({'message': 'Error al modificar categoría', 'error': str(e)}), 400
+    if response == 200:
+        return jsonify({'message': 'Categoria Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Categoría no encontrada'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400        
+       
 
 
 
+def load_config(env):
+    with open(os.path.join(current_directory,'./config.json')) as f:
+        config = json.load(f)
+        return config.get(env, {})
 
 
     
