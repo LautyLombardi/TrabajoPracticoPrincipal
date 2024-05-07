@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from models.User import User
 from models.Image import Image
 from db.db import init_db, db
+from models.Category import Category
 
 app = Flask(__name__)
 
@@ -99,6 +100,56 @@ def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
         config = json.load(f)
         return config.get(env, {})
+
+
+
+@app.route('/category', methods=['POST'])
+def create_category():
+    try:
+        name = request.json.get('name')
+        description = request.json.get('description')
+
+        # Verificar si name y description contienen solo espacios en blanco
+        if not name.strip() or not description.strip():
+            return jsonify({'error': 'Error al crear categoria debido a que name o descripcion están vacíos'}), 400
+
+        new_category = Category(name=name, description=description)
+        db.session.add(new_category)
+        db.session.commit()
+
+        return jsonify({'message': 'Categoria registrada exitosamente'}), 201
+    except Exception as e:
+            return jsonify({'message': 'Error al crear categoria', 'error': str(e)}), 400
+
+
+
+@app.route('/category/<int:id>', methods=['PUT'])
+def update_category(id):
+    try:
+        category = Category.query.get(id)
+
+        if not category:
+            return jsonify({'error': 'Categoría no encontrada'}), 404
+
+        new_name = request.json.get('name')
+        new_description = request.json.get('description')
+
+        if not new_name.strip() or not new_description.strip():
+            return jsonify({'error': 'El nombre y la descripción no pueden estar vacíos'}), 400
+
+        #Se inserta en db
+        category.name = new_name
+        category.description = new_description
+        db.session.commit()
+
+        return jsonify({'message': 'Categoría Guardada'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error al modificar categoría', 'error': str(e)}), 400
+
+
+
+
+
     
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
