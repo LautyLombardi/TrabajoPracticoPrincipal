@@ -28,7 +28,11 @@ def get_users():
         user_dict = {
             'id': user.id,
             'name': user.name,
-            'lastname': user.lastname
+            'lastname': user.lastname,
+            'rol':user.rol,
+            'password':user.password,
+            'dni':user.dni
+
             # Agrega más campos si es necesario
         }
         user_list.append(user_dict)
@@ -52,10 +56,10 @@ def delete_all_users():
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.json
-    if 'name' not in data or 'lastname' not in data:
+    if 'name' not in data or 'lastname' not in data or 'rol' not in data or 'password' not in data or 'dni' not in data:
         return jsonify({'error': 'Faltan campos en la solicitud'}), 400
     
-    new_user = User(name=data['name'], lastname=data['lastname'])
+    new_user = User(name=data['name'], lastname=data['lastname'],rol=data['rol'],password=data['password'],dni=data['dni'])
     db.session.add(new_user)
     db.session.commit()
     
@@ -65,12 +69,49 @@ def add_user():
         user_data = {
             'id': user.id,
             'name': user.name,
-            'lastname': user.lastname
+            'lastname': user.lastname,
+            'rol':user.rol,
+            'password':user.password,
+            'dni':user.dni
         }
         return jsonify({'message': 'Datos almacenados exitosamente', 'user': user_data}), 201
     else:
         return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500
+#------------------------------------------------------
+    # Método PUT para agregar un usuario
+@app.route('/user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    if 'name' not in data or 'lastname' not in data or 'rol' not in data or 'password' not in data or 'dni' not in data:
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 400
+    
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
 
+    # Actualizar los campos del usuario
+    user.name = data['name']
+    user.lastname = data['lastname']
+    user.rol = data['rol']
+    user.password = data['password']
+    user.dni = data['dni']
+
+    db.session.commit()
+
+    # Consultar el usuario actualizado y devolverlo
+    updated_user = User.query.get(user_id)
+    user_data = {
+        'id': updated_user.id,
+        'name': updated_user.name,
+        'lastname': updated_user.lastname,
+        'rol': updated_user.rol,
+        'password': updated_user.password,
+        'dni': updated_user.dni
+    }
+
+    return jsonify({'message': 'Datos actualizados exitosamente', 'user': user_data}), 200
+
+#------------------------------------------------------
 # Metodo para reconocimiento facial
 @app.route('/faceRacognition', methods=['POST'])
 def faceRacognition():
