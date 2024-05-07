@@ -1,8 +1,6 @@
 import os, json
 from flask import Flask, request, jsonify
-from models.User import User
-from models.Image import Image
-from db.db import init_db, db
+from db.db import init_db, db, Image, User
 
 app = Flask(__name__)
 

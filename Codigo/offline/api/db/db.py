@@ -8,4 +8,4 @@ def init_db(app):
     with app.app_context():
         db.create_all()
 
-from models import User, Visitor, Image, Place, Category, Exception, Type, UserType, External, Institute, PlaceException, PlaceExternal, CategoryPlace, CategoryInstitute, CategoryException, CategoryVisitor
+from models import *
