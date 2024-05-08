@@ -9,3 +9,6 @@
 *.jpg
 *.pkl
 
+offline/api/utils/__pycache__
+offline/api/services/__pycache__
+offline/api/models/__pycache__
