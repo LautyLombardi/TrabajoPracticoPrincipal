@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
 from services.placeService import savePlace, updatePlace
 from services.userService import updateUser,saveUser
+from services.roleService import saveRol,updateRol,getRol
 
 app = Flask(__name__)
 
@@ -135,11 +136,55 @@ def update_category(id):
     else:
         return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400        
 
+@app.route('/rol', methods=['POST'])
+def createRol():
+    data = request.json
+    if not data.get('name').strip() or not data.get('description').strip() or  not data.get('createDate').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = saveRol(data)
+
+    if response == True:
+        return jsonify({'message': 'Rol Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear Rol', 'error': str(response)}), 400
+
+@app.route('/rol/<int:id>', methods=['PUT'])
+def actualiar_Rol(id):
+    data = request.json
+    if not data.get('name').strip() or not data.get('description').strip() or  not data.get('createDate').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = updateRol(data)
+
+    if response == 200:
+        return jsonify({'message': 'Rol Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Rol no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar el rol', 'error': str(response)}), 400
+
+@app.route('/rol/<int:id>', methods=['GET'])
+def obtener_Rol(id):
+    data = request.json
+    if not data.get('name').strip() or not data.get('description').strip() or  not data.get('createDate').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = getRol(data)
+
+    if response == 200:
+        return jsonify({'message':'Devolver rol'})
+    elif response == 404:
+        return jsonify({'error':'Rol no encontrado'})
+    else:
+        return jsonify({'error':'error al buscar el rol'})
+
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
         config = json.load(f)
         return config.get(env, {})
-    
+
+
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
     app.run(host=config.get('host'), port=config.get('port'), debug=True)
