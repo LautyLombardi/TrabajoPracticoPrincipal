@@ -26,7 +26,10 @@ def get_users():
         user_dict = {
             'id': user.id,
             'name': user.name,
-            'lastname': user.lastname
+            'lastname': user.lastname,
+            'password':user.password,            
+            'rol':user.rol,
+            'DNI':user.DNI
         }
         user_list.append(user_dict)
     return jsonify(user_list)
@@ -57,30 +60,8 @@ def add_user():
         return jsonify({'message': 'USer Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400
-    #------------------------------------------------------------------------------------------
-    """ new_user = User(name=data['name'], lastname=data['lastname'],rol=data['rol'],password=data['password'],dni=data['dni'])
-    db.session.add(new_user)
-    db.session.commit()
-    
-    # Consultar el usuario recién creado, comprobarlo y devolverlo
-    user = User.query.filter_by(id=new_user.id).first()
-    if user:
-        user_data = {
-            'id': user.id,
-            'name': user.name,
-            'lastname': user.lastname,
-            'rol':user.rol,
-            'password':user.password,
-            'DNI':user.DNI
-        }
-        return jsonify({'message': 'Datos almacenados exitosamente', 'user': user_data}), 201
-    else:
-        return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500 """
-    
-    #------------------------------------------------------------------------------------------
 
-#------------------------------------------------------
-    # Método PUT para agregar un usuario
+# Método PUT para agregar un usuario
 @app.route('/user/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     data = request.json
@@ -95,35 +76,6 @@ def update_user(user_id):
         return jsonify({'error': 'usuario no encontrado'}), 404
     else:
         return jsonify({'message': 'Error al modificar usuario', 'error': str(response)}), 400 
-    
-    #-------------------------------------------------------------
-    """ user = User.query.get(user_id)
-    if user is None:
-        return jsonify({'error': 'Usuario no encontrado'}), 404
-
-    # Actualizar los campos del usuario
-    user.name = data['name']
-    user.lastname = data['lastname']
-    user.rol = data['rol']
-    user.password = data['password']
-    user.dni = data['dni']
-
-    db.session.commit()
-
-    # Consultar el usuario actualizado y devolverlo
-    updated_user = User.query.get(user_id)
-    user_data = {
-        'id': updated_user.id,
-        'name': updated_user.name,
-        'lastname': updated_user.lastname,
-        'rol': updated_user.rol,
-        'password': updated_user.password,
-        'dni': updated_user.dni
-    }
-
-    return jsonify({'message': 'Datos actualizados exitosamente', 'user': user_data}), 200 """
-    #-------------------------------------------------------------
-#------------------------------------------------------
 
 # Metodo para guardar usuario en db
 @app.route('/insert_image', methods=['POST'])
