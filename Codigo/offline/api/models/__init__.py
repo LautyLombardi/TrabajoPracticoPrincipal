@@ -1,1 +1,1 @@
-__all__ = ['User', 'Visitor', 'Image', 'Place', 'Category', 'Exception', 'Type', 'UserType', 'External', 'Institute', 'PlaceException', 'PlaceExternal', 'CategoryPlace', 'CategoryInstitute', 'CategoryException', 'CategoryVisitor']
+__all__ = ['User', 'Visitor', 'Image', 'Place', 'Category', 'Exception', 'Role', 'Enterprice', 'Institute', 'PlaceException', 'CategoryPlace', 'CategoryInstitute', 'CategoryException', 'CategoryVisitor']

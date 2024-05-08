@@ -4,6 +4,8 @@ from db.db import db
 class Place(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
-    abreviation = db.Column(db.Text)
+    abbreviation = db.Column(db.Text)
     description = db.Column(db.Text)
-    time = db.Column(db.Text)
+    openTime = db.Column(db.Text)
+    closeTime = db.Column(db.Text)
+    createDate = db.Column(db.Text)
