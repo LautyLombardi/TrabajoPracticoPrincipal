@@ -2,6 +2,7 @@ import os, json
 from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
 from services.placeService import savePlace, updatePlace
+from services.userService import updateUser,saveUser
 
 app = Flask(__name__)
 
@@ -43,15 +44,21 @@ def delete_all_users():
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar usuarios', 'details': str(e)}), 500
 
-
+#--------------------------------------------------------------------------------------------
 # Método POST para agregar un usuario
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.json
-    if 'name' not in data or 'lastname' not in data:
+    if 'name' not in data or 'lastname' not in data or 'rol' not in data or 'password' not in data or 'DNI' not in data:
         return jsonify({'error': 'Faltan campos en la solicitud'}), 400
     
-    new_user = User(name=data['name'], lastname=data['lastname'])
+    response = saveUser(data)
+    if response == True:
+        return jsonify({'message': 'USer Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400
+    #------------------------------------------------------------------------------------------
+    """ new_user = User(name=data['name'], lastname=data['lastname'],rol=data['rol'],password=data['password'],dni=data['dni'])
     db.session.add(new_user)
     db.session.commit()
     
@@ -61,11 +68,62 @@ def add_user():
         user_data = {
             'id': user.id,
             'name': user.name,
-            'lastname': user.lastname
+            'lastname': user.lastname,
+            'rol':user.rol,
+            'password':user.password,
+            'DNI':user.DNI
         }
         return jsonify({'message': 'Datos almacenados exitosamente', 'user': user_data}), 201
     else:
-        return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500
+        return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500 """
+    
+    #------------------------------------------------------------------------------------------
+
+#------------------------------------------------------
+    # Método PUT para agregar un usuario
+@app.route('/user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    if 'name' not in data or 'lastname' not in data or 'rol' not in data or 'password' not in data or 'DNI' not in data:
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 400
+    
+    response = updateUser(id, data)
+    
+    if response == 200:
+        return jsonify({'message': 'usuario Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'usuario no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar usuario', 'error': str(response)}), 400 
+    
+    #-------------------------------------------------------------
+    """ user = User.query.get(user_id)
+    if user is None:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+    # Actualizar los campos del usuario
+    user.name = data['name']
+    user.lastname = data['lastname']
+    user.rol = data['rol']
+    user.password = data['password']
+    user.dni = data['dni']
+
+    db.session.commit()
+
+    # Consultar el usuario actualizado y devolverlo
+    updated_user = User.query.get(user_id)
+    user_data = {
+        'id': updated_user.id,
+        'name': updated_user.name,
+        'lastname': updated_user.lastname,
+        'rol': updated_user.rol,
+        'password': updated_user.password,
+        'dni': updated_user.dni
+    }
+
+    return jsonify({'message': 'Datos actualizados exitosamente', 'user': user_data}), 200 """
+    #-------------------------------------------------------------
+#------------------------------------------------------
 
 # Metodo para guardar usuario en db
 @app.route('/insert_image', methods=['POST'])
