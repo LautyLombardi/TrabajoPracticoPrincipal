@@ -90,7 +90,7 @@ def getUserId(id):
     if user:
         return jsonify(user), 200
     else:
-        return jsonify({'error': 'Lugar no encontrado'}), 404
+        return jsonify({'error': 'Usuario no encontrado'}), 404
 
 # Metodo para guardar usuario en db
 @app.route('/insert_image', methods=['POST'])
@@ -173,7 +173,7 @@ def createRole():
     if response == True:
         return jsonify({'message': 'Role Registrado'}), 201
     else:
-        return jsonify({'message': 'Error al crear Rol', 'error': str(response)}), 400
+        return jsonify({'message': 'Error al crear Role', 'error': str(response)}), 400
 
 @app.route('/role/<int:id>', methods=['PUT'])
 def update_role(id):
@@ -200,7 +200,7 @@ def Get_Role_By_ID(id):
     if role:
         return jsonify(role), 200
     else:
-        return jsonify({'error': 'Lugar no encontrado'}), 404
+        return jsonify({'error': 'Role no encontrado'}), 404
 
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
