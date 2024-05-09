@@ -316,7 +316,7 @@ def get_role_by_id(id):
 @app.route('/institute', methods=['POST'])
 def create_institute():
     data = request.json
-    if not data.get('name').strip() or int(data.get('place_id')) <= 0:        
+    if not data.get('name').strip():        
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
     
     response = saveInstitute(data)
@@ -329,7 +329,7 @@ def create_institute():
 @app.route('/institute/<int:id>', methods=['PUT'])
 def update_institute(id):
     data = request.json
-    if not data.get('name').strip() or int(data.get('place_id')) <= 0: 
+    if not data.get('name').strip(): 
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
     
     response = updateInstitute(id,data)

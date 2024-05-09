@@ -4,7 +4,7 @@ from utils.date import createDate
 
 def saveInstitute(data):
     try:
-        institute = Institute(name=data.get('name'),place_id=data.get('place_id'),createDate=createDate())
+        institute = Institute(name=data.get('name'),createDate=createDate())
         db.session.add(institute)
         db.session.commit()
 
@@ -20,7 +20,6 @@ def updateInstitute(id,data):
     
     try:
         institute.name=data.get('name')
-        institute.place_id=data.get('place_id')
         db.session.commit()
         return 200
 
@@ -34,7 +33,6 @@ def getInstituteById(id):
         return{
             'id':institute.id,
             'name':institute.name,
-            'place_id':institute.place_id,
             'createDate':institute.createDate
         }
 
