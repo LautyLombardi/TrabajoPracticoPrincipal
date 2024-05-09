@@ -1,11 +1,10 @@
 from db.db import db
-import os, json
-from flask import Flask, request, jsonify
 from models.Role import Role
+from utils.date import createDate
 
-def saveRol(data):
+def saveRole(data):
     try:
-        role = Role(name=data.get('name'),description=data.get('description'),createDate=data.get('createDate'))
+        role = Role(name=data.get('name'),description=data.get('description'),createDate=createDate())
         db.session.add(role)
         db.session.commit()
 
@@ -13,7 +12,7 @@ def saveRol(data):
     except Exception as e:
         return e
 
-def updateRol(id,data):
+def updateRole(id,data):
     role=Role.query.get(id)
 
     if not role:
@@ -22,20 +21,22 @@ def updateRol(id,data):
     try:
         role.name=data.get('name')
         role.description=data.get('description')
-        role.createDate=data.get('createDate')
+        db.session.commit()
+        return 200
 
     except Exception as e:
         return e
 
-def getRol(id,data):
+def getRole(id):
     role=Role.query.get(id)
 
-    if not role:
-        return 404
+    if role:
+        return{
+            'id':role.id,
+            'name':role.name,
+            'description':role.description,
+            'createDate':role.createDate
+        }
 
-    try:
-        jsonify(role)
-        return (200,)
-    
-    except Exception as e:
-        return e
+    else:
+        return None

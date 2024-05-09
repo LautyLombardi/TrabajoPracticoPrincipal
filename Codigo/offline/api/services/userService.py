@@ -22,7 +22,7 @@ def updateUser(id,data):
         user.name = data.get('name')
         user.lastname = data.get('lastname')
         user.password = data.get('password')
-        user.rol = data.get('rol_id')
+        user.role_id = data.get('role_id')
         
         user.isActive = data.get('isActive')
         user.motive = data.get('motive')
@@ -33,5 +33,18 @@ def updateUser(id,data):
     except Exception as e:
         return e
 
-def getUser(id):
-    pass
+def getUserById(id):
+    user = User.query.get(id)
+    if user:
+        return {
+            'dni': user.dni,
+            'name': user.name,
+            'lastname': user.lastname,
+            'role_id': user.role_id,
+            'isActive': user.isActive,
+            'motive': user.motive,
+            'activeDate':user.activeDate,
+            'createDate':user.createDate
+        }
+    else:
+        return None
