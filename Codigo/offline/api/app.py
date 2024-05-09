@@ -2,6 +2,7 @@ import os, json
 from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
 from services.placeService import savePlace, updatePlace, getPlaceById
+from services.visitorService import saveVisitor, updateVisitor, getVisitorById
 
 app = Flask(__name__)
 
@@ -145,3 +146,46 @@ def load_config(env):
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
     app.run(host=config.get('host'), port=config.get('port'), debug=True)
+
+@app.route('/visitor', methods=['POST'])
+def create_visitor():
+    data = request.json
+
+    if not data.get('dni').strip() or not data.get('enterprice_id').strip() or not data.get('name').strip() or not data.get('lastname').strip() or not data.get('email').strip() or not data.get('startDate').strip() or not data.get('finishDate').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response =saveVisitor(data)
+
+    if response == True:
+        return jsonify({'message': 'Visitante Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear visitante', 'error': str(response)}), 400
+    
+
+
+@app.route('/visitor/<int:id>', methods=['PUT'])
+def update_visitor(id):
+    data = request.json
+
+    if not data.get('enterprice_id').strip() or not data.get('name').strip() or not data.get('lastname').strip() or not data.get('email').strip() or not data.get('startDate').strip() or not data.get('finishDate').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = updateVisitor(id,data)
+
+    if response == 200:
+        return jsonify({'message': 'Visitante Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Visitante no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar el visitante', 'error': str(response)}), 400
+
+@app.route('/visitor/<int:id>', methods=['GET'])
+def get_visitor_by_id(id):
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    visitor=getVisitorById(id)
+
+    if visitor:
+        return jsonify(visitor), 200
+    else:
+        return jsonify({'error': 'Visitante no encontrado'}), 404
