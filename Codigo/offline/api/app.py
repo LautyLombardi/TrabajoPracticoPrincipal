@@ -2,6 +2,7 @@ import os, json
 from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
 from services.placeService import savePlace, updatePlace, getPlaceById
+from services.categoryService import saveCategory , updateCategory, getCategoryById
 
 app = Flask(__name__)
 
@@ -122,7 +123,19 @@ def update_place(id):
     elif response == 404:
         return jsonify({'error': 'Lugar no encontrada'}), 404
     else:
-        return jsonify({'message': 'Error al modificar lugar', 'error': str(response)}), 400        
+        return jsonify({'message': 'Error al modificar lugar', 'error': str(response)}), 400
+
+@app.route('/place/<int:id>', methods=['GET'])
+def get_place_by_id(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    place = getPlaceById(id)
+    if place:
+        return jsonify(place), 200
+    else:
+        return jsonify({'error': 'Lugar no encontrado'}), 404               
 
 
 
@@ -134,6 +147,13 @@ def create_category():
 
     if not data.get('name').strip() or not data.get('description').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+
+    is_extern = data.get('isExtern')
+    if not isinstance(is_extern, int):
+        return jsonify({'error': 'isExtern debe ser un entero'}), 422
+
+    if is_extern != 0 and is_extern != 1:
+        return jsonify({'error': 'isExtern debe ser 0 o 1'}), 422
 
     response = saveCategory(data)
         
@@ -151,6 +171,14 @@ def update_category(id):
     if not data.get('name').strip() or not data.get('description').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
+
+    is_extern = data.get('isExtern')
+    if not isinstance(is_extern, int):
+        return jsonify({'error': 'isExtern debe ser un entero'}), 422
+
+    if is_extern != 0 and is_extern != 1:
+        return jsonify({'error': 'isExtern debe ser 0 o 1'}), 422
+
     response= updateCategory(id,data)
 
     if response == 200:
@@ -158,34 +186,23 @@ def update_category(id):
     elif response == 404:
         return jsonify({'error': 'Categoría no encontrada'}), 404
     else:
-        return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400        
+        return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400
+
+@app.route('/category/<int:id>', methods=['GET'])
+def get_category_by_id(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    category = getCategoryById(id)
+    if category:
+        return jsonify(category), 200
+    else:
+        return jsonify({'error': 'categoria no encontrado'}), 404                  
        
 
 
 
-@app.route('/place/<int:id>', methods=['GET'])
-def get_place_by_id(id):
-    
-    if id <= 0:
-        return jsonify({'error': 'ID inválido'}), 422
-    
-    place = getPlaceById(id)
-    if place:
-        return jsonify(place), 200
-    else:
-        return jsonify({'error': 'Lugar no encontrado'}), 404
-
-@app.route('/place/<int:id>', methods=['GET'])
-def get_place_by_id(id):
-    
-    if id <= 0:
-        return jsonify({'error': 'ID inválido'}), 422
-    
-    place = getPlaceById(id)
-    if place:
-        return jsonify(place), 200
-    else:
-        return jsonify({'error': 'Lugar no encontrado'}), 404
 
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
