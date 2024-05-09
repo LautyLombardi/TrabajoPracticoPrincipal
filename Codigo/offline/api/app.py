@@ -1,8 +1,7 @@
 import os, json
 from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
-from services.placeService import savePlace, updatePlace
-from services.categoryService import saveCategory, updateCategory
+from services.placeService import savePlace, updatePlace, getPlaceById
 
 app = Flask(__name__)
 
@@ -98,7 +97,7 @@ def insert_image():
 def create_place():
     data = request.json
     
-    if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
+    if not data.get('name').strip() or not data.get('abbreviation').strip() or not data.get('description').strip() or not data.get('openTime').strip() or not data.get('closeTime').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
     response = savePlace(data)
@@ -113,7 +112,7 @@ def create_place():
 def update_place(id):     
     data = request.json
 
-    if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
+    if not data.get('name').strip() or not data.get('abbreviation').strip() or not data.get('description').strip() or not data.get('openTime').strip() or not data.get('closeTime').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
     response = updatePlace(id, data)
@@ -163,6 +162,30 @@ def update_category(id):
        
 
 
+
+@app.route('/place/<int:id>', methods=['GET'])
+def get_place_by_id(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    place = getPlaceById(id)
+    if place:
+        return jsonify(place), 200
+    else:
+        return jsonify({'error': 'Lugar no encontrado'}), 404
+
+@app.route('/place/<int:id>', methods=['GET'])
+def get_place_by_id(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    place = getPlaceById(id)
+    if place:
+        return jsonify(place), 200
+    else:
+        return jsonify({'error': 'Lugar no encontrado'}), 404
 
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
