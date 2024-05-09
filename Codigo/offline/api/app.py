@@ -138,15 +138,6 @@ def get_place_by_id(id):
     else:
         return jsonify({'error': 'Lugar no encontrado'}), 404
 
-def load_config(env):
-    with open(os.path.join(current_directory,'./config.json')) as f:
-        config = json.load(f)
-        return config.get(env, {})
-    
-if __name__ == '__main__':
-    config = load_config('development') # Carga los valores de 'development' 
-    app.run(host=config.get('host'), port=config.get('port'), debug=True)
-
 @app.route('/visitor', methods=['POST'])
 def create_visitor():
     data = request.json
@@ -189,3 +180,12 @@ def get_visitor_by_id(id):
         return jsonify(visitor), 200
     else:
         return jsonify({'error': 'Visitante no encontrado'}), 404
+
+def load_config(env):
+    with open(os.path.join(current_directory,'./config.json')) as f:
+        config = json.load(f)
+        return config.get(env, {})
+    
+if __name__ == '__main__':
+    config = load_config('development') # Carga los valores de 'development' 
+    app.run(host=config.get('host'), port=config.get('port'), debug=True)

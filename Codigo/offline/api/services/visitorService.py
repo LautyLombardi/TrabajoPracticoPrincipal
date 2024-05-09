@@ -13,13 +13,12 @@ def saveVisitor(data):
         return e
 
 def updateVisitor(id, data):
-    visitor = visitor.query.get(id)
+    visitor = Visitor.query.get(id)
     
     if not visitor:
         return 404
     
     try:
-        visitor.dni = data.get('dni')
         visitor.enterprice_id = data.get('enterprice_id')
         visitor.name = data.get('name')
         visitor.lastname=data.get('lastname') 
@@ -39,10 +38,11 @@ def getVisitorById(id):
             'dni': visitor.dni,
             'enterprice_id': visitor.enterprice_id,
             'name': visitor.name,
-            'lastname': visitor.lastnae,
+            'lastname': visitor.lastname,
             'email': visitor.email,
             'startDate': visitor.startDate,
-            'finishDate': visitor.finishDate
+            'finishDate': visitor.finishDate,
+            'createDate': visitor.createDate
         }
     else:
         return None
