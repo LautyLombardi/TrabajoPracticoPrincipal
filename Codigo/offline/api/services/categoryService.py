@@ -17,11 +17,6 @@ def saveCategory(data):
 
 def updateCategory(id, data):
     category = Category.query.get(id)
-    print(id)
-    print(data.get('name'))
-    print(data.get('description'))
-    print(data.get('isExtern'))
-    print(category.name)
     if not category:
         return 404
     
