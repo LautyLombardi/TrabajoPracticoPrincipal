@@ -53,20 +53,20 @@ def delete_all_users():
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.json
-    if 'name' not in data or 'lastname' not in data or 'rol' not in data or 'password' not in data or 'DNI' not in data:
+    if 'name' not in data or 'lastname' not in data or 'rol_id' not in data or 'password' not in data or 'dni' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
         return jsonify({'error': 'Faltan campos en la solicitud'}), 400
     
     response = saveUser(data)
     if response == True:
-        return jsonify({'message': 'USer Registrado'}), 201
+        return jsonify({'message': 'User Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400
 
 # Método PUT para agregar un usuario
-@app.route('/user/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
+@app.route('/user/<int:id>', methods=['PUT'])
+def update_user(id):
     data = request.json
-    if 'name' not in data or 'lastname' not in data or 'rol' not in data or 'password' not in data or 'DNI' not in data:
+    if 'name' not in data or 'lastname' not in data or 'rol_id' not in data or 'password' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
         return jsonify({'error': 'Faltan campos en la solicitud'}), 400
     
     response = updateUser(id, data)
