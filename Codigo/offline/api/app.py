@@ -4,6 +4,8 @@ from db.db import init_db, db, Image, User
 from services.placeService import savePlace, updatePlace, getPlaceById
 from services.visitorService import saveVisitor, updateVisitor, getVisitorById
 from services.categoryService import saveCategory , updateCategory, getCategoryById
+from services.userService import updateUser,saveUser, getUserById
+from services.roleService import saveRole,updateRole,getRole
 
 app = Flask(__name__)
 
@@ -27,7 +29,10 @@ def get_users():
         user_dict = {
             'id': user.id,
             'name': user.name,
-            'lastname': user.lastname
+            'lastname': user.lastname,
+            'password':user.password,            
+            'rol':user.rol,
+            'DNI':user.DNI
         }
         user_list.append(user_dict)
     return jsonify(user_list)
@@ -45,29 +50,49 @@ def delete_all_users():
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar usuarios', 'details': str(e)}), 500
 
-
+#--------------------------------------------------------------------------------------------
 # Método POST para agregar un usuario
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.json
-    if 'name' not in data or 'lastname' not in data:
+    if 'name' not in data or 'lastname' not in data or 'role_id' not in data or 'password' not in data or 'dni' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
         return jsonify({'error': 'Faltan campos en la solicitud'}), 400
     
-    new_user = User(name=data['name'], lastname=data['lastname'])
-    db.session.add(new_user)
-    db.session.commit()
-    
-    # Consultar el usuario recién creado, comprobarlo y devolverlo
-    user = User.query.filter_by(id=new_user.id).first()
-    if user:
-        user_data = {
-            'id': user.id,
-            'name': user.name,
-            'lastname': user.lastname
-        }
-        return jsonify({'message': 'Datos almacenados exitosamente', 'user': user_data}), 201
+    response = saveUser(data)
+    if response == True:
+        return jsonify({'message': 'User Registrado'}), 201
     else:
-        return jsonify({'error': 'No se pudo encontrar el usuario recién creado'}), 500
+        return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400
+
+# Método PUT para agregar un usuario
+@app.route('/user/<int:id>', methods=['PUT'])
+def update_user(id):
+    data = request.json
+    if 'name' not in data or 'lastname' not in data or 'role_id' not in data or 'password' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 400
+    
+    response = updateUser(id, data)
+    
+    if response == 200:
+        return jsonify({'message': 'usuario Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'usuario no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar usuario', 'error': str(response)}), 400 
+
+#metodo get para user
+
+@app.route('/user/<int:id>', methods=['GET'])
+def getUserId(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    user = getUserById(id)
+    if user:
+        return jsonify(user), 200
+    else:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
 
 # Metodo para guardar usuario en db
 @app.route('/insert_image', methods=['POST'])
@@ -248,13 +273,54 @@ def get_category_by_id(id):
 
 
 
+@app.route('/role', methods=['POST'])
+def createRole():
+    data = request.json
+    if not data.get('name').strip() or not data.get('description').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = saveRole(data)
+
+    if response == True:
+        return jsonify({'message': 'Role Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear Role', 'error': str(response)}), 400
+
+@app.route('/role/<int:id>', methods=['PUT'])
+def update_role(id):
+    data = request.json
+    if not data.get('name').strip() or not data.get('description').strip():
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = updateRole(id,data)
+
+    if response == 200:
+        return jsonify({'message': 'Role Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Role no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar el role', 'error': str(response)}), 400
+
+@app.route('/role/<int:id>', methods=['GET'])
+def Get_Role_By_ID(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    role = getRole(id)
+    if role:
+        return jsonify(role), 200
+    else:
+        return jsonify({'error': 'Role no encontrado'}), 404
+
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
         config = json.load(f)
         return config.get(env, {})
 
 
-    
+
+
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
     app.run(host=config.get('host'), port=config.get('port'), debug=True)
