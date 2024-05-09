@@ -6,6 +6,7 @@ from services.visitorService import saveVisitor, updateVisitor, getVisitorById
 from services.categoryService import saveCategory , updateCategory, getCategoryById
 from services.userService import updateUser,saveUser, getUserById
 from services.roleService import saveRole,updateRole,getRole
+from services.instituteService import saveInstitute,updateInstitute,getInstituteById
 
 app = Flask(__name__)
 
@@ -21,6 +22,9 @@ init_db(app)
 def index():
     return jsonify({'message':'listening...'}),200
 
+#--------------------------------------------------------------------------------------------
+# User
+#--------------------------------------------------------------------------------------------
 @app.route('/user', methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -37,7 +41,6 @@ def get_users():
         user_list.append(user_dict)
     return jsonify(user_list)
 
-# Método DELETE para eliminar todos los usuarios solo para desarrolladores
 @app.route('/user', methods=['DELETE'])
 def delete_all_users():
     try:
@@ -50,10 +53,8 @@ def delete_all_users():
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar usuarios', 'details': str(e)}), 500
 
-#--------------------------------------------------------------------------------------------
-# Método POST para agregar un usuario
 @app.route('/user', methods=['POST'])
-def add_user():
+def create_user():
     data = request.json
     if 'name' not in data or 'lastname' not in data or 'role_id' not in data or 'password' not in data or 'dni' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
         return jsonify({'error': 'Faltan campos en la solicitud'}), 400
@@ -64,7 +65,6 @@ def add_user():
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400
 
-# Método PUT para agregar un usuario
 @app.route('/user/<int:id>', methods=['PUT'])
 def update_user(id):
     data = request.json
@@ -80,10 +80,8 @@ def update_user(id):
     else:
         return jsonify({'message': 'Error al modificar usuario', 'error': str(response)}), 400 
 
-#metodo get para user
-
 @app.route('/user/<int:id>', methods=['GET'])
-def getUserId(id):
+def get_user_by_id(id):
     
     if id <= 0:
         return jsonify({'error': 'ID inválido'}), 422
@@ -94,7 +92,9 @@ def getUserId(id):
     else:
         return jsonify({'error': 'Usuario no encontrado'}), 404
 
-# Metodo para guardar usuario en db
+#--------------------------------------------------------------------------------------------
+# Image
+#--------------------------------------------------------------------------------------------
 @app.route('/insert_image', methods=['POST'])
 def insert_image():
     try:
@@ -119,7 +119,9 @@ def insert_image():
     except Exception as e:
         return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400
 
-
+#--------------------------------------------------------------------------------------------
+# Place
+#--------------------------------------------------------------------------------------------
 @app.route('/place', methods=['POST'])
 def create_place():
     data = request.json
@@ -132,8 +134,6 @@ def create_place():
         return jsonify({'message': 'Lugar Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear lugar', 'error': str(response)}), 400
-
-
 
 @app.route('/place/<int:id>', methods=['PUT'])
 def update_place(id):     
@@ -163,6 +163,9 @@ def get_place_by_id(id):
     else:
         return jsonify({'error': 'Lugar no encontrado'}), 404               
 
+#--------------------------------------------------------------------------------------------
+# Visitor
+#--------------------------------------------------------------------------------------------
 @app.route('/visitor', methods=['POST'])
 def create_visitor():
     data = request.json
@@ -177,8 +180,6 @@ def create_visitor():
     else:
         return jsonify({'message': 'Error al crear visitante', 'error': str(response)}), 400
     
-
-
 @app.route('/visitor/<int:id>', methods=['PUT'])
 def update_visitor(id):
     data = request.json
@@ -206,10 +207,9 @@ def get_visitor_by_id(id):
     else:
         return jsonify({'error': 'Visitante no encontrado'}), 404
 
-
-
-
-
+#--------------------------------------------------------------------------------------------
+# Category
+#--------------------------------------------------------------------------------------------
 @app.route('/category', methods=['POST'])
 def create_category():
     data = request.json
@@ -230,8 +230,6 @@ def create_category():
         return jsonify({'message': 'Categoria Registrada'}), 201
     else:
         return jsonify({'message': 'Error al crear categoria', 'error': str(response)}), 400
-
-
 
 @app.route('/category/<int:id>', methods=['PUT'])
 def update_category(id):
@@ -269,12 +267,11 @@ def get_category_by_id(id):
     else:
         return jsonify({'error': 'categoria no encontrado'}), 404                  
        
-
-
-
-
+#--------------------------------------------------------------------------------------------
+# Role
+#--------------------------------------------------------------------------------------------
 @app.route('/role', methods=['POST'])
-def createRole():
+def create_role():
     data = request.json
     if not data.get('name').strip() or not data.get('description').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
@@ -302,7 +299,7 @@ def update_role(id):
         return jsonify({'message': 'Error al modificar el role', 'error': str(response)}), 400
 
 @app.route('/role/<int:id>', methods=['GET'])
-def Get_Role_By_ID(id):
+def get_role_by_id(id):
     
     if id <= 0:
         return jsonify({'error': 'ID inválido'}), 422
@@ -313,13 +310,53 @@ def Get_Role_By_ID(id):
     else:
         return jsonify({'error': 'Role no encontrado'}), 404
 
+#--------------------------------------------------------------------------------------------
+# Institute
+#--------------------------------------------------------------------------------------------
+@app.route('/institute', methods=['POST'])
+def create_institute():
+    data = request.json
+    if not data.get('name').strip() or int(data.get('place_id')) <= 0:        
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = saveInstitute(data)
+
+    if response == True:
+        return jsonify({'message': 'Institute Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear Institute', 'error': str(response)}), 400
+
+@app.route('/institute/<int:id>', methods=['PUT'])
+def update_institute(id):
+    data = request.json
+    if not data.get('name').strip() or int(data.get('place_id')) <= 0: 
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
+    
+    response = updateInstitute(id,data)
+
+    if response == 200:
+        return jsonify({'message': 'Institute Guardado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Institute no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar el Institute', 'error': str(response)}), 400
+
+@app.route('/institute/<int:id>', methods=['GET'])
+def get_institute_by_id(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    institute = getInstituteById(id)
+    if institute:
+        return jsonify(institute), 200
+    else:
+        return jsonify({'error': 'Role no encontrado'}), 404
+
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
         config = json.load(f)
         return config.get(env, {})
-
-
-
 
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
