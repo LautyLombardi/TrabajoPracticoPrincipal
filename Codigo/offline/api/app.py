@@ -1,7 +1,7 @@
 import os, json
 from flask import Flask, request, jsonify
 from db.db import init_db, db, Image, User
-from services.placeService import savePlace, updatePlace
+from services.placeService import savePlace, updatePlace, getPlaceById
 from services.userService import updateUser,saveUser
 from services.roleService import saveRol,updateRol,getRol
 
@@ -109,7 +109,7 @@ def insert_image():
 def create_category():
     data = request.json
     
-    if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
+    if not data.get('name').strip() or not data.get('abbreviation').strip() or not data.get('description').strip() or not data.get('openTime').strip() or not data.get('closeTime').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
     response = savePlace(data)
@@ -124,7 +124,7 @@ def create_category():
 def update_category(id):     
     data = request.json
 
-    if not data.get('name').strip() or not data.get('abreviation').strip() or not data.get('description').strip() or not data.get('time').strip():
+    if not data.get('name').strip() or not data.get('abbreviation').strip() or not data.get('description').strip() or not data.get('openTime').strip() or not data.get('closeTime').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
     response = updatePlace(id, data)
@@ -135,6 +135,18 @@ def update_category(id):
         return jsonify({'error': 'Categoría no encontrada'}), 404
     else:
         return jsonify({'message': 'Error al modificar categoría', 'error': str(response)}), 400        
+
+@app.route('/place/<int:id>', methods=['GET'])
+def get_place_by_id(id):
+    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    place = getPlaceById(id)
+    if place:
+        return jsonify(place), 200
+    else:
+        return jsonify({'error': 'Lugar no encontrado'}), 404
 
 @app.route('/rol', methods=['POST'])
 def createRol():
