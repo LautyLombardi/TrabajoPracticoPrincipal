@@ -40,3 +40,13 @@ def getRole(id):
 
     else:
         return None
+   
+   
+def exist_rol(id):   
+    role = Role.query.filter_by(id=id).first()
+
+    if role:
+        return True
+    else:
+        return False
+      

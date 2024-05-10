@@ -6,9 +6,11 @@ role_bp = Blueprint('role', __name__)
 @role_bp.route('/', methods=['POST'])
 def create_role():
     data = request.json
-    if not data.get('name').strip() or not data.get('description').strip():
-        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
-    
+ 
+    error = validate(data)
+    if error  is not None:
+        return error 
+
     response = saveRole(data)
 
     if response == True:
@@ -19,9 +21,11 @@ def create_role():
 @role_bp.route('/<int:id>', methods=['PUT'])
 def update_role(id):
     data = request.json
-    if not data.get('name').strip() or not data.get('description').strip():
-        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
-    
+
+    error = validate(data)
+    if error  is not None:
+        return error 
+
     response = updateRole(id,data)
 
     if response == 200:
@@ -42,3 +46,16 @@ def get_role_by_id(id):
         return jsonify(role), 200
     else:
         return jsonify({'error': 'Role no encontrado'}), 404
+
+
+def validate(data):
+    required_fields = ['name', 'description']
+    for field in required_fields:
+        if data.get(field) is None:
+            return jsonify({'error': f'No se pasó el campo {field}'}), 422
+
+    for field in ['name', 'description']:
+        if not isinstance(data.get(field), str) or not data.get(field).strip():
+            return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 422
+
+    return None
