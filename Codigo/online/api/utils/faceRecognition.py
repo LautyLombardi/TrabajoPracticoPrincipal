@@ -5,9 +5,9 @@ from deepface import DeepFace
 from utils.images import bytes_to_image_array
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
-userStorage = os.path.join(current_directory, "userStorage")
 
-def check_user_face(frame):
+def check_face(frame,storage):
+    imageStorage = os.path.join(current_directory, storage)
     try:
         # Decodificar la imagenes
         if hasattr(frame, 'read'):
@@ -19,7 +19,7 @@ def check_user_face(frame):
             # Si frame no es un objeto FileStorage, asumimos que es una ruta de archivo
             frame = cv2.imread(frame)
         
-        dff = DeepFace.find(frame, userStorage)  
+        dff = DeepFace.find(frame, imageStorage)  
         faceDB = dff[0].get("identity")
         reference_img = cv2.imread(str(faceDB[0])) 
         if DeepFace.verify(frame, reference_img)['verified']:
