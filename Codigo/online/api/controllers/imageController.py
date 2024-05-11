@@ -4,17 +4,17 @@ from services.imageService import saveUserImage, saveVisitorImage
 image_bp = Blueprint('image', __name__)
 
 @image_bp.route('/user', methods=['POST'])
-def insert_image():
+def insert_user():
 
     # Excepciones
     if 'image' not in request.files :
         return jsonify({'message': 'No se encontró archivo en la solicitud.'}), 400
 
-    if 'user_dni' not in request.files :
+    if 'user_dni' not in request.form :
         return jsonify({'message': 'No se encontró dni del usuario en la solicitud.'}), 400
     
     image = request.files['image']
-    user_dni = request.files['user_dni']
+    user_dni = int(request.form['user_dni'])
     
     if image.filename == '':
         return jsonify({'message': 'El archivo no tiene nombre.'}), 400
@@ -22,7 +22,7 @@ def insert_image():
     if not image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
         return jsonify({'message': 'El archivo no es una imagen válida.'}), 400
     
-    if not isinstance(user_dni, int) or user_dni <= 0:
+    if user_dni <= 0:
         return jsonify({'error': 'El dni debe ser una entero'}), 422
 
     response = saveUserImage(image, user_dni)
@@ -33,7 +33,7 @@ def insert_image():
         return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(response)}), 400
 
 @image_bp.route('/visitor', methods=['POST'])
-def insert_image():
+def insert_visitor():
 
     # Excepciones
     if 'image' not in request.files :

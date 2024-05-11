@@ -1,6 +1,10 @@
 import io
 import numpy as np
 from PIL import Image
+import os
+import cv2
+
+current_directory = os.path.dirname(os.path.realpath(__file__))
 
 def image_to_bytes(image_path):
 
@@ -23,3 +27,11 @@ def bytes_to_image_array(image_bytes):
     image_array = np.asarray(image)
 
   return image_array
+
+def saveUserInStorage(image_bytes,dni):  
+  save_folder = os.path.join(current_directory, "userStorage")
+  photo = bytes_to_image_array(image_bytes)
+  filepath = os.path.join(save_folder, f"photo_{dni}.jpg")
+  cv2.imwrite(filepath, photo)
+
+

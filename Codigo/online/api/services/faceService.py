@@ -12,3 +12,11 @@ def validUser(image):
     except Exception as e:
         return e
 
+def validVisitor(image):
+    images = Image.query.all()
+    try:
+        check_face(image,images)
+        
+        return True
+    except Exception as e:
+        return e
