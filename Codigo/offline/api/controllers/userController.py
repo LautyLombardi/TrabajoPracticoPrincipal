@@ -1,6 +1,10 @@
 from flask import Blueprint, request, jsonify
 from services.userService import updateUser,saveUser, getUserById
-from db.db import db, User
+from db.db import db, User, Role
+from services.roleService import exist_rol
+from utils.date import check_date_format
+
+
 
 user_bp = Blueprint('user', __name__)
 
@@ -35,8 +39,10 @@ def delete_all_users():
 @user_bp.route('/', methods=['POST'])
 def create_user():
     data = request.json
-    if 'name' not in data or 'lastname' not in data or 'role_id' not in data or 'password' not in data or 'dni' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
-        return jsonify({'error': 'Faltan campos en la solicitud'}), 400
+    
+    error = validate(data)
+    if error  is not None:
+        return error 
     
     response = saveUser(data)
     if response == True:
@@ -47,9 +53,11 @@ def create_user():
 @user_bp.route('/<int:id>', methods=['PUT'])
 def update_user(id):
     data = request.json
-    if 'name' not in data or 'lastname' not in data or 'role_id' not in data or 'password' not in data or 'isActive' not in data or 'motive' not in data or 'activeDate' not in data:
-        return jsonify({'error': 'Faltan campos en la solicitud'}), 400
-    
+
+    error = validate(data)
+    if error  is not None:
+        return error
+        
     response = updateUser(id, data)
     
     if response == 200:
@@ -70,3 +78,41 @@ def get_user_by_id(id):
         return jsonify(user), 200
     else:
         return jsonify({'error': 'Usuario no encontrado'}), 404
+
+
+def validate(data):
+    required_fields = ['name', 'lastname', 'role_id', 'password' , 'motive', 'activeDate']
+    for field in required_fields:
+        if data.get(field) is None:
+            return jsonify({'error': f'No se pasó el campo {field}'}), 422
+
+    for field in ['name', 'lastname', 'password', 'motive', 'activeDate']:
+        if not isinstance(data.get(field), str) or not data.get(field).strip():
+            return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 422
+
+
+    if data.get('isActive') is None:
+        data['isActive'] = 1
+    else:
+        is_active = data.get('isActive')
+        if not isinstance(is_active, int):
+            return jsonify({'error': 'isActive debe ser un entero'}), 422
+        if is_active != 0 and is_active != 1:
+            return jsonify({'error': 'isActive debe ser 0 o 1'}), 422       
+
+
+    role_id = data.get('role_id')
+    if not isinstance(role_id, int):
+        return jsonify({'error': 'role_id debe ser un entero'}), 422
+
+
+    if not exist_rol(role_id):
+        return jsonify({'error': 'el rol que se esta pasando no existe en la tabla Rol'}), 422
+
+    if not check_date_format(data.get('activeDate')):
+        return jsonify({'error': f'El campo activeDate no tiene el formato de fecha válido '}, 422)
+
+
+
+
+    return None
