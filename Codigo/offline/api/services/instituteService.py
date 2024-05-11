@@ -1,5 +1,7 @@
 from db.db import db
 from models.Institute import Institute
+from models.Place import Place
+from models.InstitutePlace import InstitutePlace
 from utils.date import createDate
 
 def saveInstitute(data):
@@ -38,3 +40,24 @@ def getInstituteById(id):
 
     else:
         return None
+
+def saveInstitutePlace(institute_id, place_id):
+        
+    if not Place.query.get(place_id):
+        return '404a'
+    
+    if not Institute.query.get(institute_id):
+        return '404b'
+    
+    # Verifica si la relación ya exist    
+    if InstitutePlace.query.filter_by(institute_id=institute_id, place_id=place_id).first():
+        return '409'
+    
+    try:
+        institutePlace = InstitutePlace(institute_id=institute_id, place_id=place_id)
+        db.session.add(institutePlace)
+        db.session.commit()
+
+        return 201
+    except Exception as e:
+        return e
