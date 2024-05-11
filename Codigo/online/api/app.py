@@ -16,39 +16,13 @@ init_db(app)
 def index():
     return jsonify({'message':'listening online...'}),200
 
-# Metodo para reconocimiento facial
-
-# Metodo para guardar usuario en db
-""" @app.route('/insert_image', methods=['POST'])
-def insert_image():
-    try:
-        # Excepciones
-        if 'image' not in request.files:
-            return jsonify({'message': 'No se encontró ningún archivo en la solicitud.'}), 400
-
-        input_image = request.files['image']
-        if input_image.filename == '':
-            return jsonify({'message': 'El archivo no tiene nombre.'}), 400
-        
-        if not input_image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-            return jsonify({'message': 'El archivo no es una imagen válida.'}), 400
-        
-        # Insertar en db 
-        image_bytes = input_image.read()
-        image = PersonsImages(userId=1, photo=image_bytes)
-        db.session.add(image)
-        db.session.commit()
-
-
-        return jsonify({'message': 'Imagen insertada correctamente en la base de datos.'}), 200
-    except Exception as e:
-        return jsonify({'message': 'Error al insertar la imagen en la base de datos.', 'error': str(e)}), 400 """
-
 #--------------------------------------------------------------------------------------------
 # Controllers blueprints
 #--------------------------------------------------------------------------------------------
 app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(visitor_bp, url_prefix='/visitor')
+app.register_blueprint(faceRecognition_bp, url_prefix='/faceRecognition')
+app.register_blueprint(image_bp, url_prefix='/image')
 
 def load_config(env):
     with open(os.path.join(current_directory,'./config.json')) as f:
