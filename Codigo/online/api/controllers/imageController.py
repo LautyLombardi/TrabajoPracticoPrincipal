@@ -39,11 +39,11 @@ def insert_visitor():
     if 'image' not in request.files :
         return jsonify({'message': 'No se encontró archivo en la solicitud.'}), 400
 
-    if 'visitor_dni' not in request.files :
+    if 'visitor_dni' not in request.form :
         return jsonify({'message': 'No se encontró dni del visitante en la solicitud.'}), 400
     
     image = request.files['image']
-    visitor_dni = request.files['visitor_dni']
+    visitor_dni = int(request.form['visitor_dni'])
     
     if image.filename == '':
         return jsonify({'message': 'El archivo no tiene nombre.'}), 400
@@ -51,7 +51,7 @@ def insert_visitor():
     if not image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
         return jsonify({'message': 'El archivo no es una imagen válida.'}), 400
     
-    if not isinstance(visitor_dni, int) or visitor_dni <= 0:
+    if  visitor_dni <= 0:
         return jsonify({'error': 'El dni debe ser una entero'}), 422
 
     response = saveVisitorImage(image, visitor_dni)

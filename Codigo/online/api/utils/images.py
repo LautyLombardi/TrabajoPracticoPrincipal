@@ -34,4 +34,9 @@ def saveUserInStorage(image_bytes,dni):
   filepath = os.path.join(save_folder, f"photo_{dni}.jpg")
   cv2.imwrite(filepath, photo)
 
+def saveVisitorInStorage(image_bytes,dni):
+  save_folder = os.path.join(current_directory, "visitorStorage")
+  photo = bytes_to_image_array(image_bytes)
+  filepath = os.path.join(save_folder, f"photo_{dni}.jpg")
+  cv2.imwrite(filepath, photo)
 
