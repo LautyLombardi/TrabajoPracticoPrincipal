@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet, Pressable,TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import React, { useState } from 'react'
+import { TextInput } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -51,7 +52,7 @@ type PropsTable = {
   deleteState: boolean
 };
 
-const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteState }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState }) => {
 
   const iconVerMas = () => {
     return (
@@ -85,40 +86,26 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
       <Row>
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Rol'/>
-        <Col text='Categoria'/>
-        <Col text='Institutos'/>
+        <Col text='Descripcion'/>
         <Col text='' flexWidth={0.8}/>
       </Row>
       <Row>
         <Col text='1'flexWidth={0.8}/>
-        <Col text='Juan Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Docente'/>
-        <Col text='Interno'/>
-        <Col text='ICI, IDEI'/>
+        <Col text='Papeador de la pepa' flexWidth={3}/>
+        <Col text='El que papea toda la pepa'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
       <Row>
         <Col text='2'flexWidth={0.8}/>
-        <Col text='Juan Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Docente'/>
-        <Col text='Interno'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='3'flexWidth={0.8}/>
-        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Alumno'/>
-        <Col text='Interno'/>
-        <Col text='ICI, IDEI'/>
+        <Col text='el carnicero' flexWidth={3}/>
+        <Col text='el que corta la carne'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
     </View>
   );
 };
 
-const AdministracionVisitantes = () => {
+const Administracioncategorias = () => {
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -154,7 +141,7 @@ const AdministracionVisitantes = () => {
         <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10, flexDirection: "row", gap: 10}}>
             <Ionicons name='arrow-back-outline' size={20} onPress={handleGoBack}/>
             <Text style={{fontWeight: "bold"}}>
-                Administraion de Visitantes
+                Administraion de Categoria
             </Text>
         </View>
 
@@ -172,13 +159,13 @@ const AdministracionVisitantes = () => {
           <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
             <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
           </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/visitantes/registrar")}>
+          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/categorias/registrar")}>
             <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
           </Pressable>
         </View>
 
         {/** Tabla */}
-        <TablaVisitantes viewState={view} editState={edit} deleteState={trash}/>
+        <Tablacategorias viewState={view} editState={edit} deleteState={trash}/>
 
     </View>
   )
@@ -192,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AdministracionVisitantes
+export default Administracioncategorias
