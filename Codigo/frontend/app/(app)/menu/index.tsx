@@ -23,7 +23,7 @@ const Menu = () => {
                     </Pressable>
                 </View>
                 <View style={styles.col}>
-                    <Pressable style={styles.buttonMenu}>
+                    <Pressable style={styles.buttonMenu} >
                         <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
                     </Pressable>
                 </View>
@@ -35,7 +35,7 @@ const Menu = () => {
                     </Pressable>
                 </View>
                 <View style={styles.col}>
-                    <Pressable style={styles.buttonMenu}>
+                    <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/categoria")}>
                         <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
                     </Pressable>
                 </View>
