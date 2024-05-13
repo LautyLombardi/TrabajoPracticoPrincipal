@@ -41,4 +41,18 @@ def getCategoryById(id):
             'isExtern': category.isExtern,
         }
     else:
-        return None       
+        return None    
+
+def getCategoryAll():
+
+    categories = Category.query.all()
+    category_list = []
+
+    for category in categories:
+        category_dict = {
+            'name': category.name,
+            'description': category.description,
+            'isExtern': category.isExtern,
+        }
+        category_list.append(category_dict)
+    return category_list         

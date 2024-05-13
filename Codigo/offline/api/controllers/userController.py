@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.userService import updateUser,saveUser, getUserById
-from db.db import db, User, Role
+from services.userService import updateUser,saveUser, getUserById, getUserAll
 from services.roleService import exist_rol
 from utils.date import check_date_format
 
@@ -10,31 +9,17 @@ user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/', methods=['GET'])
 def get_users():
-    users = User.query.all()
-    user_list = []
-    for user in users:
-        user_dict = {
-            'id': user.id,
-            'name': user.name,
-            'lastname': user.lastname,
-            'password':user.password,            
-            'rol':user.rol,
-            'DNI':user.DNI
-        }
-        user_list.user_bpend(user_dict)
-    return jsonify(user_list)
-
-@user_bp.route('/', methods=['DELETE'])
-def delete_all_users():
     try:
-        # Elimina todos los usuarios
-        num_deleted = db.session.query(User).delete()
-        db.session.commit()
-        
-        return jsonify({'message': f'{num_deleted} usuarios eliminados exitosamente'})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'Error al eliminar usuarios', 'details': str(e)}), 500
+        response=getUserAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay usuarios guardados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener usuarios', 'error': str(e)}), 400    
+
 
 @user_bp.route('/', methods=['POST'])
 def create_user():

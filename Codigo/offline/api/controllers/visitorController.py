@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.visitorService import saveVisitor, updateVisitor, getVisitorById
+from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll
 
 visitor_bp = Blueprint('visitor', __name__)
 
@@ -43,3 +43,16 @@ def get_visitor_by_id(id):
         return jsonify(visitor), 200
     else:
         return jsonify({'error': 'Visitante no encontrado'}), 404
+
+@visitor_bp.route('/', methods=['GET'])
+def get_visitors():
+    try:
+        response=getVisitorAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay visitantes guardados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    

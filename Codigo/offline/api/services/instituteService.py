@@ -61,3 +61,17 @@ def saveInstitutePlace(institute_id, place_id):
         return 201
     except Exception as e:
         return e
+
+def getInstituteAll():
+
+    institutes = Institute.query.all()
+    institute_list = []
+
+    for institute in institutes:
+        institute_dict = {
+            'id':institute.id,
+            'name':institute.name,
+            'createDate':institute.createDate
+        }
+        institute_list.append(institute_dict)
+    return institute_list         

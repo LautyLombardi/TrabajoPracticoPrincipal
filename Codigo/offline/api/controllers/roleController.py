@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.roleService import saveRole,updateRole,getRole
+from services.roleService import saveRole,updateRole,getRole, getRoleAll
 
 role_bp = Blueprint('role', __name__)
 
@@ -46,6 +46,21 @@ def get_role_by_id(id):
         return jsonify(role), 200
     else:
         return jsonify({'error': 'Role no encontrado'}), 404
+
+
+
+@role_bp.route('/', methods=['GET'])
+def get_roles():
+    try:
+        response=getRoleAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay roles guardados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener roles', 'error': str(e)}), 400    
 
 
 def validate(data):

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace
+from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace, getInstituteAll
 
 institute_bp = Blueprint('institute', __name__)
 
@@ -64,3 +64,17 @@ def create_institutePlace():
         return jsonify({'error': 'La asignacion Institute Place ya existe'}), 409
     else:
         return jsonify({'message': 'Error al crear asignacion', 'error': str(response)}), 400
+
+
+@institute_bp.route('/', methods=['GET'])
+def get_institutes():
+    try:
+        response=getInstituteAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay institutos guardados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400         

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.placeService import savePlace, updatePlace, getPlaceById
+from services.placeService import savePlace, updatePlace, getPlaceById, getPlaceAll
 from utils.date import check_schedule_format
 
 place_bp = Blueprint('place', __name__)
@@ -48,6 +48,20 @@ def get_place_by_id(id):
         return jsonify({'error': 'Lugar no encontrado'}), 404    
 
 
+@place_bp.route('/', methods=['GET'])
+def get_places():
+    try:
+        response=getPlaceAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay lugares guardados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener lugares', 'error': str(e)}), 400            
+
+
 
 def validate(data):
     required_fields = ['name', 'description', 'abbreviation', 'openTime', 'closeTime']
@@ -64,5 +78,5 @@ def validate(data):
         if not check_schedule_format(data.get(field)):
             return jsonify({'error': f'El campo {field} no tiene el formato de horario válido '}, 422)
 
-    # Si pasa todas las validaciones, retornar None (indicando que los datos son válidos)
+
     return None
