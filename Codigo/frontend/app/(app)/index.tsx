@@ -5,7 +5,10 @@ import { Link, Stack } from 'expo-router'
 const Welcome = () => {
   return (       
     <View style={styles.container}>
-        
+        <View style={styles.titleContainer}>
+            <Text style={styles.title}>MSS</Text>
+        </View>
+
 
         <Link href={"/login"} asChild>
             <TouchableOpacity style={styles.button}>
@@ -37,6 +40,17 @@ const styles = StyleSheet.create({
     text: {
         color: "#fff",
         textAlign: "center",
+    },
+
+    titleContainer: {
+       flex: 1,
+       justifyContent: "center"
+    },
+
+    title: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 30,
     }
 });
 
