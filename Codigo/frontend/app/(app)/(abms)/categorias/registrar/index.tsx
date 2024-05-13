@@ -132,25 +132,6 @@ const RegistroCategoria = () => {
           <SelectItem value={categoria} onValueChange={setCategoria} />
         </View>
 
-        {/** Fecha de Ingreso*/}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            width: "100%",
-            padding: 10,
-          }}
-        >
-          <View style={{ width: 90 }}>
-            <Text style={{ color: "white", fontSize: 15 }}>
-              Fecha de actividad:{" "}
-            </Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <CampoFecha date={dateIngreso} setDate={setDateIngreso} />
-          </View>
-        </View>
-
       </View>
 
       <View style={{ width: 300 }}>
