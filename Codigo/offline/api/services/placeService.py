@@ -4,7 +4,14 @@ from utils.date import createDate
 
 def savePlace(data):
     try:
-        place = Place(name=data.get('name'), abbreviation=data.get('abbreviation'), description=data.get('description'), openTime=data.get('openTime'), closeTime=data.get('closeTime'), createDate=createDate())
+        place = Place(
+            name=data.get('name'), 
+            abbreviation=data.get('abbreviation'), 
+            description=data.get('description'), 
+            openTime=data.get('openTime'), 
+            closeTime=data.get('closeTime'), 
+            isActive=1,
+            createDate=createDate())
         db.session.add(place)
         db.session.commit()
         
@@ -13,8 +20,7 @@ def savePlace(data):
         return e
 
 def updatePlace(id, data):
-    place = Place.query.get(id)
-    
+    place = Place.query.get(id)    
     if not place:
         return 404
     
@@ -32,6 +38,7 @@ def updatePlace(id, data):
 
 def getPlaceById(id):
     place = Place.query.get(id)
+    
     if place:
         return {
             'id': place.id,
@@ -40,13 +47,13 @@ def getPlaceById(id):
             'description': place.description,
             'openTime': place.openTime,
             'closeTime': place.closeTime,
+            'isActive': place.isActive,
             'createDate': place.createDate
         }
     else:
         return None
 
 def getPlaceAll():
-
     places = Place.query.all()
     place_list = []
 
@@ -58,7 +65,24 @@ def getPlaceAll():
             'description': place.description,
             'openTime': place.openTime,
             'closeTime': place.closeTime,
+            'isActive': place.isActive,
             'createDate': place.createDate
         }
         place_list.append(place_dict)
     return place_list         
+
+def setDesactive(id):
+    places = Place.query.get(id)
+    if not places:
+        return 404
+
+    try:
+        if places.isActive==0:
+            places.isActive=1
+        else:
+            places.isActive=0
+        db.session.commit()
+
+        return 200
+    except Exception as e:
+        return e
