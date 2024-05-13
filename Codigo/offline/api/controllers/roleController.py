@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.roleService import saveRole,updateRole,getRole, getRoleAll
+from services.roleService import saveRole,updateRole, getRole, getRoleAll, setDesactive
 
 role_bp = Blueprint('role', __name__)
 
@@ -47,8 +47,6 @@ def get_role_by_id(id):
     else:
         return jsonify({'error': 'Role no encontrado'}), 404
 
-
-
 @role_bp.route('/', methods=['GET'])
 def get_roles():
     try:
@@ -62,6 +60,18 @@ def get_roles():
     except Exception as e: 
         return jsonify({'message': 'Error al obtener roles', 'error': str(e)}), 400    
 
+@role_bp.route('/<int:id>', methods=['DELETE'])
+def desactive_role_by_id(id):
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    response=setDesactive(id)
+
+    if response == 200:
+        return jsonify({'message': 'Role activado/desactivado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Role no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al desactivar el Role', 'error': str(response)}), 400
 
 def validate(data):
     required_fields = ['name', 'description']
