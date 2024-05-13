@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getActiveVisitors, setDesactive
+from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll, setDesactive
 
 visitor_bp = Blueprint('visitor', __name__)
 
@@ -47,7 +47,7 @@ def get_visitor_by_id(id):
 @visitor_bp.route('/', methods=['GET'])
 def get_visitors():
     try:
-        response=getActiveVisitors()
+        response=getVisitorAll()
    
         if response is None:
             return jsonify({'error': 'No hay visitantes guardados en la base de datos'}), 404     
