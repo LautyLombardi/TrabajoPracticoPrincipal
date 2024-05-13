@@ -103,7 +103,7 @@ def set_active_user(id):
     else:
         return jsonify({'message': 'Error al modificar usuario', 'error': str(response)}), 400 
 
-@user_bp.route('/desactive/<int:id>', methods=['GET'])
+@user_bp.route('/desactive/<int:id>', methods=['PUT'])
 def set_desactive_user(id):
     data = request.json
     
