@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace, getInstituteAll
+from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace, getInstituteAll, setDesactive
 
 institute_bp = Blueprint('institute', __name__)
 
@@ -78,3 +78,18 @@ def get_institutes():
 
     except Exception as e: 
         return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400         
+
+@institute_bp.route('/<int:id>', methods=['DELETE'])
+def desactive_category_by_id(id):
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    response=setDesactive(id)
+
+    if response == 200:
+        return jsonify({'message': 'Instituto activado/desactivado'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Instituto no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al desactivar el Instituto', 'error': str(response)}), 400
+
+    

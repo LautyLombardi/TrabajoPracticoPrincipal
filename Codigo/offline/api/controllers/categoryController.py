@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.categoryService import saveCategory , updateCategory, getCategoryById, getCategoryAll
+from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive
 from utils.date import check_schedule_format
 
 
@@ -23,7 +23,6 @@ def create_category():
 @category_bp.route('/<int:id>', methods=['PUT'])
 def update_category(id):
     data = request.json
-
 
     error = validate(data)
     if error  is not None:
@@ -84,4 +83,15 @@ def validate(data):
     if is_extern != 0 and is_extern != 1:
         return jsonify({'error': 'isExtern debe ser 0 o 1'}), 422
 
-      
+@category_bp.route('/<int:id>', methods=['DELETE'])
+def desactive_category_by_id(id):
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    response=setDesactive(id)
+
+    if response == 200:
+        return jsonify({'message': 'Categoria activada/desactivada'}), 200
+    elif response == 404:
+        return jsonify({'error': 'Categoria no encontrada'}), 404
+    else:
+        return jsonify({'message': 'Error al desactivar el Categoria', 'error': str(response)}), 400

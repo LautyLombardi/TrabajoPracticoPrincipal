@@ -10,6 +10,7 @@ class Visitor(db.Model):
     email = db.Column(db.Text)
     startDate = db.Column(db.Text)
     finishDate = db.Column(db.Text)
+    isActive = db.Column(db.Integer)
     createDate = db.Column(db.Text)
     
     # Relación con tabla Enterprice

@@ -4,7 +4,16 @@ from utils.date import createDate
 
 def saveVisitor(data):
     try:
-        visitor = Visitor(dni=data.get('dni'), enterprice_id=data.get('enterprice_id'), name=data.get('name'), lastname=data.get('lastname'), email=data.get('email'), startDate=data.get('startDate'), finishDate=data.get('finishDate'), createDate=createDate())
+        visitor = Visitor(
+            dni=data.get('dni'), 
+            enterprice_id=data.get('enterprice_id'), 
+            name=data.get('name'), 
+            lastname=data.get('lastname'), email=data.get('email'), 
+            startDate=data.get('startDate'), 
+            finishDate=data.get('finishDate'),
+            isActive=1,
+            createDate=createDate()
+        )
         db.session.add(visitor)
         db.session.commit()
         
@@ -13,8 +22,7 @@ def saveVisitor(data):
         return e
 
 def updateVisitor(id, data):
-    visitor = Visitor.query.get(id)
-    
+    visitor = Visitor.query.get(id)    
     if not visitor:
         return 404
     
@@ -42,13 +50,13 @@ def getVisitorById(id):
             'email': visitor.email,
             'startDate': visitor.startDate,
             'finishDate': visitor.finishDate,
+            'isActive': visitor.isActive,
             'createDate': visitor.createDate
         }
     else:
         return None
 
 def getVisitorAll():
-
     visitors = Visitor.query.all()
     visitor_list = []
 
@@ -61,7 +69,24 @@ def getVisitorAll():
             'email': visitor.email,
             'startDate': visitor.startDate,
             'finishDate': visitor.finishDate,
+            'isActive': visitor.isActive,
             'createDate': visitor.createDate
         }
         visitor_list.append(visitor_dict)
     return visitor_list  
+
+def setDesactive(id):
+    visitor = Visitor.query.get(id)
+    if not visitor:
+        return 404
+
+    try:
+        if visitor.isActive==0:
+            visitor.isActive=1
+        else:
+            visitor.isActive=0
+        db.session.commit()
+
+        return 200
+    except Exception as e:
+        return e

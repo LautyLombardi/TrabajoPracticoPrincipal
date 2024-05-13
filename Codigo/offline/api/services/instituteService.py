@@ -6,7 +6,11 @@ from utils.date import createDate
 
 def saveInstitute(data):
     try:
-        institute = Institute(name=data.get('name'),createDate=createDate())
+        institute = Institute(
+            name=data.get('name'),
+            isActive=1,
+            createDate=createDate()
+        )
         db.session.add(institute)
         db.session.commit()
 
@@ -16,7 +20,6 @@ def saveInstitute(data):
 
 def updateInstitute(id,data):
     institute=Institute.query.get(id)
-
     if not institute:
         return 404
     
@@ -35,9 +38,9 @@ def getInstituteById(id):
         return{
             'id':institute.id,
             'name':institute.name,
+            'isActive': institute.isActive,
             'createDate':institute.createDate
         }
-
     else:
         return None
 
@@ -63,7 +66,6 @@ def saveInstitutePlace(institute_id, place_id):
         return e
 
 def getInstituteAll():
-
     institutes = Institute.query.all()
     institute_list = []
 
@@ -71,7 +73,24 @@ def getInstituteAll():
         institute_dict = {
             'id':institute.id,
             'name':institute.name,
+            'isActive': institute.isActive,
             'createDate':institute.createDate
         }
         institute_list.append(institute_dict)
     return institute_list         
+
+def setDesactive(id):
+    institute = Institute.query.get(id)
+    if not institute:
+        return 404
+
+    try:
+        if institute.isActive==0:
+            institute.isActive=1
+        else:
+            institute.isActive=0
+        db.session.commit()
+
+        return 200
+    except Exception as e:
+        return e
