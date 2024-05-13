@@ -114,7 +114,7 @@ def set_desactive_user(id):
     response=setDesactive(id, data)
 
     if response == 200:
-        return jsonify({'message': 'usuario desactiva'}), 200
+        return jsonify({'message': 'usuario desactivada'}), 200
     elif response == 400:
         return jsonify({'error': 'el usuario ya se encuentra desactivado'}), 400
     elif response == 404:

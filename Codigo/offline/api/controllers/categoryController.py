@@ -1,7 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive
-from utils.date import check_schedule_format
-
+from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive
 
 category_bp = Blueprint('category', __name__)
 
@@ -32,6 +30,8 @@ def update_category(id):
 
     if response == 200:
         return jsonify({'message': 'Categoria Guardado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'la categoria no se encuentra activada'}), 400
     elif response == 404:
         return jsonify({'error': 'Categoría no encontrada'}), 404
     else:
@@ -49,7 +49,6 @@ def get_category_by_id(id):
     else:
         return jsonify({'error': 'categoria no encontrado'}), 404    
 
-
 @category_bp.route('/', methods=['GET'])
 def get_categories():
     try:
@@ -62,6 +61,61 @@ def get_categories():
 
     except Exception as e: 
         return jsonify({'message': 'Error al obtener categorias', 'error': str(e)}), 400   
+
+@category_bp.route('/active', methods=['GET'])
+def get_active_categorias():
+    try:
+        response=getCategoryAllActive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay categorias activas en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener categorias', 'error': str(e)}), 400    
+
+@category_bp.route('/desactive', methods=['GET'])
+def get_desactive_categories():
+    try:
+        response=getCategoryAllDesactive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay categorias desactivadas en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener categorias', 'error': str(e)}), 400    
+
+@category_bp.route('/active/<int:id>', methods=['PUT'])
+def set_active_category(id):
+
+    response=setActive(id)
+
+    if response == 200:
+        return jsonify({'message': 'categoria activada'}), 200
+    elif response == 400:
+        return jsonify({'error': 'la categoria ya se encuentra activada'}), 400
+    elif response == 404:
+        return jsonify({'error': 'categoria no encontrada'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar categoria', 'error': str(response)}), 400 
+
+@category_bp.route('/desactive/<int:id>', methods=['PUT'])
+def set_desactive_category(id):
+    data = request.json
+
+    response=setDesactive(id)
+
+    if response == 200:
+        return jsonify({'message': 'categoria desactivada'}), 200
+    elif response == 400:
+        return jsonify({'error': 'la categoria ya se encuentra desactivada'}), 400
+    elif response == 404:
+        return jsonify({'error': 'categoria no encontrada'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar categoria', 'error': str(response)}), 400 
 
 def validate(data):
   
@@ -83,15 +137,3 @@ def validate(data):
     if is_extern != 0 and is_extern != 1:
         return jsonify({'error': 'isExtern debe ser 0 o 1'}), 422
 
-@category_bp.route('/<int:id>', methods=['DELETE'])
-def desactive_category_by_id(id):
-    if id <= 0:
-        return jsonify({'error': 'ID inválido'}), 422
-    response=setDesactive(id)
-
-    if response == 200:
-        return jsonify({'message': 'Categoria activada/desactivada'}), 200
-    elif response == 404:
-        return jsonify({'error': 'Categoria no encontrada'}), 404
-    else:
-        return jsonify({'message': 'Error al desactivar el Categoria', 'error': str(response)}), 400
