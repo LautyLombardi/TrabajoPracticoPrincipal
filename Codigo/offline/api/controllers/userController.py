@@ -107,6 +107,10 @@ def set_active_user(id):
 def set_desactive_user(id):
     data = request.json
     
+    error = validateDesactive(data)
+    if error  is not None:
+        return error
+    
     response=setDesactive(id, data)
 
     if response == 200:
@@ -134,5 +138,18 @@ def validate(data):
 
     if not exist_rol(role_id):
         return jsonify({'error': 'el rol que se esta pasando no existe en la tabla Rol'}), 422
+
+    return None
+
+def validateDesactive(data):
+    if data.get('motive') is None:
+        return jsonify({'error': f'No se pasó el campo motive'}), 422
+
+    for field in ['motive', 'activeDate']:
+        if not isinstance(data.get(field), str) or not data.get(field).strip():
+            return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 422     
+
+    if not check_date_format(data.get('activeDate')):
+        return jsonify({'error': 'activeDate debe tener un formato yyyyMMdd'}), 422
 
     return None
