@@ -49,4 +49,20 @@ def exist_rol(id):
         return True
     else:
         return False
+
+
+def getRoleAll():
+
+    roles = Role.query.all()
+    role_list = []
+
+    for role in roles:
+        role_dict = {
+            'id':role.id,
+            'name':role.name,
+            'description':role.description,
+            'createDate':role.createDate
+        }
+        role_list.append(role_dict)
+    return role_list         
       

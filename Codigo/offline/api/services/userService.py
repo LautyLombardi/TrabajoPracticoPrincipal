@@ -48,3 +48,24 @@ def getUserById(id):
         }
     else:
         return None
+
+
+def getUserAll():
+
+    users = User.query.all()
+    user_list = []
+
+    for user in users:
+        user_dict = {
+            'dni': user.dni,
+            'name': user.name,
+            'lastname': user.lastname,
+            'password':user.password,            
+            'rol':user.role_id,
+            'isActive' :user.isActive,
+            'motive': user.motive,
+            'activeDate' :user.activeDate,
+            'createDate': user.createDate
+        }
+        user_list.append(user_dict)
+    return user_list   

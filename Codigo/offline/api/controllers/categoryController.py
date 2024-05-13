@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.categoryService import saveCategory , updateCategory, getCategoryById
+from services.categoryService import saveCategory , updateCategory, getCategoryById, getCategoryAll
 from utils.date import check_schedule_format
 
 
@@ -51,12 +51,21 @@ def get_category_by_id(id):
         return jsonify({'error': 'categoria no encontrado'}), 404    
 
 
+@category_bp.route('/', methods=['GET'])
+def get_categories():
+    try:
+        response=getCategoryAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay categorias guardados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
 
-
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener categorias', 'error': str(e)}), 400   
 
 def validate(data):
   
-
     if data.get('name') is None or data.get('description') is None or data.get('isExtern') is None:
         return jsonify({'error': 'No se pasaron todos los campos requeridos'}), 422
 

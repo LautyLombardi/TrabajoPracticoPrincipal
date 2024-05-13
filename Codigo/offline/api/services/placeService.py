@@ -44,3 +44,21 @@ def getPlaceById(id):
         }
     else:
         return None
+
+def getPlaceAll():
+
+    places = Place.query.all()
+    place_list = []
+
+    for place in places:
+        place_dict = {
+            'id': place.id,
+            'name': place.name,
+            'abbreviation': place.abbreviation,
+            'description': place.description,
+            'openTime': place.openTime,
+            'closeTime': place.closeTime,
+            'createDate': place.createDate
+        }
+        place_list.append(place_dict)
+    return place_list         

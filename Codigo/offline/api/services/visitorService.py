@@ -46,3 +46,22 @@ def getVisitorById(id):
         }
     else:
         return None
+
+def getVisitorAll():
+
+    visitors = Visitor.query.all()
+    visitor_list = []
+
+    for visitor in visitors:
+        visitor_dict = {
+            'dni': visitor.dni,
+            'enterprice_id': visitor.enterprice_id,
+            'name': visitor.name,
+            'lastname': visitor.lastname,
+            'email': visitor.email,
+            'startDate': visitor.startDate,
+            'finishDate': visitor.finishDate,
+            'createDate': visitor.createDate
+        }
+        visitor_list.append(visitor_dict)
+    return visitor_list  
