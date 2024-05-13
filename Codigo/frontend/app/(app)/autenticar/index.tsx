@@ -49,8 +49,7 @@ const CardUser = () => {
     >
       <CardRow campo="Nombre" valor="Juan Gabriel" />
       <CardRow campo="Apellido" valor="Castaño" />
-      <CardRow campo="Rol" valor="Docente" />
-      <CardRow campo="Categoria" valor="Interno" />
+      <CardRow campo="Categoria" valor="Docente" />
       <CardRow campo="Lugares" valor="Mod7, 3066" />
     </View>
   );

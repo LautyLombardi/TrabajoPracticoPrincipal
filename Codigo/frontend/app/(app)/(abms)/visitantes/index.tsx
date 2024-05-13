@@ -1,8 +1,16 @@
-import { View, Text, StyleSheet, Pressable,TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable,TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 
+const usuarioEjemplo = {
+  nombre: "Juan",
+  apellido: "Castaño",
+  email: "ejemplo@gmail.com",
+  dni: 223333,
+  categoira: "Docente",
+  lugares: ["mod7, 222, 5555"]
+}
 
 type PropsCol = {
   text?: string,
@@ -48,10 +56,11 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 type PropsTable = {
   viewState: boolean,
   editState: boolean,
-  deleteState: boolean
+  deleteState: boolean,
+  handleShowUser: () => void,
 };
 
-const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteState }) => {
+const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteState, handleShowUser }) => {
 
   const iconVerMas = () => {
     return (
@@ -72,11 +81,15 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
   }
   const handleToggleIcon = (): JSX.Element => {
     if (editState) {
-      return modifyIcon();
+      return  <Pressable >
+        {modifyIcon()}
+      </Pressable>;
     } else if (deleteState) {
-      return deleteIcon();
+      return <Pressable>{deleteIcon()}</Pressable>;
     } else {
-      return iconVerMas();
+      return <TouchableOpacity onPress={handleShowUser} style={{backgroundColor: "transparent"}}>
+       {iconVerMas()}
+      </TouchableOpacity>
     }
   };
 
@@ -85,7 +98,6 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
       <Row>
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Rol'/>
         <Col text='Categoria'/>
         <Col text='Institutos'/>
         <Col text='' flexWidth={0.8}/>
@@ -94,7 +106,6 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='1'flexWidth={0.8}/>
         <Col text='Juan Carlos Gabriel Castaño' flexWidth={3}/>
         <Col text='Docente'/>
-        <Col text='Interno'/>
         <Col text='ICI, IDEI'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
@@ -102,7 +113,6 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='2'flexWidth={0.8}/>
         <Col text='Juan Carlos Gabriel Castaño' flexWidth={3}/>
         <Col text='Docente'/>
-        <Col text='Interno'/>
         <Col text='ICI, IDEI'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
@@ -110,7 +120,6 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='3'flexWidth={0.8}/>
         <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
         <Col text='Alumno'/>
-        <Col text='Interno'/>
         <Col text='ICI, IDEI'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
@@ -123,6 +132,8 @@ const AdministracionVisitantes = () => {
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
 
+  // Usuario Card
+  const [showUser, setShowUser] = useState(false)
 
   // Cambio de iconos
   function handleToggleIco(icon : string){
@@ -135,28 +146,55 @@ const AdministracionVisitantes = () => {
     }
   };
 
-
-  // Router
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if(canGoBack){
-      router.back()
-    }else{
-      router.navigate("/menu")
-    }
+  // Open modal ejemplo
+  const handleOpenUserModal = () => {
+    setShowUser(!showUser)
   }
 
-
+  const renderUser = () => {
+    return (
+      <View style={{backgroundColor: "#000000aa", padding: 30, width:300, borderRadius: 10, gap: 20}}>
+        <View style={{flexDirection: "row", width: "100%"}}>
+          <Ionicons name="close" size={20} />
+        </View>          
+        <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
+              <Text style={{color: "white", fontSize: 14}}>
+                  Nombre:
+              </Text>
+              <Text style={{color: "white", fontSize: 14}}>
+                {usuarioEjemplo.nombre}
+              </Text>
+            </View>          
+          <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
+              <Text style={{color: "white", fontSize: 14}}>
+                  Apellido:
+              </Text>
+              <Text style={{color: "white", fontSize: 14}}>
+                {usuarioEjemplo.apellido}
+              </Text>
+          </View>          
+          <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
+              <Text style={{color: "white", fontSize: 14}}>
+                  Email:
+              </Text>
+              <Text style={{color: "white", fontSize: 14}}>
+                {usuarioEjemplo.email}
+              </Text>
+          </View>                   
+          <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
+              <Text style={{color: "white", fontSize: 14}}>
+                  Lugares:
+              </Text>
+              <Text style={{color: "white", fontSize: 14}}>
+                {usuarioEjemplo.lugares}
+              </Text>
+          </View>          
+      </View>
+    )}
 
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10, flexDirection: "row", gap: 10}}>
-            <Ionicons name='arrow-back-outline' size={20} onPress={handleGoBack}/>
-            <Text style={{fontWeight: "bold"}}>
-                Administraion de Visitantes
-            </Text>
-        </View>
 
         {/** Buscador */}
         <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
@@ -178,8 +216,13 @@ const AdministracionVisitantes = () => {
         </View>
 
         {/** Tabla */}
-        <TablaVisitantes viewState={view} editState={edit} deleteState={trash}/>
+        <TablaVisitantes viewState={view} editState={edit} deleteState={trash} handleShowUser={handleOpenUserModal}/>
 
+        {/** Card User */}
+        { showUser && <View style={{position: "absolute", justifyContent: "center", alignItems: "center", top: 0, left: 0, height: "100%", width: "100%"}}>
+            {renderUser()}
+          </View>
+        }
     </View>
   )
 }
@@ -189,6 +232,7 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#000051',
       alignItems: 'center',
+      paddingVertical: 25
   },
 });
 
