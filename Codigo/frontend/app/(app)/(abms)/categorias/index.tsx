@@ -87,18 +87,16 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
         <Col text='Descripcion'/>
+        <Col text='Externo'/>
+        <Col text='fecha'/>
         <Col text='' flexWidth={0.8}/>
       </Row>
       <Row>
         <Col text='1'flexWidth={0.8}/>
         <Col text='Papeador de la pepa' flexWidth={3}/>
         <Col text='El que papea toda la pepa'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='2'flexWidth={0.8}/>
-        <Col text='el carnicero' flexWidth={3}/>
-        <Col text='el que corta la carne'/>
+        <Col text='True'/>
+        <Col text='10/10/10'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
     </View>
