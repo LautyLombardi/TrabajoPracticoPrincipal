@@ -6,7 +6,11 @@ from utils.date import createDate
 
 def saveInstitute(data):
     try:
-        institute = Institute(name=data.get('name'),createDate=createDate())
+        institute = Institute(
+            name=data.get('name'),
+            isActive=1,
+            createDate=createDate()
+        )
         db.session.add(institute)
         db.session.commit()
 
@@ -16,9 +20,11 @@ def saveInstitute(data):
 
 def updateInstitute(id,data):
     institute=Institute.query.get(id)
-
+    
     if not institute:
         return 404
+    if institute.isActive == 0:
+        return 400
     
     try:
         institute.name=data.get('name')
@@ -35,12 +41,13 @@ def getInstituteById(id):
         return{
             'id':institute.id,
             'name':institute.name,
+            'isActive': institute.isActive,
             'createDate':institute.createDate
         }
-
     else:
         return None
 
+# Falta el isActive de c/u
 def saveInstitutePlace(institute_id, place_id):
         
     if not Place.query.get(place_id):
@@ -63,15 +70,57 @@ def saveInstitutePlace(institute_id, place_id):
         return e
 
 def getInstituteAll():
-
     institutes = Institute.query.all()
-    institute_list = []
+    return instituteList(institutes)
 
+def getInstituteAllActive():
+    institutes = Institute.query.filter_by(isActive=1).all()
+    return instituteList(institutes)
+
+def getInstituteAllDesactive():
+    institutes = Institute.query.filter_by(isActive=0).all()
+    return instituteList(institutes)        
+
+def setDesactive(id):
+    institute = Institute.query.get(id)
+    
+    if not institute:
+        return 404
+    if institute.isActive == 0:
+        return 400
+    
+    try:
+        institute.isActive = 0
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+
+def setActive(id):
+    institute = Institute.query.get(id)
+    
+    if not institute:
+        return 404
+    if institute.isActive == 1:
+        return 400
+    
+    try:
+        institute.isActive = 1
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+    
+def instituteList(institutes):
+    institute_list = []
     for institute in institutes:
         institute_dict = {
             'id':institute.id,
             'name':institute.name,
+            'isActive': institute.isActive,
             'createDate':institute.createDate
         }
         institute_list.append(institute_dict)
-    return institute_list         
+    return institute_list    

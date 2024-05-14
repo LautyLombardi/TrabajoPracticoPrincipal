@@ -4,7 +4,15 @@ from utils.date import createDate
 
 def saveUser(data):
     try:
-        user = User(name=data.get('name'), lastname=data.get('lastname'), password=data.get('password'), role_id=data.get('role_id'),dni=data.get('dni'),isActive=data.get('isActive'),motive=data.get('motive'),activeDate=data.get('activeDate'),createDate=createDate())
+        user = User(
+            name=data.get('name'), 
+            lastname=data.get('lastname'), 
+            password=data.get('password'), 
+            role_id=data.get('role_id'),
+            dni=data.get('dni'),
+            isActive=1,
+            createDate=createDate()
+        )
         db.session.add(user)
         db.session.commit()
 
@@ -17,18 +25,16 @@ def updateUser(id,data):
     
     if not user:
         return 404
+    if user.isActive == 0:
+        return 400
     
     try:
         user.name = data.get('name')
         user.lastname = data.get('lastname')
         user.password = data.get('password')
         user.role_id = data.get('role_id')
-        
-        user.isActive = data.get('isActive')
-        user.motive = data.get('motive')
-        user.activeDate = data.get('activeDate')
-        
         db.session.commit()
+        
         return 200
     except Exception as e:
         return e
@@ -49,12 +55,56 @@ def getUserById(id):
     else:
         return None
 
-
 def getUserAll():
-
     users = User.query.all()
-    user_list = []
+    return userList(users)
 
+def getUserAllActive():
+    users = User.query.filter_by(isActive=1).all()
+    return userList(users) 
+
+def getUserAllDesactive():
+    users = User.query.filter_by(isActive=0).all()
+    return userList(users)
+
+def setDesactive(id,data):
+    user = User.query.get(id)
+    
+    if not user:
+        return 404
+    if user.isActive == 0:
+        return 400
+    
+    try:
+        user.isActive = 0
+        user.motive = data.get('motive')
+        user.activeDate = data.get('activeDate')
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+
+def setActive(id):
+    user = User.query.get(id)
+    
+    if not user:
+        return 404
+    if user.isActive == 1:
+        return 400
+    
+    try:
+        user.isActive = 1
+        user.motive = None
+        user.activeDate = None
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+
+def userList(users):
+    user_list = []
     for user in users:
         user_dict = {
             'dni': user.dni,

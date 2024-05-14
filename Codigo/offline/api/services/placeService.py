@@ -4,7 +4,14 @@ from utils.date import createDate
 
 def savePlace(data):
     try:
-        place = Place(name=data.get('name'), abbreviation=data.get('abbreviation'), description=data.get('description'), openTime=data.get('openTime'), closeTime=data.get('closeTime'), createDate=createDate())
+        place = Place(
+            name=data.get('name'), 
+            abbreviation=data.get('abbreviation'), 
+            description=data.get('description'), 
+            openTime=data.get('openTime'), 
+            closeTime=data.get('closeTime'), 
+            isActive=1,
+            createDate=createDate())
         db.session.add(place)
         db.session.commit()
         
@@ -14,9 +21,11 @@ def savePlace(data):
 
 def updatePlace(id, data):
     place = Place.query.get(id)
-    
+        
     if not place:
         return 404
+    if place.isActive == 0:
+        return 400
     
     try:
         place.name = data.get('name')
@@ -32,6 +41,7 @@ def updatePlace(id, data):
 
 def getPlaceById(id):
     place = Place.query.get(id)
+    
     if place:
         return {
             'id': place.id,
@@ -40,16 +50,58 @@ def getPlaceById(id):
             'description': place.description,
             'openTime': place.openTime,
             'closeTime': place.closeTime,
+            'isActive': place.isActive,
             'createDate': place.createDate
         }
     else:
         return None
 
 def getPlaceAll():
-
     places = Place.query.all()
-    place_list = []
+    return placeList(places)     
 
+def getPlaceAllActive():
+    places = Place.query.filter_by(isActive=1).all()
+    return placeList(places)
+
+def getPlaceAllDesactive():
+    places = Place.query.filter_by(isActive=0).all()
+    return placeList(places)   
+
+def setDesactive(id):
+    places = Place.query.get(id)
+    
+    if not places:
+        return 404
+    if places.isActive == 0:
+        return 400
+    
+    try:
+        places.isActive = 0
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+
+def setActive(id):
+    places = Place.query.get(id)
+    
+    if not places:
+        return 404
+    if places.isActive == 1:
+        return 400
+    
+    try:
+        places.isActive = 1
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+    
+def placeList(places):
+    place_list = []
     for place in places:
         place_dict = {
             'id': place.id,
@@ -58,7 +110,8 @@ def getPlaceAll():
             'description': place.description,
             'openTime': place.openTime,
             'closeTime': place.closeTime,
+            'isActive': place.isActive,
             'createDate': place.createDate
         }
         place_list.append(place_dict)
-    return place_list         
+    return place_list    
