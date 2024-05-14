@@ -1,12 +1,121 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useState } from "react";
+import { Text, View, Pressable, TextInput, Platform, Image } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import CampoFecha from "@/components/CampoFecha/CampoFecha";
+import Boton from "@/ui/Boton";
+import SelectItem from "@/components/seleccionar/SelectItem";
+import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
+import { CameraView } from "expo-camera";
+import SeleccionarImagen from "@/components/pickers/SeleccionarImagen";
 
-const RegistrarScreen = () => {
+const Fila = ({ label, value }: any) => {
   return (
-    <View>
-      <Text>RegistrarScreen</Text>
+    <View
+      style={{
+        height: 70,
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 10,
+        paddingHorizontal: 10,
+      }}
+    >
+      <View style={{ width: 80 }}>
+        <Text style={{ color: "white", fontSize: 15 }}>{label}</Text>
+      </View>
+      <View
+        style={{
+          backgroundColor: "white",
+          padding: 10,
+          flex: 2,
+          borderRadius: 5,
+        }}
+      >
+        <TextInput placeholder={value} placeholderTextColor={"gray"} />
+      </View>
     </View>
-  )
-}
+  );
+};
 
-export default RegistrarScreen
+const RegistroEmpresa = () => {
+  const [dateIngreso, setDateIngreso] = useState(new Date());
+  const [dateEgreso, setDateEgreso] = useState(new Date());
+  const [Empresa, setEmpresa] = useState("");
+
+  const [showNext, setShowNext] = useState(false);
+
+  // Route
+  const handleGoBack = () => {
+    const canGoBack = router.canGoBack();
+    if (canGoBack) {
+      router.back();
+    } else {
+      router.navigate("/empresas");
+    }
+  };
+
+  const handleContinuar = () => {
+    setShowNext(true);
+  };
+
+  const handleRetroceder = () => {
+    setShowNext(false);
+  };
+
+  const handleTerminar = () => {
+    router.navigate("/empresas")
+  }
+
+  return (
+    <View
+      style={{
+        backgroundColor: "#000051",
+        flex: 1,
+        paddingVertical: 30,
+        alignItems: "center",
+      }}
+    >
+      {/** HEADER */}
+      <View
+        style={{
+          height: 50,
+          backgroundColor: "white",
+          width: "100%",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          padding: 10,
+          flexDirection: "row",
+          gap: 10,
+        }}
+      >
+        <Ionicons name="arrow-back-outline" size={20} onPress={handleGoBack} />
+        <Text style={{ fontWeight: "bold" }}>Registro Empresa</Text>
+      </View>
+
+
+
+      <View style={{ flex: 1, marginTop: 20 }}>
+        <Fila label="Nombre" value="Fontanero" />
+        <Fila label="Descripcion" value="arregla cañeria" />
+        {/** Seleccionar la Empresa */}
+        
+      </View>
+
+      <View style={{ width: 300 }}>
+        <Boton
+          backgroundColor="black"
+          padding={20}
+          text="Continuar"
+          color="white"
+          textAlign="center"
+          fontSze={20}
+          borderRadius={10}
+          onPress={handleTerminar}
+        />
+      </View>
+
+    </View>
+  );
+};
+
+export default RegistroEmpresa;
