@@ -1,5 +1,7 @@
 from db.db import db
 from models.Category import Category
+from models.Institute import Institute
+from models.CategoryInstitute import CategoryInstitute
 from utils.date import createDate
 
 def saveCategory(data):
@@ -90,6 +92,27 @@ def setActive(id):
         db.session.commit()
         
         return 200
+    except Exception as e:
+        return e
+
+# Falta el isActive de c/u
+def saveInstituteCategory(institute_id, category_id):
+    if not Category.query.get(category_id):
+        return '404a'
+    
+    if not Institute.query.get(institute_id):
+        return '404b'
+    
+    # Verifica si la relación ya exist    
+    if CategoryInstitute.query.filter_by(institute_id=institute_id, category_id=category_id).first():
+        return '409'
+    
+    try:
+        instituteCategory = CategoryInstitute(institute_id=institute_id, category_id=category_id)
+        db.session.add(instituteCategory)
+        db.session.commit()
+
+        return 201
     except Exception as e:
         return e
     
