@@ -82,7 +82,7 @@ def get_institutes():
         return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400         
 
 @institute_bp.route('/active', methods=['GET'])
-def get_active_categorias():
+def get_active_institutes():
     try:
         response=getInstituteAllActive()
    
@@ -95,7 +95,7 @@ def get_active_categorias():
         return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400    
 
 @institute_bp.route('/desactive', methods=['GET'])
-def get_desactive_categories():
+def get_desactive_institutes():
     try:
         response=getInstituteAllDesactive()
    
@@ -108,7 +108,7 @@ def get_desactive_categories():
         return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400    
 
 @institute_bp.route('/active/<int:id>', methods=['PUT'])
-def set_active_category(id):
+def set_active_institute(id):
 
     response=setActive(id)
 
@@ -122,7 +122,7 @@ def set_active_category(id):
         return jsonify({'message': 'Error al modificar instituto', 'error': str(response)}), 400 
 
 @institute_bp.route('/desactive/<int:id>', methods=['PUT'])
-def set_desactive_category(id):
+def set_desactive_institute(id):
     data = request.json
 
     response=setDesactive(id)

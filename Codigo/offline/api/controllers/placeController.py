@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify
-from services.placeService import savePlace, updatePlace, getPlaceById, getPlaceAll, setDesactive
+from services.placeService import savePlace, updatePlace, getPlaceById, getPlaceAll, setDesactive, getPlaceAllActive, getPlaceAllDesactive, setActive
 from utils.date import check_schedule_format
 
 place_bp = Blueprint('place', __name__)
 
-@place_bp.route('', methods=['POST'])
+@place_bp.route('/', methods=['POST'])
 def create_place():
     data = request.json
     
@@ -30,6 +30,9 @@ def update_place(id):
     
     if response == 200:
         return jsonify({'message': 'Lugar Guardado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el Lugar no se encuentra activado'}), 400
+    
     elif response == 404:
         return jsonify({'error': 'Lugar no encontrada'}), 404
     else:
@@ -61,18 +64,60 @@ def get_places():
     except Exception as e: 
         return jsonify({'message': 'Error al obtener lugares', 'error': str(e)}), 400            
 
-@place_bp.route('/<int:id>', methods=['DELETE'])
-def desactive_place_by_id(id):
-    if id <= 0:
-        return jsonify({'error': 'ID inválido'}), 422
+@place_bp.route('/active', methods=['GET'])
+def get_active_places():
+    try:
+        response=getPlaceAllActive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay lugares activos en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener lugares', 'error': str(e)}), 400    
+
+@place_bp.route('/desactive', methods=['GET'])
+def get_desactive_places():
+    try:
+        response=getPlaceAllDesactive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay lugares desactivados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener lugares', 'error': str(e)}), 400    
+
+@place_bp.route('/active/<int:id>', methods=['PUT'])
+def set_active_place(id):
+
+    response=setActive(id)
+
+    if response == 200:
+        return jsonify({'message': 'lugar activado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el lugar ya se encuentra activado'}), 400
+    elif response == 404:
+        return jsonify({'error': 'lugar no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar lugar', 'error': str(response)}), 400 
+
+@place_bp.route('/desactive/<int:id>', methods=['PUT'])
+def set_desactive_place(id):
+    data = request.json
+
     response=setDesactive(id)
 
     if response == 200:
-        return jsonify({'message': 'Lugar activado/desactivado'}), 200
+        return jsonify({'message': 'lugar desactivado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el lugar ya se encuentra desactivado'}), 400
     elif response == 404:
-        return jsonify({'error': 'Lugar no encontrado'}), 404
+        return jsonify({'error': 'lugar no encontrado'}), 404
     else:
-        return jsonify({'message': 'Error al desactivar el Lugar', 'error': str(response)}), 400
+        return jsonify({'message': 'Error al modificar lugar', 'error': str(response)}), 400 
 
 def validate(data):
     required_fields = ['name', 'description', 'abbreviation', 'openTime', 'closeTime']
