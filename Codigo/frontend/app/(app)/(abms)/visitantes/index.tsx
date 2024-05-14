@@ -2,15 +2,9 @@ import { View, Text, StyleSheet, Pressable,TextInput, TouchableOpacity } from 'r
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, router } from 'expo-router';
+import VisitorModal from '@/components/Modal/ModalUser';
 
-const usuarioEjemplo = {
-  nombre: "Juan",
-  apellido: "Castaño",
-  email: "ejemplo@gmail.com",
-  dni: 223333,
-  categoira: "Docente",
-  lugares: ["mod7, 222, 5555"]
-}
+
 
 type PropsCol = {
   text?: string,
@@ -123,6 +117,27 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='ICI, IDEI'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
+      <Row>
+        <Col text='3'flexWidth={0.8}/>
+        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
+        <Col text='Alumno'/>
+        <Col text='ICI, IDEI'/>
+        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
+      </Row>
+      <Row>
+        <Col text='3'flexWidth={0.8}/>
+        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
+        <Col text='Alumno'/>
+        <Col text='ICI, IDEI'/>
+        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
+      </Row>
+      <Row>
+        <Col text='3'flexWidth={0.8}/>
+        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
+        <Col text='Alumno'/>
+        <Col text='ICI, IDEI'/>
+        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
+      </Row>
     </View>
   );
 };
@@ -146,53 +161,29 @@ const AdministracionVisitantes = () => {
     }
   };
 
+
   // Open modal ejemplo
+  const usuarioEjemplo = {
+    nombre: "Juan",
+    apellido: "Castaño",
+    email: "ejemplo@gmail.com",
+    dni: 223333,
+    categoria: "Docente",
+    lugares: ["mod7", "222", "5555"],
+  };
+  const [visitante, setVisitante] = useState(usuarioEjemplo);
+
   const handleOpenUserModal = () => {
-    setShowUser(!showUser)
-  }
+    setShowUser(true);
+  };
 
-  const renderUser = () => {
-    return (
-      <View style={{backgroundColor: "#000000aa", padding: 30, width:300, borderRadius: 10, gap: 20}}>
-        <View style={{flexDirection: "row", width: "100%"}}>
-          <Ionicons name="close" size={20} />
-        </View>          
-        <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
-              <Text style={{color: "white", fontSize: 14}}>
-                  Nombre:
-              </Text>
-              <Text style={{color: "white", fontSize: 14}}>
-                {usuarioEjemplo.nombre}
-              </Text>
-            </View>          
-          <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
-              <Text style={{color: "white", fontSize: 14}}>
-                  Apellido:
-              </Text>
-              <Text style={{color: "white", fontSize: 14}}>
-                {usuarioEjemplo.apellido}
-              </Text>
-          </View>          
-          <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
-              <Text style={{color: "white", fontSize: 14}}>
-                  Email:
-              </Text>
-              <Text style={{color: "white", fontSize: 14}}>
-                {usuarioEjemplo.email}
-              </Text>
-          </View>                   
-          <View style={{flex: 1, flexDirection: "row", width: "100%", justifyContent: "space-between", borderBottomColor: "white", borderBottomWidth: 2}}>
-              <Text style={{color: "white", fontSize: 14}}>
-                  Lugares:
-              </Text>
-              <Text style={{color: "white", fontSize: 14}}>
-                {usuarioEjemplo.lugares}
-              </Text>
-          </View>          
-      </View>
-    )}
+  const handleCloseUserModal = () => {
+    setShowUser(false);
+  };
 
-  return (
+
+
+  return (<>
     <View style={styles.container}>
         {/** Header Menu */}
 
@@ -218,13 +209,11 @@ const AdministracionVisitantes = () => {
         {/** Tabla */}
         <TablaVisitantes viewState={view} editState={edit} deleteState={trash} handleShowUser={handleOpenUserModal}/>
 
-        {/** Card User */}
-        { showUser && <View style={{position: "absolute", justifyContent: "center", alignItems: "center", top: 0, left: 0, height: "100%", width: "100%"}}>
-            {renderUser()}
-          </View>
-        }
+
     </View>
-  )
+            {/** Card User */}
+            {showUser && <VisitorModal usuario={visitante} handleCloseModal={handleCloseUserModal} />}
+            </>)
 }
 
 const styles = StyleSheet.create({

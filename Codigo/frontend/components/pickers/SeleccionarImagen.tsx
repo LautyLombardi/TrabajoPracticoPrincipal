@@ -23,7 +23,7 @@ const SeleccionarImagen = ({imagen, onChange}: any) => {
     
     return (<>
         <Boton  backgroundColor="white" padding={20}  borderRadius={5} fontSze={15} text="Selecciona una imagen" onPress={pickImage} />
-        {imagen && <Image source={{ uri: imagen }} style={styles.image} />}    
+        {imagen && <Image  source={{ uri: imagen }} style={styles.image} />}    
     </>
     );
     }
@@ -36,9 +36,10 @@ const SeleccionarImagen = ({imagen, onChange}: any) => {
       gap: 10
     },
     image: {
-      width: 150,
-      height: 150,
-      borderRadius: 3
+      width: 170,
+      height: 170,
+      borderRadius: 2,
+      borderWidth: 2,
     },
 })
 
