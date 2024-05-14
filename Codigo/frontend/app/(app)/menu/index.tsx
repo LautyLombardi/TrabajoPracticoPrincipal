@@ -22,7 +22,7 @@ const Menu = () => {
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
-            <Pressable style={styles.buttonMenu}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/roles")}>
               <Text style={styles.textBtnMenu}>Administración de Roles</Text>
             </Pressable>
           </View>
