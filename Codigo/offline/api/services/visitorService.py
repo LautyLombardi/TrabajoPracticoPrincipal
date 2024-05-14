@@ -22,9 +22,12 @@ def saveVisitor(data):
         return e
 
 def updateVisitor(id, data):
-    visitor = Visitor.query.get(id)    
+    visitor = Visitor.query.get(id) 
+       
     if not visitor:
         return 404
+    if visitor.isActive == 0:
+        return 400
     
     try:
         visitor.enterprice_id = data.get('enterprice_id')
@@ -58,8 +61,50 @@ def getVisitorById(id):
 
 def getVisitorAll():
     visitors = Visitor.query.all()
-    visitor_list = []
+    return visitorList(visitors)
+   
+def getVisitorAllActive():
+    visitors = Visitor.query.filter_by(isActive=1).all()
+    return visitorList(visitors)
 
+def getVisitorAllDesactive():
+    visitors = Visitor.query.filter_by(isActive=0).all()
+    return visitorList(visitors)     
+
+def setDesactive(id):
+    visitor = Visitor.query.get(id)
+    
+    if not visitor:
+        return 404
+    if visitor.isActive == 0:
+        return 400
+    
+    try:
+        visitor.isActive = 0
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+
+def setActive(id):
+    visitor = Visitor.query.get(id)
+    
+    if not visitor:
+        return 404
+    if visitor.isActive == 1:
+        return 400
+    
+    try:
+        visitor.isActive = 1
+        db.session.commit()
+        
+        return 200
+    except Exception as e:
+        return e
+    
+def visitorList(visitors):
+    visitor_list = []
     for visitor in visitors:
         visitor_dict = {
             'dni': visitor.dni,
@@ -74,19 +119,3 @@ def getVisitorAll():
         }
         visitor_list.append(visitor_dict)
     return visitor_list  
-
-def setDesactive(id):
-    visitor = Visitor.query.get(id)
-    if not visitor:
-        return 404
-
-    try:
-        if visitor.isActive==0:
-            visitor.isActive=1
-        else:
-            visitor.isActive=0
-        db.session.commit()
-
-        return 200
-    except Exception as e:
-        return e

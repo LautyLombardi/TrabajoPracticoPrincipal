@@ -32,7 +32,6 @@ def update_place(id):
         return jsonify({'message': 'Lugar Guardado'}), 200
     elif response == 400:
         return jsonify({'error': 'el Lugar no se encuentra activado'}), 400
-    
     elif response == 404:
         return jsonify({'error': 'Lugar no encontrada'}), 404
     else:
@@ -49,7 +48,6 @@ def get_place_by_id(id):
         return jsonify(place), 200
     else:
         return jsonify({'error': 'Lugar no encontrado'}), 404    
-
 
 @place_bp.route('/', methods=['GET'])
 def get_places():

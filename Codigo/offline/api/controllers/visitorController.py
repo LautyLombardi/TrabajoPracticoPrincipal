@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll, setDesactive
+from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll, getVisitorAllActive, getVisitorAllDesactive, setDesactive, setActive
 
 visitor_bp = Blueprint('visitor', __name__)
 
@@ -28,6 +28,8 @@ def update_visitor(id):
 
     if response == 200:
         return jsonify({'message': 'Visitante Guardado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el Visitante no se encuentra activado'}), 400
     elif response == 404:
         return jsonify({'error': 'Visitante no encontrado'}), 404
     else:
@@ -57,17 +59,57 @@ def get_visitors():
     except Exception as e: 
         return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    
 
-@visitor_bp.route('/<int:id>', methods=['DELETE'])
-def desactive_visitor_by_id(id):
-    if id <= 0:
-        return jsonify({'error': 'ID inválido'}), 422
+@visitor_bp.route('/active', methods=['GET'])
+def get_active_visitors():
+    try:
+        response=getVisitorAllActive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay visitantes activos en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    
+
+@visitor_bp.route('/desactive', methods=['GET'])
+def get_desactive_visitors():
+    try:
+        response=getVisitorAllDesactive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay visitantes desactivados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    
+
+@visitor_bp.route('/active/<int:id>', methods=['PUT'])
+def set_active_visitor(id):
+
+    response=setActive(id)
+
+    if response == 200:
+        return jsonify({'message': 'visitante activado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el visitante ya se encuentra activado'}), 400
+    elif response == 404:
+        return jsonify({'error': 'visitante no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar visitante', 'error': str(response)}), 400 
+
+@visitor_bp.route('/desactive/<int:id>', methods=['PUT'])
+def set_desactive_visitor(id):
+    data = request.json
+
     response=setDesactive(id)
 
     if response == 200:
-        return jsonify({'message': 'Visitante activado/desactivado'}), 200
+        return jsonify({'message': 'visitante desactivado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el visitante ya se encuentra desactivado'}), 400
     elif response == 404:
-        return jsonify({'error': 'Visitante no encontrado'}), 404
+        return jsonify({'error': 'visitante no encontrado'}), 404
     else:
-        return jsonify({'message': 'Error al desactivar el Visitante', 'error': str(response)}), 400
-
-    
+        return jsonify({'message': 'Error al modificar visitante', 'error': str(response)}), 400 
