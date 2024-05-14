@@ -15,7 +15,7 @@ const Menu = () => {
             </Pressable>
           </View>
           <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} >
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/institutos")}>
               <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
             </Pressable>
           </View>

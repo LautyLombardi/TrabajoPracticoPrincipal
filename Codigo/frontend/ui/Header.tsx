@@ -2,7 +2,7 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 
-const Header = ({handleGoBack}: any) => {
+const Header = ({title = "Header" ,handleGoBack = () => console.log("Ir hacia atras")}: any) => {
   return (
     <View
     style={{
@@ -14,10 +14,11 @@ const Header = ({handleGoBack}: any) => {
       padding: 10,
       flexDirection: "row",
       gap: 10,
+      marginTop: 35,
     }}
   >
     <Ionicons name="arrow-back-outline" size={20} onPress={handleGoBack} />
-    <Text style={{ fontWeight: "bold" }}>Registro Empresa</Text>
+    <Text style={{ fontWeight: "bold" }}>{title}</Text>
   </View>
   )
 }

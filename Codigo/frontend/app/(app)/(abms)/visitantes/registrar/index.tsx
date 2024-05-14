@@ -11,6 +11,7 @@ import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
 import SeleccionarImagen from "@/components/pickers/SeleccionarImagen";
+import Header from "@/ui/Header";
 
 const Input = ({ label, value }: any) => {
   return (
@@ -98,26 +99,11 @@ const RegistroVisitante = () => {
       style={{
         backgroundColor: "#000051",
         flex: 1,
-        paddingVertical: 30,
         alignItems: "center",
       }}
     >
       {/** HEADER */}
-      <View
-        style={{
-          height: 50,
-          backgroundColor: "white",
-          width: "100%",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          padding: 10,
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <Ionicons name="arrow-back-outline" size={20} onPress={handleGoBack} />
-        <Text style={{ fontWeight: "bold" }}>Registro Visitante</Text>
-      </View>
+      <Header title="Registro Visitante" handleGoBack={handleGoBack}/>
 
       {!showNext ? (
         <>
