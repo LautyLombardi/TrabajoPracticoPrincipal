@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace, getInstituteAll, setDesactive
+from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace, getInstituteAll, setDesactive, getInstituteAllActive, getInstituteAllDesactive, setActive
 
 institute_bp = Blueprint('institute', __name__)
 
@@ -26,6 +26,8 @@ def update_institute(id):
 
     if response == 200:
         return jsonify({'message': 'Institute Guardado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el instituto no se encuentra activado'}), 400
     elif response == 404:
         return jsonify({'error': 'Institute no encontrado'}), 404
     else:
@@ -79,17 +81,57 @@ def get_institutes():
     except Exception as e: 
         return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400         
 
-@institute_bp.route('/<int:id>', methods=['DELETE'])
-def desactive_category_by_id(id):
-    if id <= 0:
-        return jsonify({'error': 'ID inválido'}), 422
+@institute_bp.route('/active', methods=['GET'])
+def get_active_categorias():
+    try:
+        response=getInstituteAllActive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay institutos activos en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400    
+
+@institute_bp.route('/desactive', methods=['GET'])
+def get_desactive_categories():
+    try:
+        response=getInstituteAllDesactive()
+   
+        if response is None:
+            return jsonify({'error': 'No hay institutos desactivados en la base de datos'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Error al obtener institutos', 'error': str(e)}), 400    
+
+@institute_bp.route('/active/<int:id>', methods=['PUT'])
+def set_active_category(id):
+
+    response=setActive(id)
+
+    if response == 200:
+        return jsonify({'message': 'instituto activado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el instituto ya se encuentra activado'}), 400
+    elif response == 404:
+        return jsonify({'error': 'instituto no encontrado'}), 404
+    else:
+        return jsonify({'message': 'Error al modificar instituto', 'error': str(response)}), 400 
+
+@institute_bp.route('/desactive/<int:id>', methods=['PUT'])
+def set_desactive_category(id):
+    data = request.json
+
     response=setDesactive(id)
 
     if response == 200:
-        return jsonify({'message': 'Instituto activado/desactivado'}), 200
+        return jsonify({'message': 'instituto desactivado'}), 200
+    elif response == 400:
+        return jsonify({'error': 'el instituto ya se encuentra desactivado'}), 400
     elif response == 404:
-        return jsonify({'error': 'Instituto no encontrado'}), 404
+        return jsonify({'error': 'instituto no encontrado'}), 404
     else:
-        return jsonify({'message': 'Error al desactivar el Instituto', 'error': str(response)}), 400
-
-    
+        return jsonify({'message': 'Error al modificar instituto', 'error': str(response)}), 400 
