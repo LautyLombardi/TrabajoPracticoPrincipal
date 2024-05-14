@@ -1,48 +1,15 @@
 import React, { useState } from "react";
-import { Text, View, Pressable, TextInput, Platform, Image } from 'react-native';
+import { Text, View, TextInput } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import CampoFecha from "@/components/CampoFecha/CampoFecha";
 import Boton from "@/ui/Boton";
-import SelectItem from "@/components/seleccionar/SelectItem";
-import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
-import { CameraView } from "expo-camera";
-import SeleccionarImagen from "@/components/pickers/SeleccionarImagen";
-
-const Fila = ({ label, value }: any) => {
-  return (
-    <View
-      style={{
-        height: 70,
-        alignItems: "center",
-        flexDirection: "row",
-        gap: 10,
-        paddingHorizontal: 10,
-      }}
-    >
-      <View style={{ width: 80 }}>
-        <Text style={{ color: "white", fontSize: 15 }}>{label}</Text>
-      </View>
-      <View
-        style={{
-          backgroundColor: "white",
-          padding: 10,
-          flex: 2,
-          borderRadius: 5,
-        }}
-      >
-        <TextInput placeholder={value} placeholderTextColor={"gray"} />
-      </View>
-    </View>
-  );
-};
+import CustomInputText from "@/components/registrar/CustomInputText";
 
 const RegistroEmpresa = () => {
   const [dateIngreso, setDateIngreso] = useState(new Date());
   const [dateEgreso, setDateEgreso] = useState(new Date());
   const [Empresa, setEmpresa] = useState("");
 
-  const [showNext, setShowNext] = useState(false);
 
   // Route
   const handleGoBack = () => {
@@ -52,14 +19,6 @@ const RegistroEmpresa = () => {
     } else {
       router.navigate("/empresas");
     }
-  };
-
-  const handleContinuar = () => {
-    setShowNext(true);
-  };
-
-  const handleRetroceder = () => {
-    setShowNext(false);
   };
 
   const handleTerminar = () => {
@@ -95,10 +54,8 @@ const RegistroEmpresa = () => {
 
 
       <View style={{ flex: 1, marginTop: 20 }}>
-        <Fila label="Nombre" value="Fontanero" />
-        <Fila label="Descripcion" value="arregla cañeria" />
-        {/** Seleccionar la Empresa */}
-        
+        <CustomInputText label="Nombre" value="Fontanero" />
+        <CustomInputText label="Descripcion" value="arregla cañeria" />        
       </View>
 
       <View style={{ width: 300 }}>

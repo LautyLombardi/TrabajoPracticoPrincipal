@@ -2,10 +2,7 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  Pressable,
   TextInput,
-  Platform,
-  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -95,8 +92,6 @@ const RegistroVisitante = () => {
     }
   };
 
-  // tERCERA PARTE
-  const [showCamera, setShowCamera] = useState(false);
 
   return (
     <View
