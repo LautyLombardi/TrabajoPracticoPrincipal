@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -134,10 +134,10 @@ const AdministracionRoles = () => {
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10, flexDirection: "row", gap: 10}}>
+        <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10, flexDirection: "row", gap: 10, marginTop: 35}}>
             <Ionicons name='arrow-back-outline' size={20} onPress={handleGoBack}/>
             <Text style={{fontWeight: "bold"}}>
-                Administraion de Categoria
+                Administraion de Roles
             </Text>
         </View>
 

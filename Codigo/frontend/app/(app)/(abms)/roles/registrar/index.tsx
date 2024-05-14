@@ -1,13 +1,9 @@
 import React, { useState } from "react";
-import { Text, View, Pressable, TextInput, Platform, Image } from 'react-native';
+import { Text, View, TextInput } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import CampoFecha from "@/components/CampoFecha/CampoFecha";
 import Boton from "@/ui/Boton";
-import SelectItem from "@/components/seleccionar/SelectItem";
-import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
-import { CameraView } from "expo-camera";
-import SeleccionarImagen from "@/components/pickers/SeleccionarImagen";
+
 
 const Fila = ({ label, value }: any) => {
   return (
@@ -38,11 +34,8 @@ const Fila = ({ label, value }: any) => {
 };
 
 const RegistroRoles = () => {
-  const [dateIngreso, setDateIngreso] = useState(new Date());
-  const [dateEgreso, setDateEgreso] = useState(new Date());
-  const [Roles, setRoles] = useState("");
-
-  const [showNext, setShowNext] = useState(false);
+  const [nombre, setNombre] = useState();
+  const [descripcion, setDescripcion] = useState()
 
   // Route
   const handleGoBack = () => {
@@ -54,36 +47,9 @@ const RegistroRoles = () => {
     }
   };
 
-  const handleContinuar = () => {
-    setShowNext(true);
-  };
-
-  const handleRetroceder = () => {
-    setShowNext(false);
-  };
-
   const handleTerminar = () => {
     router.navigate("/roles")
   }
-
-  // Segunda parte
-  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<string[]>(
-    []
-  );
-  const handleLugarToggle = (lugar: string) => {
-    const isSelected = lugaresSeleccionados.includes(lugar);
-    if (isSelected) {
-      setLugaresSeleccionados(
-        lugaresSeleccionados.filter((item) => item !== lugar)
-      );
-    } else {
-      setLugaresSeleccionados([...lugaresSeleccionados, lugar]);
-    }
-  };
-
-
-  // tERCERA PARTE
-  const [showCamera, setShowCamera] = useState(false)
 
   return (
     <View
@@ -113,7 +79,7 @@ const RegistroRoles = () => {
 
 
 
-      <View style={{ flex: 1, marginTop: 20 }}>
+      <View style={{ flex: 1, marginTop: 20, width: "100%" }}>
         <Fila label="Nombre" value="Profesor" />
         <Fila label="Descripcion" value="Enseña matematicas" />
         {/** Seleccionar la Roles */}
