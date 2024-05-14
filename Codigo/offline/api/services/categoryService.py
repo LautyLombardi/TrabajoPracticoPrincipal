@@ -115,7 +115,29 @@ def saveInstituteCategory(institute_id, category_id):
         return 201
     except Exception as e:
         return e
-    
+
+def getInstituteByCategoryId(id):
+    try:
+        category_institutes = CategoryInstitute.query.filter_by(category_id=id).all()
+        institute_list = []
+        
+        for category_institute in category_institutes:
+            
+            institute_id = category_institute.institute_id
+            institute = Institute.query.get(institute_id)
+            
+            if institute:
+                institute_dict = {
+                    'id': institute.id,
+                    'name': institute.name
+                }
+                institute_list.append(institute_dict)
+        
+        return institute_list
+    except Exception as e:
+        print(e)
+        return None
+        
 def categoryList(categories):
     category_list = []
     for category in categories:

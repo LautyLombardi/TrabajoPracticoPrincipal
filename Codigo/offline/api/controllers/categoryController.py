@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory
+from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory,getInstituteByCategoryId
 
 category_bp = Blueprint('category', __name__)
 
@@ -138,6 +138,18 @@ def create_categoryInstitute():
         return jsonify({'error': 'La asignacion Institute Category ya existe'}), 409
     else:
         return jsonify({'message': 'Error al crear asignacion', 'error': str(response)}), 400
+
+@category_bp.route('/<int:id>/institute', methods=['GET'])
+def get_institute_for_category(id):
+        
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    response = getInstituteByCategoryId(id)
+    if response:
+        return jsonify(response), 200
+    else:
+        return jsonify({'error': 'no existe relacion'}), 404    
 
 def validate(data):
   
