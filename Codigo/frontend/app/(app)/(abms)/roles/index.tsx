@@ -92,8 +92,8 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState })
       </Row>
       <Row>
         <Col text='1'flexWidth={0.8}/>
-        <Col text='Profesor' flexWidth={3}/>
-        <Col text='El que enseña matematicas'/>
+        <Col text='Seguridad' flexWidth={3}/>
+        <Col text='el encargado de tomar los inicios de sesion'/>
         <Col text='10/10/10'/>
         <Col flexWidth={0.8} icon={handleToggleIcon()}/>
       </Row>
