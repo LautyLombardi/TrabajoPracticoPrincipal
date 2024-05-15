@@ -8,8 +8,6 @@ CORS(category_bp)
 @category_bp.route('/', methods=['POST'])
 def create_category():
     data = request.json
-    
-    print(data)
 
     error = validate(data)
     if error  is not None:
