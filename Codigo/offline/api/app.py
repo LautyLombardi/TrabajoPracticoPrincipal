@@ -33,13 +33,6 @@ def load_config(env):
         config = json.load(f)
         return config.get(env, {})
 
-
-
-# Endpoint de prueba
-@app.route('/test', methods=['GET'])
-def test():
-    return jsonify({'message':'listening...'}), 200
-
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
     app.run(host='0.0.0.0', port=config.get('port'), debug=True)

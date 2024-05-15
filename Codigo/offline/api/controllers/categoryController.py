@@ -1,11 +1,15 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import CORS
 from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory,getInstituteByCategoryId
 
 category_bp = Blueprint('category', __name__)
+CORS(category_bp)
 
 @category_bp.route('/', methods=['POST'])
 def create_category():
     data = request.json
+    
+    print(data)
 
     error = validate(data)
     if error  is not None:
