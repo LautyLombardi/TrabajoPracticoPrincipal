@@ -42,6 +42,7 @@ def getCategoryById(id):
     category = Category.query.get(id)
     if category:
         return {
+            'id':category.id,
             'name': category.name,
             'description': category.description,
             'isExtern': category.isExtern,
@@ -142,6 +143,7 @@ def categoryList(categories):
     category_list = []
     for category in categories:
         category_dict = {
+            'id':category.id,
             'name': category.name,
             'description': category.description,
             'isExtern': category.isExtern,

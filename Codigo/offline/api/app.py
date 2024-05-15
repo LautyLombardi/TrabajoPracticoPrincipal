@@ -2,8 +2,10 @@ import os, json
 from flask import Flask, jsonify
 from db.db import init_db
 from controllers import *
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Configurar e inicializar la base de datos
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -31,6 +33,13 @@ def load_config(env):
         config = json.load(f)
         return config.get(env, {})
 
+
+
+# Endpoint de prueba
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({'message':'listening...'}), 200
+
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
-    app.run(host=config.get('host'), port=config.get('port'), debug=True)
+    app.run(host='0.0.0.0', port=config.get('port'), debug=True)
