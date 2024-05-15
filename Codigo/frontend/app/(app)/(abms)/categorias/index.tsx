@@ -3,7 +3,12 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import axios from 'axios';
 
+
+import { Categoria } from '@/api/model/interfaces';
+import { obtenerCategorias } from '@/api/services/categorias';
+import { useEffect } from 'react';
 
 type PropsCol = {
   text?: string,
@@ -47,12 +52,18 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 };
 
 type PropsTable = {
+  categorias: Categoria[];
+
   viewState: boolean,
   editState: boolean,
-  deleteState: boolean
+  deleteState: boolean,
+  
+  handleView: (id: number) => void;
+  handleEdit: (id: number) => void;
+  handleDelete: (id: number) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, categorias }) => {
 
   const iconVerMas = () => {
     return (
@@ -91,14 +102,16 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='fecha'/>
         <Col text='' flexWidth={0.8}/>
       </Row>
-      <Row>
-        <Col text='1'flexWidth={0.8}/>
-        <Col text='Papeador de la pepa' flexWidth={3}/>
-        <Col text='El que papea toda la pepa'/>
-        <Col text='True'/>
-        <Col text='10/10/10'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
+      {categorias.map((categoria, index) => (
+        <Row key={index}>
+          <Col text={categoria.id?.toString() || ''} flexWidth={0.8} />
+          <Col text={categoria.name} flexWidth={3} />
+          <Col text={categoria.description} flexWidth={3} />
+          <Col text={categoria.isExtern.toString()} flexWidth={1} />
+          <Col text={categoria.createDate} flexWidth={1} />
+          <Col flexWidth={0.8} icon={handleToggleIcon()} />
+        </Row>
+      ))}
     </View>
   );
 };
@@ -131,6 +144,38 @@ const AdministracionCategorias = () => {
     }
   }
 
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const categoriasObtenidas = await obtenerCategorias();
+        setCategorias(categoriasObtenidas);
+      } catch (error) {
+        console.error('Error al obtener las categorías:', error);
+      }
+    };
+
+    fetchCategorias();
+
+    console.log(categorias)
+  }, []);
+
+  //----------------------------------------------
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Realizar la solicitud GET al endpoint de prueba en el backend de Flask
+        const response = await axios.get('http://192.168.1.44:5000'); // Reemplaza con la dirección IP de tu servidor Flask
+        console.log('Conexión exitosa con el backend de Flask:', response.data);
+      } catch (error) {
+        console.error('Error al conectarse al backend de Flask:', error);
+      }
+    };
+
+    fetchData(); // Llamar a la función para realizar la solicitud al cargar el componente
+  }, []); // Ejecutar solo una vez al cargar el componente
+  //----------------------------------------------
 
 
   return (
@@ -163,7 +208,7 @@ const AdministracionCategorias = () => {
         </View>
 
         {/** Tabla */}
-        <Tablacategorias viewState={view} editState={edit} deleteState={trash}/>
+        <Tablacategorias viewState={view} editState={edit} deleteState={trash} categorias={categorias} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={() => console.log("borrar")}/>
 
     </View>
   )

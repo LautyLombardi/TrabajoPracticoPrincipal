@@ -7,7 +7,19 @@ import CustomInputText from "@/components/registrar/CustomInputText";
 import SelectItem from "@/components/seleccionar/SelectItem";
 
 const RegistroCategoria = () => {
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [extern,setExtern] = useState(0)
+
+  const handleSetCategoria = (cate: string) => {
+    setCategoria(cate)
+    if(cate == "interno"){
+      setExtern(0)
+    }else {
+      setExtern(1)
+    }
+  } 
 
   // Route
   const handleGoBack = () => {
@@ -19,11 +31,33 @@ const RegistroCategoria = () => {
     }
   };
 
-  const handleTerminar = () => {
-    router.navigate("/categorias")
-  }
-
-
+  const handleTerminar = async () => {
+    try {
+      const url = 'http://192.168.1.44:5000/category/';
+      const data = {
+        name: nombre,
+        description: descripcion,
+        isExtern: 0
+      };
+  
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al registrar la categoría');
+      }
+  
+      // Navegar de regreso a la pantalla de categorías
+      router.navigate("/categorias");
+    } catch (error) {
+      console.error('Error al registrar la categoría:', error);
+    }
+  };
 
   return (
     <View
@@ -51,11 +85,9 @@ const RegistroCategoria = () => {
         <Text style={{ fontWeight: "bold" }}>Registro Categoria</Text>
       </View>
 
-
-
       <View style={{ flex: 1, marginTop: 20 }}>
-        <CustomInputText label="Nombre" value="Fontanero" />
-        <CustomInputText label="Descripcion" value="arregla cañeria" />
+        <CustomInputText label="Nombre" value={nombre} onChangeText={setNombre} />
+        <CustomInputText label="Descripcion" value={descripcion} onChangeText={setDescripcion} />
         {/** Seleccionar la categoria */}
         <View
           style={{
@@ -66,9 +98,8 @@ const RegistroCategoria = () => {
             gap: 10,
           }}
         >
-          <SelectItem value={categoria} onValueChange={setCategoria} fieldName="Categoria" values={["interno", "externo"]} />
+          <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria" values={["interno", "externo"]} />
         </View>
-
       </View>
 
       <View style={{ width: 300 }}>

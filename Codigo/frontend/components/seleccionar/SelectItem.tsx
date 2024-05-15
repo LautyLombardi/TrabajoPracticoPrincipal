@@ -10,6 +10,8 @@ interface SelectItemProps {
 }
 
 const SelectItem: React.FC<SelectItemProps> = ({ value, onValueChange, values, fieldName }) => {
+
+  
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Text
@@ -26,7 +28,7 @@ const SelectItem: React.FC<SelectItemProps> = ({ value, onValueChange, values, f
       <Picker
         style={{ flex: 1, backgroundColor: "white", color: "black", borderRadius: 100 }}
         selectedValue={value}
-        onValueChange={(itemValue) => onValueChange(itemValue)}
+        onValueChange={(itemValue) => onValueChange(itemValue.toString())}
       >
         {values.map((label, index) => (
           <Picker.Item key={index} label={label.toUpperCase()} value={label.toLowerCase()} />

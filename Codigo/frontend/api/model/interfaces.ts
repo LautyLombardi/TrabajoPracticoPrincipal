@@ -1,4 +1,4 @@
-interface usuario{
+interface usuario{  
     id: number,
     name: string,
     lastname: string,
@@ -13,9 +13,17 @@ interface visitante{
     category: string,
 }
 
-// types.ts
+// Definición de la interfaz para la entidad Categoria
 export interface Categoria {
-    id?: number; // id es opcional porque podría no estar presente en la carga útil de la solicitud
+    id?: number | undefined; // Opcional, en caso de tener un identificador
+    name: string;
+    description: string;
+    isExtern: boolean; // Nuevo atributo
+    createDate: string;
+  }
+  
+export interface Instituto {
+id?: number;
     nombre: string;
     lugares: string[];
 }

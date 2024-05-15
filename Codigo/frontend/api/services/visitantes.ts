@@ -1,6 +1,6 @@
 // serviceCategorias.ts
-import { Categoria } from '@/api/model/interfaces.ts';
-import { URL } from '@/api/constantes.ts'
+import { Categoria } from '@/api/model/interfaces';
+import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}categorias`; // Reemplaza con la URL de tu API
 
 export const getCategorias = async (): Promise<Categoria[]> => {

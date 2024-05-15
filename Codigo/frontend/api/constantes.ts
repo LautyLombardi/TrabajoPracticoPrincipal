@@ -1,3 +1,3 @@
-const IP = "localhost"
-const PUERTO = 3000
-export const URL =  `http://${IP}:${PUERTO}/`;
+const IP = "192.168.1.44"
+const PUERTO = 5000
+export const URL =  `http://192.168.1.44:5000`;
