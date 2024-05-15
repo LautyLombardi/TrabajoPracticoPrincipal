@@ -1,0 +1,11 @@
+## Entornos virtuales
+/online/api/env
+/offline/api/env
+/online/env
+/offline/env
+/env
+
+## Achivos 
+*.jpg
+*.pkl
+

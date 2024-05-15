@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "0fdfb32e-a529-4f6f-80af-55c85b17df14",
+		"name": "labo Produccion",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13117722"
+	},
+	"item": [
+		{
+			"name": "index - happy path",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ip}}/",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user  - happy path",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Franco\",\r\n    \"lastname\": \"Fallatti\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ip}}/user",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert_image - happy path",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/franc/Downloads/img1.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/insert_image",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"insert_image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "faceRacognition - happy path",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/franc/Downloads/img1.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/faceRacognition",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"faceRacognition"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "faceRacognition - bad image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/franc/Downloads/img3.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/faceRacognition",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"faceRacognition"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
