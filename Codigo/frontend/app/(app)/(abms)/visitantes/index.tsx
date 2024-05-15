@@ -1,10 +1,8 @@
 import { View, Text, StyleSheet, Pressable,TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, router } from 'expo-router';
+import { router } from 'expo-router';
 import VisitorModal from '@/components/Modal/ModalUser';
-
-
 
 type PropsCol = {
   text?: string,

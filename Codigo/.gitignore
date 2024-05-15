@@ -1,0 +1,14 @@
+## Entornos virtuales
+/online/api/env
+/offline/api/env
+/online/env
+/offline/env
+/env
+
+## Achivos 
+*.jpg
+*.pkl
+
+offline/api/utils/__pycache__
+offline/api/services/__pycache__
+offline/api/models/__pycache__
