@@ -1,0 +1,10 @@
+export default function parserArrayToString(array){
+    let text = ""
+    array.map((a, i) => {
+        if(i == array.length + 1){
+            text = text.concat(a)
+            return
+        }
+        text = text.concat(a, ",")
+    })
+}

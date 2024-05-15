@@ -180,6 +180,7 @@ const AdministracionVisitantes = () => {
   };
 
 
+  // Visitantes
 
   return (<>
     <View style={styles.container}>

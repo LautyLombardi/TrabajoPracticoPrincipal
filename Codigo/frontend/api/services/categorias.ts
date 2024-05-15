@@ -15,16 +15,34 @@ export async function obtenerCategorias(): Promise<any> {
   }
 }
 
-// Función para crear una nueva categoría
-export async function crearCategoria(categoria: Categoria): Promise<Categoria | null> {
+// Funcion para crear una categoria
+export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<void> => {
   try {
-    const response: AxiosResponse<Categoria> = await axios.post(API_URL, categoria);
-    return response.data;
+    const url = 'http://192.168.1.44:5000/category/';
+    const data: Categoria = {
+      name: nombre,
+      description: descripcion,
+      isExtern: isExtern
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al registrar la categoría');
+    }
+
+    // Si se registró correctamente, no necesitamos devolver ningún dato adicional
   } catch (error) {
-    console.error('Error al crear la categoría:', error);
-    return null;
+    console.error('Error al registrar la categoría:', error);
+    throw new Error('Error al registrar la categoría');
   }
-}
+};
 
 // Función para actualizar una categoría existente
 export async function actualizarCategoria(id: number | undefined, categoria: Categoria): Promise<Categoria | null> {
@@ -37,13 +55,21 @@ export async function actualizarCategoria(id: number | undefined, categoria: Cat
   }
 }
 
-// Función para eliminar una categoría
-export async function eliminarCategoria(id: number | undefined): Promise<boolean> {
+export const desactivarCategoria = async (id: number): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/${id}`);
-    return true;
+    const url = `http://192.168.1.44:5000/category/desactivate/${id}`;
+
+    const response = await fetch(url, {
+      method: 'PUT'
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al desactivar la categoría');
+    }
+
+    // Si se desactivó correctamente, no necesitamos devolver ningún dato adicional
   } catch (error) {
-    console.error('Error al eliminar la categoría:', error);
-    return false;
+    console.error('Error al desactivar la categoría:', error);
+    throw new Error('Error al desactivar la categoría');
   }
-}
+};
