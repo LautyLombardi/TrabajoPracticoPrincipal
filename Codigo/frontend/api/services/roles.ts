@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Rol } from '../model/interfaces';
-const API_URL = 'http://192.168.1.44:5000/role';
+const API_URL = ' http://192.168.248.170:5000/role';
 
 export async function obtenerRoles(): Promise<any> {
   try {
@@ -12,29 +12,20 @@ export async function obtenerRoles(): Promise<any> {
   }
 }
 
-export const crearRol = async (nombre: string, descripcion: string): Promise<void> => {
+export const crearRol = async (nombre: string, descripcion: string) => {
     try {
-      const url = 'http://192.168.1.44:5000/role/';
-      const data: Rol = {
+      const url = 'http://192.168.248.170:5000/role/';
+      const data = {
         name: nombre,
         description: descripcion,
       };
   
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+      const response = await axios.post(url, data, {
       });
-  
-      if (!response.ok) {
-        throw new Error('Error al registrar la categoría');
-      }
   
       // Si se registró correctamente, no necesitamos devolver ningún dato adicional
     } catch (error) {
       console.error('Error al registrar la categoría:', error);
       throw new Error('Error al registrar la categoría');
     }
-  };
+};

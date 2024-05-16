@@ -55,10 +55,8 @@ const RegistroRoles = () => {
 
   const handleTerminar = async () => {
     try {
-      await crearRol(nombre, descripcion)
-      // Si la solicitud es exitosa, puedes redirigir a la página de roles u realizar otras acciones necesarias
+      const respuesta = await crearRol(nombre, descripcion)
       router.navigate("/roles");
-
     } catch (error) {
       console.error('Error al crear el rol:', error);
     }

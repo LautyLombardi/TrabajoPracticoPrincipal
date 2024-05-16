@@ -18,7 +18,7 @@ export async function obtenerCategorias(): Promise<any> {
 // Funcion para crear una categoria
 export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<void> => {
   try {
-    const url = 'http://192.168.1.44:5000/category/';
+    const url = 'http://192.168.248.170:5000/category/';
     const data: Categoria = {
       name: nombre,
       description: descripcion,
