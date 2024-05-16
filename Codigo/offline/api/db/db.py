@@ -3,13 +3,21 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+# Resto del código de db.py
+
+
+db = SQLAlchemy()
+
 # Asocia la instancia de SQLAlchemy con Flask
 def init_db(app):
     db.init_app(app)
     with app.app_context():
         db.create_all()
 
+
 from models import *
+
+
 
 places = [
     ('Modulo 1', 'M1', 'Descripción del Módulo 1', '07:00', '22:00', 1, datetime.now().strftime('%Y-%m-%d %H:%M')),
@@ -27,8 +35,7 @@ places = [
 ]
 def populate_places():
     for place_data in places:
-        place = Place(
-            name=place_data[0],
+        place = Place(name=place_data[0],
             abbreviation=place_data[1],
             description=place_data[2],
             openTime=place_data[3],
