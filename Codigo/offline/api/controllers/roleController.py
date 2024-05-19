@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import CORS
 from services.roleService import saveRole,updateRole, getRole, getRoleAll, setDesactive, getRoleAllActive, getRoleAllDesactive, setDesactive, setActive
 
 role_bp = Blueprint('role', __name__)
+CORS(role_bp)
 
 @role_bp.route('/', methods=['POST'])
 def create_role():

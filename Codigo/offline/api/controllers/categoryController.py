@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify
-from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive
+from flask_cors import CORS
+from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory,getInstituteByCategoryId
 
 category_bp = Blueprint('category', __name__)
+CORS(category_bp)
 
 @category_bp.route('/', methods=['POST'])
 def create_category():
@@ -116,6 +118,40 @@ def set_desactive_category(id):
         return jsonify({'error': 'categoria no encontrada'}), 404
     else:
         return jsonify({'message': 'Error al modificar categoria', 'error': str(response)}), 400 
+
+@category_bp.route('/institute', methods=['POST'])
+def create_categoryInstitute():
+    data = request.json
+    institute_id = data.get('institute_id')
+    category_id = data.get('category_id')
+    
+    if not isinstance(institute_id, int) or not isinstance(category_id, int) or institute_id <= 0 or category_id <= 0:
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422 
+    
+    response = saveInstituteCategory(institute_id, category_id)
+
+    if response == 201:
+        return jsonify({'message': 'Asignacion Institute Category creada'}), 201
+    elif response == '404a':
+        return jsonify({'error': 'la Category no existe'}), 404
+    elif response == '404b':
+        return jsonify({'error': 'el Institute no existe'}), 404
+    elif response == '409':
+        return jsonify({'error': 'La asignacion Institute Category ya existe'}), 409
+    else:
+        return jsonify({'message': 'Error al crear asignacion', 'error': str(response)}), 400
+
+@category_bp.route('/<int:id>/institute', methods=['GET'])
+def get_institute_for_category(id):
+        
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    response = getInstituteByCategoryId(id)
+    if response:
+        return jsonify(response), 200
+    else:
+        return jsonify({'error': 'no existe relacion'}), 404    
 
 def validate(data):
   

@@ -10,7 +10,7 @@ def saveUser(data):
             password=data.get('password'), 
             role_id=data.get('role_id'),
             dni=data.get('dni'),
-            isActiva=1,
+            isActive=1,
             createDate=createDate()
         )
         db.session.add(user)

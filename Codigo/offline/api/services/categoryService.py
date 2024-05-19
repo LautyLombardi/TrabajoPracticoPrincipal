@@ -1,5 +1,7 @@
 from db.db import db
 from models.Category import Category
+from models.Institute import Institute
+from models.CategoryInstitute import CategoryInstitute
 from utils.date import createDate
 
 def saveCategory(data):
@@ -40,6 +42,7 @@ def getCategoryById(id):
     category = Category.query.get(id)
     if category:
         return {
+            'id':category.id,
             'name': category.name,
             'description': category.description,
             'isExtern': category.isExtern,
@@ -92,11 +95,55 @@ def setActive(id):
         return 200
     except Exception as e:
         return e
+
+# Falta el isActive de c/u
+def saveInstituteCategory(institute_id, category_id):
+    if not Category.query.get(category_id):
+        return '404a'
     
+    if not Institute.query.get(institute_id):
+        return '404b'
+    
+    # Verifica si la relación ya exist    
+    if CategoryInstitute.query.filter_by(institute_id=institute_id, category_id=category_id).first():
+        return '409'
+    
+    try:
+        instituteCategory = CategoryInstitute(institute_id=institute_id, category_id=category_id)
+        db.session.add(instituteCategory)
+        db.session.commit()
+
+        return 201
+    except Exception as e:
+        return e
+
+def getInstituteByCategoryId(id):
+    try:
+        category_institutes = CategoryInstitute.query.filter_by(category_id=id).all()
+        institute_list = []
+        
+        for category_institute in category_institutes:
+            
+            institute_id = category_institute.institute_id
+            institute = Institute.query.get(institute_id)
+            
+            if institute:
+                institute_dict = {
+                    'id': institute.id,
+                    'name': institute.name
+                }
+                institute_list.append(institute_dict)
+        
+        return institute_list
+    except Exception as e:
+        print(e)
+        return None
+        
 def categoryList(categories):
     category_list = []
     for category in categories:
         category_dict = {
+            'id':category.id,
             'name': category.name,
             'description': category.description,
             'isExtern': category.isExtern,
