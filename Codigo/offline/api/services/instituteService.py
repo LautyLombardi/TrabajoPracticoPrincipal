@@ -69,6 +69,34 @@ def saveInstitutePlace(institute_id, place_id):
     except Exception as e:
         return e
 
+def getPlaceByInstituteId(id):
+    try:
+        institutesPlaces = InstitutePlace.query.filter_by(institute_id=id).all()
+        institute_list = []
+        
+        for institutePlace in institutesPlaces:
+            
+            place_id = institutePlace.place_id
+            place = Place.query.get(place_id)
+            
+            if place:
+                place_dict = {
+                    'id': place.id,
+                    'name': place.name,
+                    'abbreviation': place.abbreviation,
+                    'description': place.description,
+                    'openTime': place.openTime,
+                    'closeTime': place.closeTime,
+                    'isActive': place.isActive,
+                    'createDate': place.createDate
+                }
+                institute_list.append(place_dict)
+        
+        return institute_list
+    except Exception as e:
+        print(e)
+        return None
+    
 def getInstituteAll():
     institutes = Institute.query.all()
     return instituteList(institutes)
@@ -112,7 +140,7 @@ def setActive(id):
         return 200
     except Exception as e:
         return e
-    
+        
 def instituteList(institutes):
     institute_list = []
     for institute in institutes:
