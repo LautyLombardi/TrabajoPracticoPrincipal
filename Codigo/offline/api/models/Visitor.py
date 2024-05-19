@@ -1,4 +1,3 @@
-from models import User, Image, Visitor, Place
 from db.db import db
 
 # Modelo para la tabla 'visitor'
