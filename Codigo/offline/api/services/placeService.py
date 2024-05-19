@@ -1,5 +1,7 @@
 from db.db import db
 from models.Place import Place
+from models.Institute import Institute
+from models.InstitutePlace import InstitutePlace
 from utils.date import createDate
 
 def savePlace(data):
@@ -99,6 +101,31 @@ def setActive(id):
         return 200
     except Exception as e:
         return e
+
+def getInstituteByPlaceId(id):
+    try:
+        institutesPlaces = InstitutePlace.query.filter_by(place_id=id).all()
+        institute_list = []
+        
+        for institutePlace in institutesPlaces:
+            
+            institute_id = institutePlace.institute_id
+            institute = Institute.query.get(institute_id)
+            
+            if institute:
+                institute_dict = {
+                    'id':institute.id,
+                    'name':institute.name,
+                    'isActive': institute.isActive,
+                    'createDate':institute.createDate
+                }
+                institute_list.append(institute_dict)
+        
+        return institute_list
+    except Exception as e:
+        print(e)
+        return None
+    
     
 def placeList(places):
     place_list = []

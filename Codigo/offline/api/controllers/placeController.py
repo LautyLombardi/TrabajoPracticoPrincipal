@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.placeService import savePlace, updatePlace, getPlaceById, getPlaceAll, setDesactive, getPlaceAllActive, getPlaceAllDesactive, setActive
+from services.placeService import savePlace, updatePlace, getPlaceById, getPlaceAll, setDesactive, getPlaceAllActive, getPlaceAllDesactive, setActive, getInstituteByPlaceId
 from utils.date import check_schedule_format
 
 place_bp = Blueprint('place', __name__)
@@ -116,6 +116,19 @@ def set_desactive_place(id):
         return jsonify({'error': 'lugar no encontrado'}), 404
     else:
         return jsonify({'message': 'Error al modificar lugar', 'error': str(response)}), 400 
+
+@place_bp.route('/<int:id>/institute', methods=['GET'])
+def get_institute_for_place(id):
+        
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    response = getInstituteByPlaceId(id)
+    if response:
+        return jsonify(response), 200
+    else:
+        return jsonify({'error': 'no existe relacion'}), 404  
+
 
 def validate(data):
     required_fields = ['name', 'description', 'abbreviation', 'openTime', 'closeTime']

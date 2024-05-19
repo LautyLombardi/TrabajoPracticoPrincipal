@@ -72,7 +72,7 @@ def saveInstitutePlace(institute_id, place_id):
 def getPlaceByInstituteId(id):
     try:
         institutesPlaces = InstitutePlace.query.filter_by(institute_id=id).all()
-        institute_list = []
+        place_list = []
         
         for institutePlace in institutesPlaces:
             
@@ -90,9 +90,9 @@ def getPlaceByInstituteId(id):
                     'isActive': place.isActive,
                     'createDate': place.createDate
                 }
-                institute_list.append(place_dict)
+                place_list.append(place_dict)
         
-        return institute_list
+        return place_list
     except Exception as e:
         print(e)
         return None
