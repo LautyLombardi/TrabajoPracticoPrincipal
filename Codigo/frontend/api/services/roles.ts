@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Rol } from '../model/interfaces';
-const API_URL = ' http://192.168.248.170:5000/role';
+const API_URL = ' http://192.168.0.208:5000/role';
 
 export async function obtenerRoles(): Promise<any> {
   try {
@@ -14,7 +14,7 @@ export async function obtenerRoles(): Promise<any> {
 
 export const crearRol = async (nombre: string, descripcion: string) => {
     try {
-      const url = 'http://192.168.248.170:5000/role/';
+      const url = 'http://192.168.0.208:5000/role/';
       const data = {
         name: nombre,
         description: descripcion,
