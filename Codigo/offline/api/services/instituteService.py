@@ -14,7 +14,12 @@ def saveInstitute(data):
         db.session.add(institute)
         db.session.commit()
 
-        return institute
+        return {
+            'id':institute.id,
+            'name':institute.name,
+            'isActive': institute.isActive,
+            'createDate':institute.createDate
+        }
     except Exception as e:
         return e
 

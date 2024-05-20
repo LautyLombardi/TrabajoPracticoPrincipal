@@ -8,12 +8,11 @@ def create_institute():
     data = request.json
     if not data.get('name').strip():        
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
-    
-    response = saveInstitute(data)
+    try:
+        response = saveInstitute(data)
 
-    if isinstance(response.id, int):
-        return jsonify({'message': 'Institute Registrado', 'institute': str(response)}), 201
-    else:
+        return jsonify(response), 201
+    except Exception as e:
         return jsonify({'message': 'Error al crear Institute', 'error': str(response)}), 400
 
 @institute_bp.route('/<int:id>', methods=['PUT'])

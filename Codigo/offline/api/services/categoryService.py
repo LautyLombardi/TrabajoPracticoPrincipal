@@ -168,9 +168,9 @@ def getVisitorByCategoryId(id):
         visitor_list = []
         
         for category_visitor in category_visitors:
-            
+
             dni = category_visitor.visitor_id
-            visitor = Institute.query.get(dni)
+            visitor = Visitor.query.get(dni)
             
             if visitor:
                 visitor_dict = {

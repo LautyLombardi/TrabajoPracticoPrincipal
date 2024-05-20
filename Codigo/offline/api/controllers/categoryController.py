@@ -154,7 +154,7 @@ def get_institute_for_category(id):
         return jsonify({'error': 'no existe relacion'}), 404    
 
 @category_bp.route('/visitor', methods=['POST'])
-def create_categoryInstitute():
+def create_categoryVisitor():
     data = request.json
     visitor_dni = data.get('visitor_dni')
     category_id = data.get('category_id')
@@ -180,7 +180,7 @@ def get_visitor_for_category(id):
         
     if id <= 0:
         return jsonify({'error': 'ID inválido'}), 422
-    
+        
     response = getVisitorByCategoryId(id)
     if response:
         return jsonify(response), 200
