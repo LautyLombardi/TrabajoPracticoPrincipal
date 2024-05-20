@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll, getVisitorAllActive, getVisitorAllDesactive, setDesactive, setActive
+from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll, getVisitorAllActive, getVisitorAllDesactive, setDesactive, setActive, getInstituteByVisitorId
 
 visitor_bp = Blueprint('visitor', __name__)
 
@@ -113,3 +113,17 @@ def set_desactive_visitor(id):
         return jsonify({'error': 'visitante no encontrado'}), 404
     else:
         return jsonify({'message': 'Error al modificar visitante', 'error': str(response)}), 400 
+
+@visitor_bp.route('/<int:id>/institute', methods=['GET'])
+def get_institute_for_visitor(id):    
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    response = getInstituteByVisitorId(id)
+    if response:
+        return jsonify(response), 200
+    else:
+        return jsonify({'error': 'no existe relacion'}), 404 
+
+
+

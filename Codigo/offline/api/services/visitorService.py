@@ -1,6 +1,9 @@
 from db.db import db
 from models.Visitor import Visitor
 from utils.date import createDate
+from models.CategoryVisitor import CategoryVisitor
+from models.CategoryInstitute import CategoryInstitute
+from models.Institute import Institute
 
 def saveVisitor(data):
     try:
@@ -118,4 +121,36 @@ def visitorList(visitors):
             'createDate': visitor.createDate
         }
         visitor_list.append(visitor_dict)
-    return visitor_list  
+    return visitor_list 
+
+
+def getInstituteByVisitorId(id):
+    try:
+        category_visitors = CategoryVisitor.query.filter_by(visitor_id=id).all()
+        institute_id_list = []
+        institute_list = []
+
+        for category_visitor in category_visitors:
+            category_institutes = CategoryInstitute.query.filter_by(category_id=category_visitor.category_id).all()
+            for category_institute in category_institutes:
+                institute_id_list.append(category_institute.institute_id)
+
+        # Eliminar duplicados usando un conjunto
+        unique_institute_ids = list(set(institute_id_list))
+
+
+        for institute_id in unique_institute_ids:
+            
+            institute = Institute.query.get(institute_id)
+
+            if institute:
+                institute_dict = {
+                    'id': institute.id,
+                    'name': institute.name
+                }
+                institute_list.append(institute_dict)
+                
+        return institute_list
+    except Exception as e:
+        print(e)
+        return None     
