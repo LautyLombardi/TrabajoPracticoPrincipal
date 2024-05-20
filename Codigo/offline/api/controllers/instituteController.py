@@ -11,8 +11,8 @@ def create_institute():
     
     response = saveInstitute(data)
 
-    if response == True:
-        return jsonify({'message': 'Institute Registrado'}), 201
+    if isinstance(response.id, int):
+        return jsonify({'message': 'Institute Registrado', 'institute': str(response)}), 201
     else:
         return jsonify({'message': 'Error al crear Institute', 'error': str(response)}), 400
 

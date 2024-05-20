@@ -14,7 +14,7 @@ def saveInstitute(data):
         db.session.add(institute)
         db.session.commit()
 
-        return True
+        return institute
     except Exception as e:
         return e
 
