@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory,getInstituteByCategoryId
+from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory,getInstituteByCategoryId, saveCategoryVisitor, getVisitorByCategoryId
 
 category_bp = Blueprint('category', __name__)
 CORS(category_bp)
@@ -153,6 +153,40 @@ def get_institute_for_category(id):
     else:
         return jsonify({'error': 'no existe relacion'}), 404    
 
+@category_bp.route('/visitor', methods=['POST'])
+def create_categoryInstitute():
+    data = request.json
+    visitor_dni = data.get('visitor_dni')
+    category_id = data.get('category_id')
+    
+    if not isinstance(visitor_dni, int) or not isinstance(category_id, int) or visitor_dni <= 0 or category_id <= 0:
+        return jsonify({'error': 'Faltan campos en la solicitud'}), 422 
+    
+    response = saveCategoryVisitor(visitor_dni, category_id)
+
+    if response == 201:
+        return jsonify({'message': 'Asignacion Visitor Category creada'}), 201
+    elif response == '404a':
+        return jsonify({'error': 'la Category no existe'}), 404
+    elif response == '404b':
+        return jsonify({'error': 'el Visitor no existe'}), 404
+    elif response == '409':
+        return jsonify({'error': 'La asignacion Visitor Category ya existe'}), 409
+    else:
+        return jsonify({'message': 'Error al crear asignacion', 'error': str(response)}), 400
+
+@category_bp.route('/<int:id>/visitor', methods=['GET'])
+def get_visitor_for_category(id):
+        
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    response = getVisitorByCategoryId(id)
+    if response:
+        return jsonify(response), 200
+    else:
+        return jsonify({'error': 'no existe relacion'}), 404 
+    
 def validate(data):
   
     if data.get('name') is None or data.get('description') is None or data.get('isExtern') is None:

@@ -1,7 +1,9 @@
 from db.db import db
 from models.Category import Category
 from models.Institute import Institute
+from models.Visitor import Visitor
 from models.CategoryInstitute import CategoryInstitute
+from models.CategoryVisitor import CategoryVisitor
 from utils.date import createDate
 
 def saveCategory(data):
@@ -138,7 +140,57 @@ def getInstituteByCategoryId(id):
     except Exception as e:
         print(e)
         return None
+
+# Falta el isActive de c/u
+def saveCategoryVisitor(visitor_dni, category_id):
+    if not Category.query.get(category_id):
+        return '404a'
+    
+    if not Visitor.query.get(visitor_dni):
+        return '404b'
+    
+    # Verifica si la relación ya exist    
+    if CategoryVisitor.query.filter_by(visitor_id=visitor_dni, category_id=category_id).first():
+        return '409'
+    
+    try:
+        categoryVisitor = CategoryVisitor(visitor_id=visitor_dni, category_id=category_id)
+        db.session.add(categoryVisitor)
+        db.session.commit()
+
+        return 201
+    except Exception as e:
+        return e
+
+def getVisitorByCategoryId(id):
+    try:
+        category_visitors = CategoryVisitor.query.filter_by(category_id=id).all()
+        visitor_list = []
         
+        for category_visitor in category_visitors:
+            
+            dni = category_visitor.visitor_id
+            visitor = Institute.query.get(dni)
+            
+            if visitor:
+                visitor_dict = {
+                    'dni': visitor.dni,
+                    'enterprice_id': visitor.enterprice_id,
+                    'name': visitor.name,
+                    'lastname': visitor.lastname,
+                    'email': visitor.email,
+                    'startDate': visitor.startDate,
+                    'finishDate': visitor.finishDate,
+                    'isActive': visitor.isActive,
+                    'createDate': visitor.createDate
+                }
+                visitor_list.append(visitor_dict)
+        
+        return visitor_list
+    except Exception as e:
+        print(e)
+        return None
+    
 def categoryList(categories):
     category_list = []
     for category in categories:
