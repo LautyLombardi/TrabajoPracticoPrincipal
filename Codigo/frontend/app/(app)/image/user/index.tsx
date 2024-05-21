@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, TextInput, Alert } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import Boton from "@/ui/Boton";
@@ -6,14 +6,16 @@ import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import axios from 'axios';
 import { insertImage } from '@/api/services/image';
+import { sendImageToBackend } from '@/api/services/util'
 
 const UserImage = () => {
   const navigator = useRouter();
   const [cameraPermission, setCameraPermission] = useCameraPermissions();
   const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
-  const [imagen, setImagen] = useState<string | null>(null);
+  const [imagen, setImagen] = useState<File | null>(null);
   const [dni, setDni] = useState<string>('');
+
   const handleAutenticacion = async () => {
     await takePicture();
     
@@ -27,7 +29,7 @@ const UserImage = () => {
     }
   
     try {
-      await insertImage(parseInt(dni), imagen, 'user', 'user_dni');
+      await sendImageToBackend(imagen, dni)
       Alert.alert("Éxito", "Autenticación exitosa");
       navigator.navigate("/menu"); // TODO change to faceRecognition/user
     } catch (error) {
@@ -41,19 +43,45 @@ const UserImage = () => {
   
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = { quality: 1, base64: false, exif: true, skipProcessing: true };
-      const imagen = await cameraRef.current.takePictureAsync(options);
-      setImagen(imagen);
+      const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
+      const photo = await cameraRef.current.takePictureAsync(options);
+      //const imageFile = await uriToFile(imagen.uri);
+      setImagen(photo.uri);
+      return photo.uri
     }
   };
+  
 
-  const uriToFile = async (uri: string): Promise<File> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-    return file;
-  };
-
+  const handleTerminarBien = async () => {
+    if(dni){
+      try{
+        takePicture().then((foto) => {
+          const formData= new FormData()
+          formData.append('user_dni',dni)
+          formData.append("image", { // Ignora el error de append esta alpedo jodiendo
+            uri: foto,
+            name: "photoTEST.jpg",
+            type: "image/jpeg",
+          })
+            fetch('http://192.168.0.208:5000/image/user',{
+            method : 'POST',
+            body: formData
+          }).then((respuesta) => {
+            if(respuesta.status == 200){
+              Alert.alert("REGISTRACION DE IMAGEN DE USUARIO EXITOSA")
+              navigator.navigate("/menu")
+            }else{
+              Alert.alert("FALLO EL REGISTRO DE IMAGEN DE USUARIO")
+            }
+          })
+        })
+      }catch(error){
+        Alert.alert("No se pudo sacar la foto")
+      }
+    }else {
+      Alert.alert("Te falta regstrar el dni")
+    }
+  }
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>
@@ -69,7 +97,7 @@ const UserImage = () => {
           text="Registrar usuario"
           styleText={styles.text}
           style={styles.button}
-          onPress={handleAutenticacion}
+          onPress={handleTerminarBien}
           hoverColor="#000000aa"
         />
       </View>

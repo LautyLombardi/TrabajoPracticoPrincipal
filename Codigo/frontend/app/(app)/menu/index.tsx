@@ -23,24 +23,24 @@ export const Menu = () => {
         <View style={styles.row}> 
           <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/visitantes")}>
-              <Text style={styles.textBtnMenu}>Administraci贸n de Visitantes</Text>
+              <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
             </Pressable>
           </View>       
           <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/institutos")}>
-              <Text style={styles.textBtnMenu}>Administraci贸n de Instituciones</Text>
+              <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
             </Pressable>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/roles")}>
-              <Text style={styles.textBtnMenu}>Administraci贸n de Roles</Text>
+              <Text style={styles.textBtnMenu}>Administración de Roles</Text>
             </Pressable>
           </View>
           <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/categorias")}>
-              <Text style={styles.textBtnMenu}>Administraci贸n de Categorias</Text>
+              <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
             </Pressable>
           </View>                  
         </View>
@@ -135,4 +135,3 @@ const styles = StyleSheet.create({
 });
 
 export default Menu;
-
