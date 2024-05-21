@@ -7,9 +7,13 @@ visitor_bp = Blueprint('visitor', __name__)
 def create_visitor():
     data = request.json
 
-    if not data.get('dni').strip() or not data.get('enterprice_id').strip() or not data.get('name').strip() or not data.get('lastname').strip() or not data.get('email').strip() or not data.get('startDate').strip() or not data.get('finishDate').strip():
-        return jsonify({'error': 'Faltan campos en la solicitud'}), 422
-    
+    required_fields = ['dni', 'enterprice_id', 'name', 'lastname', 'email', 'startDate', 'finishDate']
+    missing_fields = [field for field in required_fields if not data.get(field)]
+
+    if missing_fields:
+        print(missing_fields)
+        return jsonify({'error': 'Faltan campos en la solicitud', 'missing_fields': missing_fields}), 422
+
     response =saveVisitor(data)
 
     if response == True:
