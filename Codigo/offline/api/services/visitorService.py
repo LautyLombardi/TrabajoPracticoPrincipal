@@ -4,6 +4,7 @@ from utils.date import createDate
 from models.CategoryVisitor import CategoryVisitor
 from models.CategoryInstitute import CategoryInstitute
 from models.Institute import Institute
+from services.categoryService import getCategoryById
 
 def saveVisitor(data):
     try:
@@ -118,11 +119,19 @@ def visitorList(visitors):
             'startDate': visitor.startDate,
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
-            'createDate': visitor.createDate
+            'createDate': visitor.createDate,
+            'category': getCategoryForVisitor(visitor.dni)["name"],
+            'institutes':getInstituteByNames(visitor.dni)
         }
         visitor_list.append(visitor_dict)
     return visitor_list 
 
+def getInstituteByNames (id):
+    institutos = getInstituteByVisitorId(id)
+    institutosNames=""
+    for insti in institutos:
+        institutosNames=institutosNames+" "+insti["name"]
+    return institutosNames
 
 def getInstituteByVisitorId(id):
     try:
@@ -153,4 +162,17 @@ def getInstituteByVisitorId(id):
         return institute_list
     except Exception as e:
         print(e)
+        return None
+
+def getCategoryForVisitor(id):
+    try:
+        category_visitors = CategoryVisitor.query.filter_by(visitor_id=id).all()
+        categorias=[]
+        for category in category_visitors:
+            categorias.append(getCategoryById(category.category_id))
+        return {"name":categorias[0].get("name")}
+
+    except Exception as e:
+        print(e)
         return None     
+    return visitor_list  

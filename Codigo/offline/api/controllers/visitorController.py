@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.visitorService import saveVisitor, updateVisitor, getVisitorById, getVisitorAll, getVisitorAllActive, getVisitorAllDesactive, setDesactive, setActive, getInstituteByVisitorId
+import services.visitorService as SV
 
 visitor_bp = Blueprint('visitor', __name__)
 
@@ -28,7 +28,7 @@ def update_visitor(id):
     if not data.get('enterprice_id').strip() or not data.get('name').strip() or not data.get('lastname').strip() or not data.get('email').strip() or not data.get('startDate').strip() or not data.get('finishDate').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
     
-    response = updateVisitor(id,data)
+    response = SV.updateVisitor(id,data)
 
     if response == 200:
         return jsonify({'message': 'Visitante Guardado'}), 200
@@ -43,7 +43,7 @@ def update_visitor(id):
 def get_visitor_by_id(id):
     if id <= 0:
         return jsonify({'error': 'ID inválido'}), 422
-    visitor=getVisitorById(id)
+    visitor=SV.getVisitorById(id)
 
     if visitor:
         return jsonify(visitor), 200
@@ -53,7 +53,7 @@ def get_visitor_by_id(id):
 @visitor_bp.route('/', methods=['GET'])
 def get_visitors():
     try:
-        response=getVisitorAll()
+        response=SV.getVisitorAll()
    
         if response is None:
             return jsonify({'error': 'No hay visitantes guardados en la base de datos'}), 404     
@@ -66,7 +66,7 @@ def get_visitors():
 @visitor_bp.route('/active', methods=['GET'])
 def get_active_visitors():
     try:
-        response=getVisitorAllActive()
+        response=SV.getVisitorAllActive()
    
         if response is None:
             return jsonify({'error': 'No hay visitantes activos en la base de datos'}), 404     
@@ -79,7 +79,7 @@ def get_active_visitors():
 @visitor_bp.route('/desactive', methods=['GET'])
 def get_desactive_visitors():
     try:
-        response=getVisitorAllDesactive()
+        response=SV.getVisitorAllDesactive()
    
         if response is None:
             return jsonify({'error': 'No hay visitantes desactivados en la base de datos'}), 404     
@@ -92,7 +92,7 @@ def get_desactive_visitors():
 @visitor_bp.route('/active/<int:id>', methods=['PUT'])
 def set_active_visitor(id):
 
-    response=setActive(id)
+    response=SV.setActive(id)
 
     if response == 200:
         return jsonify({'message': 'visitante activado'}), 200
@@ -107,7 +107,7 @@ def set_active_visitor(id):
 def set_desactive_visitor(id):
     data = request.json
 
-    response=setDesactive(id)
+    response=SV.setDesactive(id)
 
     if response == 200:
         return jsonify({'message': 'visitante desactivado'}), 200
@@ -123,11 +123,19 @@ def get_institute_for_visitor(id):
     if id <= 0:
         return jsonify({'error': 'ID inválido'}), 422
     
-    response = getInstituteByVisitorId(id)
+    response = SV.getInstituteByVisitorId(id)
     if response:
         return jsonify(response), 200
     else:
         return jsonify({'error': 'no existe relacion'}), 404 
 
-
-
+@visitor_bp.route('/<int:id>/category',methods=['GET'])
+def get_category_for_visitor(id):
+    if id <= 0:
+        return jsonify({'error': 'ID inválido'}), 422
+    
+    response = SV.getCategoryForVisitor(id)
+    if response:
+        return jsonify(response), 200
+    else:
+        return jsonify({'error': 'no existe relacion'}), 404
