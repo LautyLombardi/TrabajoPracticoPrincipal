@@ -9,6 +9,7 @@ import { Categoria } from '@/api/model/interfaces';
 import { obtenerCategorias } from '@/api/services/categorias';
 import { useEffect } from 'react';
 import { desactivarCategoria } from '@/api/services/categorias';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 type PropsCol = {
   text?: string,
@@ -151,17 +152,6 @@ const AdministracionCategorias = () => {
     }
   };
 
-
-  // Router
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if(canGoBack){
-      router.back()
-    }else{
-      router.navigate("/menu")
-    }
-  }
-
   // Listado de categorias
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
@@ -174,12 +164,7 @@ const AdministracionCategorias = () => {
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10,flexDirection: "row", gap: 10, marginTop: 35}}>
-            <Ionicons name='arrow-back-outline' size={20} onPress={handleGoBack}/>
-            <Text style={{fontWeight: "bold"}}>
-                Administraion de Categorias
-            </Text>
-        </View>
+        <HandleGoBack title='Administración de Categorías' route='menu' />
 
         {/** Buscador */}
         <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>

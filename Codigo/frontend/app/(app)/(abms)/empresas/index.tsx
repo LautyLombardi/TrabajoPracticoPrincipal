@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 
 type PropsCol = {
@@ -128,28 +129,10 @@ const AdministracionEmpresas = () => {
     }
   };
 
-
-  // Router
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if(canGoBack){
-      router.back()
-    }else{
-      router.navigate("/menu")
-    }
-  }
-
-
-
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10, flexDirection: "row", gap: 10}}>
-            <Ionicons name='arrow-back-outline' size={20} onPress={handleGoBack}/>
-            <Text style={{fontWeight: "bold"}}>
-                Administraion de Empresa
-            </Text>
-        </View>
+        <HandleGoBack title='Administraion de Empresa' route='menu' />
 
         {/** Buscador */}
         <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
