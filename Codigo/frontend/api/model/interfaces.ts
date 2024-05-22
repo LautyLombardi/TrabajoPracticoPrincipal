@@ -1,21 +1,50 @@
-interface usuario{
+interface Usuario{  
     id: number,
     name: string,
     lastname: string,
     rol: string,
 }
 
-interface visitante{
+export interface Lugar{
+    id:number,
+    name:string,
+    abbreviation:string,
+    description:string,
+    openTime:string,
+    closeTime:string,
+    isActive?:number,
+    createDate?:string
+}
+
+export interface Visitante{
     id: number,
+    dni:number,
     name: string,
     lastname: string,
     places: string[],
+    institutes?: string,
+    empresa?: string,
     category: string,
 }
 
-// types.ts
+// Definición de la interfaz para la entidad Categoria
 export interface Categoria {
-    id?: number; // id es opcional porque podría no estar presente en la carga útil de la solicitud
-    nombre: string;
-    lugares: string[];
+    id?: number | undefined; // Opcional, en caso de tener un identificador
+    name: string;
+    description: string;
+    isExtern: number; // Nuevo atributo
+    createDate?: string;
+  }
+  
+export interface Instituto {
+    id?: number;
+    name: string;
+    createDate: string;
+}
+
+export interface Rol {
+    id?: number | undefined,
+    name: string,
+    description: string,
+    createDate?: string,
 }

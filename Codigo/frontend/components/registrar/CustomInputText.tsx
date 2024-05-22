@@ -1,7 +1,7 @@
 import { View, Text, TextInput } from 'react-native'
 import React from 'react'
 
-const CustomInputText = ({ label, value }: any) => {
+const CustomInputText = ({ label, value, onChangeText }: any) => {
         return (
           <View
             style={{
@@ -23,7 +23,7 @@ const CustomInputText = ({ label, value }: any) => {
                 borderRadius: 5,
               }}
             >
-              <TextInput placeholder={value} placeholderTextColor={"gray"} />
+              <TextInput placeholder={value} placeholderTextColor={"gray"} onChangeText={(text) => onChangeText(text)}/>
             </View>
           </View>
         );

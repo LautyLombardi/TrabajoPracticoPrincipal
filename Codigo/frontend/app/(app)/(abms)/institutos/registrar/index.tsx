@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TextInput } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import CustomInputText from "@/components/registrar/CustomInputText";
 import Header from "@/ui/Header";
-import SelectItem from "@/components/seleccionar/SelectItem";
 import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
+import { createInstituto } from "@/api/services/institutos";
+import { getLugares } from "@/api/services/place";
+import { Lugar } from "@/api/model/interfaces";
+import SelectItem from "@/components/seleccionar/SelectItem";
 
 const ejemploLugares = ["mod1", "mod2", "mod3", "mod4"]
 
 const RegistroInstituto = () => {
-  const [nombreInstituto, setNombreInstituto] = useState("");
-  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<string[]>([])
+  const [nombre, setNombre] = useState<string>("");
+  const [lugares, setLugares] = useState<Lugar[]>([])
+  const [lugaresName, setLugaresName] = useState<string[]>([])
+  const [lugaresSeleccionadoName, setLugaresSeleccionadoName] = useState<string>('')
 
   //         Route
   const handleGoBack = () => {
@@ -25,23 +29,26 @@ const RegistroInstituto = () => {
     }
   };
 
-  const handleTerminar = () => {
+  //TODO: continuar por acá
+  const handleTerminar = async() => {
+    //const respuesta = await createInstituto(instituto, lugaresId)
     router.navigate("/institutos")
   }
 
-  // ----------------------------
+  useEffect(() => {
+    const fetchLugares = async () => {
+      try {
+      const lugaresData = await getLugares();
+      const nombresLugares = lugaresData.map(lugar => lugar.name);
+      setLugaresName(nombresLugares)
+      } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+      }
+    };
 
-  const handleLugarToggle = (lugar: string) => {
-    const isSelected = lugaresSeleccionados.includes(lugar);
-    if (isSelected) {
-      setLugaresSeleccionados(
-        lugaresSeleccionados.filter((item) => item !== lugar)
-      );
-    } else {
-      setLugaresSeleccionados([...lugaresSeleccionados, lugar]);
-    }
-  };
-
+    fetchLugares();    
+  }, [])
+  
   return (
     <View
       style={{
@@ -59,28 +66,28 @@ const RegistroInstituto = () => {
 
     {/**Institos a registrar --> nombre, descripcion, lugares */}
       <View style={{ flex: 1, marginTop: 20, width: "100%" }}>
-        <CustomInputText label="Nombre" value="ICI" />
-      
-        <View
-              style={{
-                width: "100%",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                flex: 1,
-              }}
-            >
-              <View style={{ marginTop: 20 }}>
-                <Text style={{ fontSize: 15, color: "white" }}>
-                  Lugares seleccionados: {lugaresSeleccionados.join(", ")}
-                </Text>
-              </View>
-              <LugaresCheckBox
-                lugares={ejemploLugares}
-                lugaresSeleccionados={lugaresSeleccionados}
-                onLugarToggle={handleLugarToggle}
-              />
-          </View>
-      
+        <View style={{ height: 70, alignItems: "center",flexDirection: "row", gap: 10, paddingHorizontal: 10,}}>
+        <View style={{ width: 80 }}>
+          <Text style={{ color: "white", fontSize: 15 }}>Instituto</Text>
+        </View>
+        <View style={{ backgroundColor: "white", padding: 10, flex: 2, borderRadius: 5,}}>
+          <TextInput
+              value={nombre}
+              onChangeText={setNombre}
+              placeholder="ICI"
+              placeholderTextColor={"gray"}
+            />
+        </View>
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center", width: "100%", padding: 10, gap: 10 }}>
+            <SelectItem
+              fieldName="Lugar"
+              value={lugaresSeleccionadoName}
+              onValueChange={setLugaresSeleccionadoName}
+              values={lugaresName}
+            />
+        </View>    
       </View>
 
       <View style={{ width: 300 }}>

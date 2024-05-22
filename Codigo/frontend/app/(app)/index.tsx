@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Link, Stack } from 'expo-router'
+import Menu from './menu'
+
+const dev = true
 
 const Welcome = () => {
-  return (       
+  return (<>
     <View style={styles.container}>
         <View style={styles.titleContainer}>
             <Text style={styles.title}>MSS</Text>
@@ -18,9 +21,8 @@ const Welcome = () => {
             </TouchableOpacity>
         </Link>
     </View>
-  )
+    </>)
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

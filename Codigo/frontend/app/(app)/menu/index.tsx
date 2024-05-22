@@ -3,17 +3,29 @@ import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
 import { Link, router, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-const Menu = () => {
+export const Menu = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/** Menu */}
       <View style={styles.listBtns}>
         <View style={styles.row}>
           <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/image/user")}>
+              <Text style={styles.textBtnMenu}>Registrar Imagen de Usuario</Text>
+            </Pressable>
+          </View>
+          <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/image/visitor")}>
+              <Text style={styles.textBtnMenu}>Registrar Imagen de Visitante</Text>
+            </Pressable>
+          </View>          
+        </View>          
+        <View style={styles.row}> 
+          <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/visitantes")}>
               <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
             </Pressable>
-          </View>
+          </View>       
           <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/institutos")}>
               <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
@@ -30,14 +42,14 @@ const Menu = () => {
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/categorias")}>
               <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
             </Pressable>
-          </View>
+          </View>                  
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/empresas")}>
               <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
             </Pressable>
-          </View>
+          </View>  
           <View style={styles.col}></View>
         </View>
       </View>

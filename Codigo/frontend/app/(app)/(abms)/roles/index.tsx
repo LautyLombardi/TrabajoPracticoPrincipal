@@ -3,7 +3,9 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-
+import { useEffect } from 'react';
+import { Rol } from '@/api/model/interfaces';
+import { obtenerRoles } from '@/api/services/roles'
 
 type PropsCol = {
   text?: string,
@@ -49,10 +51,11 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 type PropsTable = {
   viewState: boolean,
   editState: boolean,
-  deleteState: boolean
+  deleteState: boolean,
+  roles: Rol[]
 };
 
-const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState }) => {
+const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, roles }) => {
 
   const iconVerMas = () => {
     return (
@@ -90,13 +93,17 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState })
         <Col text='CreateDate'/>
         <Col text='' flexWidth={0.8}/>
       </Row>
-      <Row>
-        <Col text='1'flexWidth={0.8}/>
-        <Col text='Seguridad' flexWidth={3}/>
-        <Col text='el encargado de tomar los inicios de sesion'/>
-        <Col text='10/10/10'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
+      {roles.map((rol) => 
+              <Row key={rol.id}>
+              <Col text={rol.id? rol.id.toString() : ''} flexWidth={0.8} />
+              <Col text={rol.name} flexWidth={3} />
+              <Col text={rol.description} flexWidth={3} />
+              <Col text={rol.createDate} flexWidth={1} />
+              <Col text='' flexWidth={0.8} />
+            </Row>
+      )}
+  
+    
     </View>
   );
 };
@@ -128,6 +135,12 @@ const AdministracionRoles = () => {
       router.navigate("/menu")
     }
   }
+
+  const [roles, setRoles] = useState<Rol[]>([])
+
+  useEffect(() => {
+    obtenerRoles().then((rols) => setRoles(rols))
+  }, []);
 
 
 
@@ -161,7 +174,7 @@ const AdministracionRoles = () => {
         </View>
 
         {/** Tabla */}
-        <TablaRoles viewState={view} editState={edit} deleteState={trash}/>
+        <TablaRoles viewState={view} editState={edit} deleteState={trash} roles={roles}/>
 
     </View>
   )

@@ -5,6 +5,7 @@ import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo
 import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
+import { Alert } from "react-native";
 
 const Login = () => {
    const navigator = useRouter()
@@ -14,21 +15,42 @@ const Login = () => {
     const cameraRef = useRef<any>();
     const [imagen, setImagen] = useState(null);
 
-    const handleAutenticacion = () => {
-      takePicture()
-      // Enviar laas cosas al backend 
-
-      navigator.navigate("/menu")
-    };
-
-    const takePicture = async () => {
-      if (cameraRef.current) {
-        const options = { quality: 1, base64: false, exif: true, skipProcessing: true };
-        const imagen = await cameraRef.current.takePictureAsync(options);
-        setImagen(imagen);
-        console.log(imagen)
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
+      const photo = await cameraRef.current.takePictureAsync(options);
+      setImagen(photo.uri);
+      return photo.uri
+    }
+  };
+  
+  const handleAuterizar = async () => {
+      try{
+        /* takePicture().then((foto) => {
+          const formData= new FormData()
+          formData.append("image", { // Ignora el error de append esta alpedo jodiendo
+            uri: foto,
+            name: "photo.jpg",
+            type: "image/jpeg",
+          })
+            fetch('http://192.168.0.208:5000/faceRecognition/user',{
+            method : 'POST',
+            body: formData
+          }).then((respuesta) => {
+            console.log(respuesta)
+            if(respuesta.status == 200){
+              Alert.alert("AUTENTICACION EXITOSA: ")
+              navigator.navigate("/menu")
+            }else{
+              Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO")
+            }
+          })
+        }) */
+        navigator.navigate("/menu")
+      }catch(error){
+        Alert.alert("No se pudo sacar la foto")
       }
-    };
+  }
 
 
     return (
@@ -49,7 +71,7 @@ const Login = () => {
             text="Autenticar"
             styleText={styles.text}
             style={styles.button}
-            onPress={handleAutenticacion}
+            onPress={handleAuterizar}
             hoverColor="#000000aa"
         />
         </View>

@@ -3,9 +3,10 @@ import { Text, View, TextInput } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
+import { Rol } from "@/api/model/interfaces";
+import { crearRol } from "@/api/services/roles";
 
-
-const Fila = ({ label, value }: any) => {
+const Fila = ({ label, value, onChangeText }: any) => {
   return (
     <View
       style={{
@@ -27,15 +28,20 @@ const Fila = ({ label, value }: any) => {
           borderRadius: 5,
         }}
       >
-        <TextInput placeholder={value} placeholderTextColor={"gray"} />
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={label}
+          placeholderTextColor={"gray"}
+        />
       </View>
     </View>
   );
 };
 
 const RegistroRoles = () => {
-  const [nombre, setNombre] = useState();
-  const [descripcion, setDescripcion] = useState()
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
   // Route
   const handleGoBack = () => {
@@ -47,9 +53,14 @@ const RegistroRoles = () => {
     }
   };
 
-  const handleTerminar = () => {
-    router.navigate("/roles")
-  }
+  const handleTerminar = async () => {
+    try {
+      const respuesta = await crearRol(nombre, descripcion)
+      router.navigate("/roles");
+    } catch (error) {
+      console.error('Error al crear el rol:', error);
+    }
+  };
 
   return (
     <View
@@ -77,23 +88,9 @@ const RegistroRoles = () => {
         <Text style={{ fontWeight: "bold" }}>Registro roles</Text>
       </View>
 
-
-
       <View style={{ flex: 1, marginTop: 20, width: "100%" }}>
-        <Fila label="Nombre" value="Profesor" />
-        <Fila label="Descripcion" value="Enseña matematicas" />
-        {/** Seleccionar la Roles */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            width: "100%",
-            padding: 10,
-            gap: 10,
-          }}
-        >
-        </View>
-        
+        <Fila label="Nombre" value={nombre} onChangeText={setNombre} />
+        <Fila label="Descripcion" value={descripcion} onChangeText={setDescripcion} />
       </View>
 
       <View style={{ width: 300 }}>
@@ -108,7 +105,6 @@ const RegistroRoles = () => {
           onPress={handleTerminar}
         />
       </View>
-
     </View>
   );
 };
