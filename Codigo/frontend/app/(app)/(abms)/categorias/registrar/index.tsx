@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Text, TextInput, View } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
+import { Text, TextInput, View, StyleSheet } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { crearCategoria } from "@/api/services/categorias";
+import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 
 const RegistroCategoria = () => {
   const [nombre, setNombre] = useState("");
@@ -21,16 +21,6 @@ const RegistroCategoria = () => {
     }
   } 
 
-  // Route
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if (canGoBack) {
-      router.back();
-    } else {
-      router.navigate("/categorias");
-    }
-  };
-
   // Comportamiento Terminar
   const handleTerminar = async () => {
     try {
@@ -42,30 +32,9 @@ const RegistroCategoria = () => {
     }
   };
   return (
-    <View
-      style={{
-        backgroundColor: "#000051",
-        flex: 1,
-        paddingVertical: 30,
-        alignItems: "center",
-      }}
-    >
-      {/** HEADER */}
-      <View
-        style={{
-          height: 50,
-          backgroundColor: "white",
-          width: "100%",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          padding: 10,
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <Ionicons name="arrow-back-outline" size={20} onPress={handleGoBack} />
-        <Text style={{ fontWeight: "bold" }}>Registro Categoria</Text>
-      </View>
+    <View style={styles.container}>
+      {/** Header Menu */}
+      {<HandleGoBackReg title='Registro Categoria' route='categorias' />}
 
       <View style={{ flex: 1, marginTop: 20 }}>
         <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
@@ -114,5 +83,14 @@ const RegistroCategoria = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#000051",
+    flex: 1,
+    paddingVertical: 30,
+    alignItems: "center",
+  },
+});
 
 export default RegistroCategoria;

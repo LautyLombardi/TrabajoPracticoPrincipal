@@ -6,6 +6,7 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Rol } from '@/api/model/interfaces';
 import { obtenerRoles } from '@/api/services/roles'
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 type PropsCol = {
   text?: string,
@@ -125,17 +126,6 @@ const AdministracionRoles = () => {
     }
   };
 
-
-  // Router
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if(canGoBack){
-      router.back()
-    }else{
-      router.navigate("/menu")
-    }
-  }
-
   const [roles, setRoles] = useState<Rol[]>([])
 
   useEffect(() => {
@@ -147,12 +137,7 @@ const AdministracionRoles = () => {
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <View style={{height: 50, backgroundColor: "white", width: "100%", justifyContent: "flex-start", alignItems: "center", padding: 10, flexDirection: "row", gap: 10, marginTop: 35}}>
-            <Ionicons name='arrow-back-outline' size={20} onPress={handleGoBack}/>
-            <Text style={{fontWeight: "bold"}}>
-                Administraion de Roles
-            </Text>
-        </View>
+        <HandleGoBack title='Administraion de Roles' route='menu' />
 
         {/** Buscador */}
         <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
