@@ -35,19 +35,13 @@ const VisitorFaceRecognition = () => {
   
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = { quality: 1, base64: false, exif: true, skipProcessing: true };
-      const imagen = await cameraRef.current.takePictureAsync(options);
-      const imageFile = await uriToFile(imagen.uri);
-      setImagen(imageFile);
+      const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
+      const photo = await cameraRef.current.takePictureAsync(options);
+      setImagen(photo.uri);
+      return photo.uri;
     }
   };
 
-  const uriToFile = async (uri: string): Promise<File> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-    return file;
-  };
 
   return (
     <View style={styles.container}>

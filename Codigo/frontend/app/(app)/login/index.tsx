@@ -17,7 +17,7 @@ const Login = () => {
 
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
+      const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
       const photo = await cameraRef.current.takePictureAsync(options);
       setImagen(photo.uri);
       return photo.uri
@@ -42,7 +42,7 @@ const Login = () => {
               Alert.alert("AUTENTICACION EXITOSA: ")
               navigator.navigate("/menu")
             }else{
-              Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO")
+              Alert.alert("Error al autenticar usuario: ")
             }
           })
         })

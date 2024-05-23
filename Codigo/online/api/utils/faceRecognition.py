@@ -11,15 +11,20 @@ def check_face(frame,storage):
     print(imageStorage)
     try:
 
-        file_data = frame.read()
-        nparr = np.frombuffer(file_data, np.uint8)
-        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
+        # Decodificar la imagenes
+        if hasattr(frame, 'read'):
+            frame_data = frame.read() 
+            nparr = np.fromstring(frame_data, np.uint8)  
+            frame_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  
+            frame = frame_np
+        else:
+            # Si frame no es un objeto FileStorage, asumimos que es una ruta de archivo
+            frame = cv2.imread(frame)
 
         dff = DeepFace.find(frame, imageStorage) 
         faceDB = dff[0].get("identity")
         reference_img = cv2.imread(str(faceDB[0])) 
-        if DeepFace.verify(frame, reference_img, enforce_detection=False)['verified']:
+        if DeepFace.verify(frame, reference_img)['verified']:
             return extractDni(str(faceDB[0]))
         
     except Exception as error:
