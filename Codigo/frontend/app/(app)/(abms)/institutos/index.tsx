@@ -3,10 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import Header from '@/ui/Header';
-import Table from '@/ui/Table/Table';
 import { Instituto } from '@/api/model/interfaces';
 import { getInstitutos } from '@/api/services/institutos';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 type PropsCol = {
   text?: string,
@@ -122,17 +121,6 @@ const AdministracionInstitutos = () => {
     }
   };
 
-
-  // Router
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if(canGoBack){
-      router.back()
-    }else{
-      router.navigate("/menu")
-    }
-  }
-
   const [institutos, setInstitutos] = useState<Instituto[]>([])
 
   useEffect(() => {
@@ -142,7 +130,7 @@ const AdministracionInstitutos = () => {
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <Header title="Administracion de Institutos" handleGoBack={handleGoBack}/>
+        <HandleGoBack title='Administración de Institutos' route='menu' />
 
         {/** Buscador */}
         <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>

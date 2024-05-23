@@ -34,7 +34,6 @@ export const createInstituto = async (instituto: string, lugaresId: number[]): P
         });
         
         if(response.data){
-            console.log(response.data)
             lugaresId.forEach(async(id)=>await createInstitutePlace(response.data.id,id))
         }
 
@@ -66,8 +65,8 @@ export const deleteInstituto = async (id: number): Promise<void> => {
 
 export const createInstitutePlace = async (instituteId: number, placeId: number): Promise<any> => {
     try {
-        console.log(instituteId+"|"+placeId)
-        const response = await axios.post(BASE_URL+"place", {
+        console.log("instituteId ", instituteId, " | ",  placeId ," placeId")
+        const response = await axios.post(`${BASE_URL}/place`, {
             "institute_id": instituteId,
             "place_id": placeId
         }, {
