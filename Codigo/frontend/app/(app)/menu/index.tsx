@@ -58,11 +58,10 @@ export const Menu = () => {
         </View>
       </View>
 
-      {/** Boton de autenticar */}
       <View style={styles.bottomButton}>
-        <Link href={"/autenticar"} asChild>
+        <Link href={"/openCloseDay"} asChild>
           <Pressable style={styles.button}>
-            <Text style={styles.text}>Autenticar</Text>
+            <Text style={styles.text}>Apertura y Cierre del dia</Text>
           </Pressable>
         </Link>
       </View>
