@@ -50,7 +50,11 @@ export const Menu = () => {
               <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
             </Pressable>
           </View>  
-          <View style={styles.col}></View>
+          <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/lugares")}>
+              <Text style={styles.textBtnMenu}>Administracion de Lugares</Text>
+            </Pressable>
+          </View>  
         </View>
       </View>
 
