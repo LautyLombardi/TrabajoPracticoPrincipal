@@ -38,3 +38,4 @@ def load_config(env):
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development' 
     app.run("0.0.0.0",port=config.get('port'), debug=True)
+

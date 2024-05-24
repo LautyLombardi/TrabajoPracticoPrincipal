@@ -10,7 +10,7 @@ export const faceRecognition = async (imageFile: File, type: string): Promise<nu
     });
   
     try {
-        const response = await axios.post(`http://192.168.0.208:5000/faceRecognition/${type}`, formData, {
+        const response = await axios.post(`http://192.168.0.208:5001/faceRecognition/${type}`, formData, {
             headers: {
             'Content-Type': 'multipart/form-data'
             }

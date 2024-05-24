@@ -33,7 +33,7 @@ const Login = () => {
           name: "photo.jpg",
           type: "image/jpeg",
         });
-        fetch('http://192.168.58.170:5000/faceRecognition/visitor', {
+        fetch('http://192.168.58.170:5001/faceRecognition/visitor', {
           method: 'POST',
           body: formData
         }).then((respuesta) => {
