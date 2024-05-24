@@ -5,9 +5,9 @@ class Logs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer, db.ForeignKey('user.dni'))
     exceptionId = db.Column(db.Integer, db.ForeignKey('exception.id'))
-    visitorId = db.Column(db.Integer, db.ForeignKey('visitor.id'))
+    visitorId = db.Column(db.Integer, db.ForeignKey('visitor.dni'))
     hasAccess = db.Column(db.Integer)  
-    isFaceRecognition = db.Column(db.Integer)  # Cambiado a entero para representar manual o automático
+    isFaceRecognition = db.Column(db.Integer)  
     abm = db.Column(db.Text)
     abmType = db.Column(db.Text)
     description = db.Column(db.Text)

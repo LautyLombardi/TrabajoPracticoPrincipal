@@ -6,7 +6,6 @@ class User(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     name = db.Column(db.Text)
     lastname = db.Column(db.Text)
-    username = db.Column(db.Text)
     password = db.Column(db.Text)
     isActive = db.Column(db.Integer)
     motive = db.Column(db.Text)
