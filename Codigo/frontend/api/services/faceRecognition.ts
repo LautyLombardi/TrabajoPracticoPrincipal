@@ -3,10 +3,14 @@ import axios from 'axios';
 export const faceRecognition = async (imageFile: File, type: string): Promise<number> => {    
     console.log('Data to send ', imageFile);
     const formData = new FormData();
-    formData.append('image', imageFile);
+    formData.append("image", { // Ignora el error de append esta alpedo jodiendo
+      uri: imageFile,
+      name: "photo.jpg",
+      type: "image/jpeg",
+    });
   
     try {
-        const response = await axios.post(`http://34.125.221.164/faceRecognition/${type}`, formData, {
+        const response = await axios.post(`http://192.168.0.208:5001/faceRecognition/${type}`, formData, {
             headers: {
             'Content-Type': 'multipart/form-data'
             }
