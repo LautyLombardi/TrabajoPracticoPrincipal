@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Text, View, TextInput } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
+import { Text, View, TextInput, StyleSheet } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import { Rol } from "@/api/model/interfaces";
 import { crearRol } from "@/api/services/roles";
+import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 
 const Fila = ({ label, value, onChangeText }: any) => {
   return (
@@ -43,16 +43,6 @@ const RegistroRoles = () => {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
 
-  // Route
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if (canGoBack) {
-      router.back();
-    } else {
-      router.navigate("/roles");
-    }
-  };
-
   const handleTerminar = async () => {
     try {
       const respuesta = await crearRol(nombre, descripcion)
@@ -63,30 +53,9 @@ const RegistroRoles = () => {
   };
 
   return (
-    <View
-      style={{
-        backgroundColor: "#000051",
-        flex: 1,
-        paddingVertical: 30,
-        alignItems: "center",
-      }}
-    >
-      {/** HEADER */}
-      <View
-        style={{
-          height: 50,
-          backgroundColor: "white",
-          width: "100%",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          padding: 10,
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <Ionicons name="arrow-back-outline" size={20} onPress={handleGoBack} />
-        <Text style={{ fontWeight: "bold" }}>Registro roles</Text>
-      </View>
+    <View style={styles.container}>
+      {/** Header Menu */}
+      {<HandleGoBackReg title='Registro Categoria' route='roles' />}
 
       <View style={{ flex: 1, marginTop: 20, width: "100%" }}>
         <Fila label="Nombre" value={nombre} onChangeText={setNombre} />
@@ -108,5 +77,14 @@ const RegistroRoles = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#000051",
+    flex: 1,
+    paddingVertical: 30,
+    alignItems: "center",
+  },
+});
 
 export default RegistroRoles;

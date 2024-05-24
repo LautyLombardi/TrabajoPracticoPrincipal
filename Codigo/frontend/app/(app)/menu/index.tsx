@@ -62,15 +62,18 @@ export const Menu = () => {
               <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
             </Pressable>
           </View>  
-          <View style={styles.col}></View>
+          <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/lugares")}>
+              <Text style={styles.textBtnMenu}>Administracion de Lugares</Text>
+            </Pressable>
+          </View>  
         </View>
       </View>
 
-      {/** Boton de autenticar */}
       <View style={styles.bottomButton}>
-        <Link href={"/autenticar"} asChild>
+        <Link href={"/openCloseDay"} asChild>
           <Pressable style={styles.button}>
-            <Text style={styles.text}>Autenticar</Text>
+            <Text style={styles.text}>Apertura y Cierre del dia</Text>
           </Pressable>
         </Link>
       </View>

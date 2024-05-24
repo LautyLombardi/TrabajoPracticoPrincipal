@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
   TextInput,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import CampoFecha from "@/components/CampoFecha/CampoFecha";
 import Boton from "@/ui/Boton";
@@ -12,46 +11,32 @@ import SelectItem from "@/components/seleccionar/SelectItem";
 import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
 import SeleccionarImagen from "@/components/pickers/SeleccionarImagen";
 import Header from "@/ui/Header";
-
-const Input = ({ label, value }: any) => {
-  return (
-    <View
-      style={{
-        height: 70,
-        alignItems: "center",
-        flexDirection: "row",
-        gap: 10,
-      }}
-    >
-      <View style={{ width: "23%" }}>
-        <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>{label}</Text>
-      </View>
-      <View
-        style={{
-          backgroundColor: "white",
-          padding: 12,
-          flex: 1,
-          borderRadius: 5,
-          marginRight: 10
-        }}
-      >
-        <TextInput placeholder={value} placeholderTextColor={"gray"} />
-      </View>
-    </View>
-  );
-};
+import { createVisitante } from "@/api/services/visitantes";
+import { obtenerCategorias } from "@/api/services/categorias";
+import { Categoria } from "@/api/model/interfaces";
 
 const empresas = ["COCA", "PEPSI", "BIMBO"];
 const institutos = ["ICI", "IDEI", "PAPU"];
 
 const RegistroVisitante = () => {
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [dni, setDni] = useState("");
+  const [email, setEmail] = useState("");
   const [dateIngreso, setDateIngreso] = useState(new Date());
   const [dateEgreso, setDateEgreso] = useState(new Date());
-  const [categoria, setCategoria] = useState("interno");
+  const [categoriasName, setCategoriasName] = useState<string[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [categoriaSeleccionadaName, setCategoriaSeleccionadaName] = useState<string>('');
   const [instituto, setInstituto] = useState("");
   const [empresa, setEmpresa] = useState("");
 
   const [showNext, setShowNext] = useState(false);
+
+  // Segunda parte
+  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<string[]>([]);
+  const ejemploLugares = ["2222", "mod3", "mod7"];
+  const [imagen, setImagen] = useState<any>(null);
 
   // Route
   const handleGoBack = () => {
@@ -71,69 +56,98 @@ const RegistroVisitante = () => {
     setShowNext(false);
   };
 
-  const handleTerminar = () => {
-    router.navigate("/visitantes");
+  const handleTerminar = async () => {
+    try {
+      await createVisitante(parseInt(dni), nombre, apellido, email, dateIngreso, dateEgreso);
+      // TODO: implementar category
+      console.log(categorias)
+      
+      router.navigate("/visitantes");
+    } catch (error) {
+      console.error("Error en createVisitante:", error);
+    }
   };
-
-  // Segunda parte
-  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<string[]>(
-    []
-  );
-  const ejemploLugares = ["2222", "mod3", "mod7"];
-  const [imagen, setImagen] = useState<any>(null);
 
   const handleLugarToggle = (lugar: string) => {
     const isSelected = lugaresSeleccionados.includes(lugar);
     if (isSelected) {
-      setLugaresSeleccionados(
-        lugaresSeleccionados.filter((item) => item !== lugar)
-      );
+      setLugaresSeleccionados(lugaresSeleccionados.filter((item) => item !== lugar));
     } else {
       setLugaresSeleccionados([...lugaresSeleccionados, lugar]);
     }
   };
 
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const categoriasData = await obtenerCategorias();
+        setCategorias(categoriasData)
+        const nombresCategorias = categoriasData.map(categoria => categoria.name);
+        setCategoriasName(nombresCategorias);
+         // Establecer el estado con los datos obtenidos
+      } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+      }
+    };
 
+    fetchCategorias();
+  }, [])
+  
   return (
-    <View
-      style={{
-        backgroundColor: "#000051",
-        flex: 1,
-        alignItems: "center",
-      }}
-    >
+    <View style={{ backgroundColor: "#000051", flex: 1, alignItems: "center" }}>
       {/** HEADER */}
-      <Header title="Registro Visitante" handleGoBack={handleGoBack}/>
+      <Header title="Registro Visitante" handleGoBack={handleGoBack} />
 
       {!showNext ? (
         <>
           <View style={{ flex: 1, marginTop: 20 }}>
-            <Input label="Nombre" value="Juan Carlos" />
-            <Input label="Apellido" value="Perez" />
-            <Input label="DNI" value="12345678" />
-            <Input label="Email" value="ejemplo@gmail.com" />
+            <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
+              <View style={{ width: "23%" }}>
+                <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>Nombre</Text>
+              </View>
+              <View style={{ backgroundColor: "white",padding: 12,flex: 1,borderRadius: 5,marginRight: 10}}>
+                <TextInput placeholder='Jose' placeholderTextColor={"gray"} onChangeText={setNombre} value={nombre}/>
+              </View>
+            </View>
+            <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
+              <View style={{ width: "23%" }}>
+                <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>Apellido</Text>
+              </View>
+              <View style={{ backgroundColor: "white",padding: 12,flex: 1,borderRadius: 5,marginRight: 10}}>
+                <TextInput placeholder='Perez' placeholderTextColor={"gray"} onChangeText={setApellido} value={apellido}/>
+              </View>
+            </View>
+            <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
+              <View style={{ width: "23%" }}>
+                <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>DNI</Text>
+              </View>
+              <View style={{ backgroundColor: "white",padding: 12,flex: 1,borderRadius: 5,marginRight: 10}}>
+                <TextInput placeholder='00000000' placeholderTextColor={"gray"} onChangeText={setDni} value={dni} keyboardType="numeric"/>
+              </View>
+            </View>
+            <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
+              <View style={{ width: "23%" }}>
+                <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>Email</Text>
+              </View>
+              <View style={{ backgroundColor: "white",padding: 12,flex: 1,borderRadius: 5,marginRight: 10}}>
+                <TextInput placeholder='example@example.com' placeholderTextColor={"gray"} onChangeText={setEmail} value={email} keyboardType="email-address"/>
+              </View>
+            </View>
+            
             {/** Seleccionar la categoria */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-                padding: 10,
-                gap: 10,
-              }}
-            >
+            <View style={{ flexDirection: "row", alignItems: "center", width: "100%", padding: 10, gap: 10 }}>
               <SelectItem
                 fieldName="Categoria"
-                value={categoria}
-                onValueChange={setCategoria}
-                values={["interno", "externo"]}
+                value={categoriaSeleccionadaName}
+                onValueChange={setCategoriaSeleccionadaName}
+                values={categoriasName}
               />
             </View>
 
-            {/** Si es un visitante interno , se mostrara las opciones de instituos.
+            {/** Si es un visitante interno , se mostrara las opciones de institutos.
              * De ser un visitante externo, se le mostrara las opciones de Empresas */}
 
-            <View
+            {/* <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -143,9 +157,9 @@ const RegistroVisitante = () => {
               }}
             >
               {categoria == "interno" ? (
-                <>
+                <> */}
                   {/** Institutos */}
-                  <SelectItem
+                  {/* <SelectItem
                     fieldName="Instituto"
                     value={instituto}
                     onValueChange={setInstituto}
@@ -153,9 +167,9 @@ const RegistroVisitante = () => {
                   />
                 </>
               ) : (
-                <>
+                <> */}
                   {/** Empresas */}
-                  <SelectItem
+                  {/* <SelectItem
                     fieldName="Empresa"
                     value={empresa}
                     onValueChange={setEmpresa}
@@ -163,17 +177,10 @@ const RegistroVisitante = () => {
                   />
                 </>
               )}
-            </View>
+            </View> */}
 
             {/** Fecha de Ingreso*/}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-                padding: 10,
-              }}
-            >
+            <View style={{flexDirection: "row", alignItems: "center", width: "100%", padding: 10, }}>
               <View style={{ width: "25%" }}>
                 <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>
                   Fecha de Ingreso:{" "}
@@ -185,14 +192,7 @@ const RegistroVisitante = () => {
             </View>
 
             {/** Fecha de Egreso */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-                padding: 10,
-              }}
-            >
+            <View style={{ flexDirection: "row", alignItems: "center", width: "100%", padding: 10, }}>
               <View style={{ width: "25%" }}>
                 <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>
                   Fecha de Egreso:{" "}
@@ -203,20 +203,19 @@ const RegistroVisitante = () => {
               </View>
             </View>
 
-            
-          <View style={{ alignSelf: "center" }}>
-            <Boton
-              backgroundColor="black"
-              padding={20}
-              text="Continuar"
-              color="white"
-              textAlign="center"
-              fontSze={20}
-              borderRadius={10}
-              onPress={handleContinuar}
-              style={{width: 300, marginTop: 20}}
-            />
-          </View>
+            <View style={{ alignSelf: "center" }}>
+              <Boton
+                backgroundColor="black"
+                padding={20}
+                text="Continuar"
+                color="white"
+                textAlign="center"
+                fontSze={20}
+                borderRadius={10}
+                onPress={handleContinuar}
+                style={{ width: 300, marginTop: 20 }}
+              />
+            </View>
           </View>
         </>
       ) : (

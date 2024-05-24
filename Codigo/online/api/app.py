@@ -3,6 +3,8 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from db.db import init_db
 from controllers import *
+from flask_cors import CORS
+from db.Populate import populate_places, populate_institutes,populate_institute_places
 
 app = Flask(__name__)
 

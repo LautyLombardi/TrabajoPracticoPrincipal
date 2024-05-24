@@ -1,86 +1,106 @@
-import React, { useState } from "react";
-import { Text, View, TextInput } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { Text, View, TextInput, StyleSheet } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import CustomInputText from "@/components/registrar/CustomInputText";
 import Header from "@/ui/Header";
-import SelectItem from "@/components/seleccionar/SelectItem";
 import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
+import { createInstituto } from "@/api/services/institutos";
+import { getLugares } from "@/api/services/place";
+import { Lugar } from "@/api/model/interfaces";
+import SelectItem from "@/components/seleccionar/SelectItem";
+import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
+import Checkbox from "expo-checkbox";
 
 const ejemploLugares = ["mod1", "mod2", "mod3", "mod4"]
 
 const RegistroInstituto = () => {
-  const [nombreInstituto, setNombreInstituto] = useState("");
-  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<string[]>([])
+  const [nombre, setNombre] = useState<string>("");
+  const [lugares, setLugares] = useState<Lugar[]>([])
+  const [lugaresName, setLugaresName] = useState<string[]>([])
+  const [lugaresSeleccionadoName, setLugaresSeleccionadoName] = useState<string>('')
+  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
 
-  //         Route
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    console.log(canGoBack)
-    if (canGoBack) {
-      router.back();
-    } else {
+  const handleTerminar = async () => {
+    if (lugaresSeleccionados.length > 0) {
+      const respuesta = await createInstituto(nombre, lugaresSeleccionados);
       router.navigate("/institutos");
-    }
-  };
-
-  const handleTerminar = () => {
-    router.navigate("/institutos")
-  }
-
-  // ----------------------------
-
-  const handleLugarToggle = (lugar: string) => {
-    const isSelected = lugaresSeleccionados.includes(lugar);
-    if (isSelected) {
-      setLugaresSeleccionados(
-        lugaresSeleccionados.filter((item) => item !== lugar)
-      );
     } else {
-      setLugaresSeleccionados([...lugaresSeleccionados, lugar]);
+      console.error("Debe seleccionar al menos un lugar");
     }
   };
 
-  return (
-    <View
-      style={{
-        backgroundColor: "#000051",
-        flex: 1,
-        alignItems: "center",
-        paddingBottom: 20
-      }}
-    >
-    {/** HEADER */}
-      <Header
-        title="Registro de Instituto"
-        handleGoBack={handleGoBack}
-      />
+  const handleLugarSeleccionado = (id: number) => {
+    setLugaresSeleccionados((prevSeleccionados) =>
+      prevSeleccionados.includes(id)
+        ? prevSeleccionados.filter((lugarId) => lugarId !== id)
+        : [...prevSeleccionados, id]
+    );
+  };
 
-    {/**Institos a registrar --> nombre, descripcion, lugares */}
+  useEffect(() => {
+    const fetchLugares = async () => {
+      try {
+      const lugaresData = await getLugares();
+      const nombresLugares = lugaresData.map(lugar => lugar.name);
+      setLugaresName(nombresLugares)
+      setLugares(lugaresData)
+      } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+      }
+    };
+
+    fetchLugares();    
+  }, [])
+  
+  return (
+    <View style={styles.container}>
+      {/** Header Menu */}
+      <HandleGoBackReg title="Registro de Instituto" route="institutos" />
+
+      {/** Institutos a registrar --> nombre, descripcion, lugares */}
       <View style={{ flex: 1, marginTop: 20, width: "100%" }}>
-        <CustomInputText label="Nombre" value="ICI" />
-      
         <View
-              style={{
-                width: "100%",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                flex: 1,
-              }}
-            >
-              <View style={{ marginTop: 20 }}>
-                <Text style={{ fontSize: 15, color: "white" }}>
-                  Lugares seleccionados: {lugaresSeleccionados.join(", ")}
-                </Text>
-              </View>
-              <LugaresCheckBox
-                lugares={ejemploLugares}
-                lugaresSeleccionados={lugaresSeleccionados}
-                onLugarToggle={handleLugarToggle}
-              />
+          style={{
+            height: 70,
+            alignItems: "center",
+            flexDirection: "row",
+            gap: 10,
+            paddingHorizontal: 10,
+          }}
+        >
+          <View style={{ width: 80 }}>
+            <Text style={{ color: "white", fontSize: 15 }}>Instituto</Text>
           </View>
-      
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: 10,
+              flex: 2,
+              borderRadius: 5,
+            }}
+          >
+            <TextInput
+              value={nombre}
+              onChangeText={setNombre}
+              placeholder="ICI"
+              placeholderTextColor={"gray"}
+            />
+          </View>
+        </View>
+
+        <View style={{ padding: 10 }}>
+          <Text style={{ color: "white", fontSize: 15 }}>Lugaress</Text>
+          {lugares.map((lugar) => (
+            <View key={lugar.id} style={{ flexDirection: "row", alignItems: "center" }}>
+              <Checkbox
+                value={lugaresSeleccionados.includes(lugar.id)}
+                onValueChange={() => handleLugarSeleccionado(lugar.id)}
+              />
+              <Text style={{marginLeft:'2%', marginBottom:'2%', color: "white" }}>{lugar.name}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       <View style={{ width: 300 }}>
@@ -95,9 +115,17 @@ const RegistroInstituto = () => {
           onPress={handleTerminar}
         />
       </View>
-
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#000051",
+    flex: 1,
+    paddingVertical: 30,
+    alignItems: "center",
+  },
+});
 
 export default RegistroInstituto;

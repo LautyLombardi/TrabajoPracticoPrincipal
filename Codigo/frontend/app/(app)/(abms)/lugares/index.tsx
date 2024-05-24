@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Lugar } from '@/api/model/interfaces';
+import { getLugares } from '@/api/services/place';
 import { useEffect } from 'react';
-import { Rol } from '@/api/model/interfaces';
-import { obtenerRoles } from '@/api/services/roles'
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 type PropsCol = {
@@ -50,38 +50,53 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 };
 
 type PropsTable = {
+  lugares: Lugar[];
   viewState: boolean,
   editState: boolean,
   deleteState: boolean,
-  roles: Rol[]
+  
+  handleView: (id: number) => void;
+  handleEdit: (id: number) => void;
+  handleDelete: (id: number) => void;
 };
 
-const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, roles }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares }) => {
 
-  const iconVerMas = () => {
+  const handleDesactivarCategoria = async (id: number) => {
+    try {
+      // TODO:
+       //await desactivarLugar(id);
+      // Realizar cualquier otra acción necesaria después de desactivar la categoría
+    } catch (error) {
+      console.error('Error al desactivar la categoría:', error);
+    }
+  };
+
+  const iconVerMas = (id: any) => {
     return (
       <Ionicons name='eye-outline' style={{fontSize: 20, backgroundColor: "black", padding: 7, borderRadius: 100}} color={"white"} />
     )
   }
 
-  const deleteIcon = () => {
+  const deleteIcon = (id: any) => {
     return (
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
+
+      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
     )
   }
 
-  const modifyIcon = () => {
+  const modifyIcon = (id: any) => {
     return (
       <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
     )
   }
-  const handleToggleIcon = (): JSX.Element => {
+  const handleToggleIcon = (id: any): JSX.Element => {
     if (editState) {
-      return modifyIcon();
+      return modifyIcon(id);
     } else if (deleteState) {
-      return deleteIcon();
+      return deleteIcon(id);
     } else {
-      return iconVerMas();
+      return iconVerMas(id);
     }
   };
 
@@ -90,30 +105,40 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, r
       <Row>
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Descripcion'/>
-        <Col text='CreateDate'/>
+        <Col text='Abreviación'/>
+        <Col text='openTime'/>
+        <Col text='closeTime'/>
+        <Col text='createdDate'/>
         <Col text='' flexWidth={0.8}/>
       </Row>
-      {roles.map((rol) => 
-              <Row key={rol.id}>
-              <Col text={rol.id? rol.id.toString() : ''} flexWidth={0.8} />
-              <Col text={rol.name} flexWidth={3} />
-              <Col text={rol.description} flexWidth={3} />
-              <Col text={rol.createDate} flexWidth={1} />
-              <Col text='' flexWidth={0.8} />
-            </Row>
-      )}
-  
-    
+      {lugares.map((lugar) => (
+        <Row key={lugar.id}>
+          <Col text={lugar.id?.toString() || ''} flexWidth={0.8} />
+          <Col text={lugar.name} flexWidth={3} />
+          <Col text={lugar.abbreviation} flexWidth={3} />
+          <Col text={lugar.openTime} flexWidth={3} />
+          <Col text={lugar.closeTime} flexWidth={3} />
+          <Col text={lugar.createDate} flexWidth={1} />
+          {/* <Col flexWidth={0.8} icon={handleToggleIcon()} /> */} 
+          {/** Icono de columna */}
+          <View style={{ flex: 0.8, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
+              {handleToggleIcon(lugar.id)}
+          </View>
+        </Row>
+      ))}
     </View>
   );
 };
 
-const AdministracionRoles = () => {
+const AdministracionLugares = () => {
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
 
+  // HandleDeleteCategoria 
+  const handleDeleteCategoria = () => {
+
+  }
 
   // Cambio de iconos
   function handleToggleIco(icon : string){
@@ -126,18 +151,18 @@ const AdministracionRoles = () => {
     }
   };
 
-  const [roles, setRoles] = useState<Rol[]>([])
+  const [lugares, setLugares] = useState<Lugar[]>([]);
 
   useEffect(() => {
-    obtenerRoles().then((rols) => setRoles(rols))
-  }, []);
+    getLugares().then((places) => setLugares(places))
 
+  }, []);
 
 
   return (
     <View style={styles.container}>
         {/** Header Menu */}
-        <HandleGoBack title='Administraion de Roles' route='menu' />
+        <HandleGoBack title='Administración de Lugares' route='menu' />
 
         {/** Buscador */}
         <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
@@ -153,13 +178,13 @@ const AdministracionRoles = () => {
           <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
             <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
           </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/roles/registrar")}>
+          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/categorias/registrar")}>
             <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
           </Pressable>
         </View>
 
         {/** Tabla */}
-        <TablaRoles viewState={view} editState={edit} deleteState={trash} roles={roles}/>
+        <Tablacategorias viewState={view} editState={edit} deleteState={trash} lugares={lugares} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={handleDeleteCategoria}/>
 
     </View>
   )
@@ -173,4 +198,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AdministracionRoles
+export default AdministracionLugares

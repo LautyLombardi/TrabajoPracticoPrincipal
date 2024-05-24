@@ -5,12 +5,24 @@ interface Usuario{
     rol: string,
 }
 
+export interface Lugar{
+    id:number,
+    name:string,
+    abbreviation:string,
+    description:string,
+    openTime:string,
+    closeTime:string,
+    isActive?:number,
+    createDate?:string
+}
+
 export interface Visitante{
     id: number,
+    dni:number,
     name: string,
     lastname: string,
     places: string[],
-    institutos?: string[],
+    institutes?: string,
     empresa?: string,
     category: string,
 }
@@ -25,9 +37,9 @@ export interface Categoria {
   }
   
 export interface Instituto {
-id?: number;
-    nombre: string;
-    lugares: string[];
+    id?: number;
+    name: string;
+    createDate: string;
 }
 
 export interface Rol {

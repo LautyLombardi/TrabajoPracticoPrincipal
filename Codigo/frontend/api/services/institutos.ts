@@ -1,8 +1,8 @@
 // serviceInstitutos.ts
 import axios from 'axios';
 import { Instituto } from '@/api/model/interfaces';
-
-const BASE_URL = 'http://localhost:3000/institutos'; // Reemplaza con la URL de tu API
+import { URL } from '@/api/constantes'
+const BASE_URL = `${URL}/institute`;
 
 export const getInstitutos = async (): Promise<Instituto[]> => {
     try {
@@ -22,16 +22,23 @@ export const getInstitutoById = async (id: number): Promise<Instituto> => {
     }
 };
 
-export const createInstituto = async (instituto: Instituto): Promise<Instituto> => {
+
+export const createInstituto = async (instituto: string, lugaresId: number[]): Promise<any> => {
     try {
-        const response = await axios.post(BASE_URL, instituto, {
+        const response = await axios.post(BASE_URL, {
+            "name":instituto
+        }, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        return response.data;
+        
+        if(response.data){
+            lugaresId.forEach(async(id)=>await createInstitutePlace(response.data.id,id))
+        }
+
     } catch (error) {
-        throw new Error('Error al crear el instituto');
+        throw new Error('Error al crear el instituto: ' + error);
     }
 };
 
@@ -53,5 +60,26 @@ export const deleteInstituto = async (id: number): Promise<void> => {
         await axios.delete(`${BASE_URL}/${id}`);
     } catch (error) {
         throw new Error(`Error al eliminar el instituto con id ${id}`);
+    }
+};
+
+export const createInstitutePlace = async (instituteId: number, placeId: number): Promise<any> => {
+    try {
+        console.log("instituteId ", instituteId, " | ",  placeId ," placeId")
+        const response = await axios.post(`${BASE_URL}/place`, {
+            "institute_id": instituteId,
+            "place_id": placeId
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            return error.response.data;
+        } else {
+            throw new Error('Error al conectar con el servidor');
+        }
     }
 };

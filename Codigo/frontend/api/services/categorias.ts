@@ -1,13 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
 import { Categoria } from '../model/interfaces';
-
-// URL base de la API
-const API_URL = 'http://192.168.1.44:5000/category';
+import { URL } from '@/api/constantes'
+const BASE_URL = `${URL}/category`;
 
 // Función para obtener todas las categorías
-export async function obtenerCategorias(): Promise<any> {
+export async function obtenerCategorias(): Promise<Categoria[]> {
   try {
-    const response: AxiosResponse<any> = await axios.get(API_URL);
+    const response: AxiosResponse<any> = await axios.get(BASE_URL);
     return response.data;
   } catch (error) {
     console.error('Error al obtener las categorías:', error);
@@ -18,14 +17,13 @@ export async function obtenerCategorias(): Promise<any> {
 // Funcion para crear una categoria
 export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<void> => {
   try {
-    const url = 'http://192.168.248.170:5000/category/';
     const data: Categoria = {
       name: nombre,
       description: descripcion,
       isExtern: isExtern
     };
 
-    const response = await fetch(url, {
+    const response = await fetch(BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -47,7 +45,7 @@ export const crearCategoria = async (nombre: string, descripcion: string, isExte
 // Función para actualizar una categoría existente
 export async function actualizarCategoria(id: number | undefined, categoria: Categoria): Promise<Categoria | null> {
   try {
-    const response: AxiosResponse<Categoria> = await axios.put(`${API_URL}/${id}`, categoria);
+    const response: AxiosResponse<Categoria> = await axios.put(`${BASE_URL}/${id}`, categoria);
     return response.data;
   } catch (error) {
     console.error('Error al actualizar la categoría:', error);
@@ -57,9 +55,8 @@ export async function actualizarCategoria(id: number | undefined, categoria: Cat
 
 export const desactivarCategoria = async (id: number): Promise<void> => {
   try {
-    const url = `http://192.168.1.44:5000/category/desactivate/${id}`;
 
-    const response = await fetch(url, {
+    const response = await fetch( `${BASE_URL}/desactivate/${id}`, {
       method: 'PUT'
     });
 

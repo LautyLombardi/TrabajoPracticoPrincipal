@@ -1,10 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 import { Rol } from '../model/interfaces';
-const API_URL = ' http://192.168.248.170:5000/role';
+import { URL } from '@/api/constantes'
+const BASE_URL = `${URL}/role`;
 
 export async function obtenerRoles(): Promise<any> {
   try {
-    const response: AxiosResponse<any> = await axios.get(API_URL);
+    const response: AxiosResponse<any> = await axios.get(BASE_URL);
     return response.data;
   } catch (error) {
     console.error('Error al obtener los roles:', error);
@@ -14,15 +15,14 @@ export async function obtenerRoles(): Promise<any> {
 
 export const crearRol = async (nombre: string, descripcion: string) => {
     try {
-      const url = 'http://192.168.248.170:5000/role/';
       const data = {
         name: nombre,
         description: descripcion,
       };
   
-      const response = await axios.post(url, data, {
+      const response = await axios.post(BASE_URL, data, {
       });
-  
+
       // Si se registró correctamente, no necesitamos devolver ningún dato adicional
     } catch (error) {
       console.error('Error al registrar la categoría:', error);
