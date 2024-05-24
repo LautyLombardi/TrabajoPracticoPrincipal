@@ -1,5 +1,5 @@
 import os, json
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from db.db import init_db
 from controllers import *
 from flask_cors import CORS
@@ -19,14 +19,41 @@ with app.app_context():
     populate_institutes()
     populate_institute_places()
 
+apertura_de_dia = True
+
+@app.route('/abrir_dia', methods=['POST'])
+def abrir_dia():
+    global apertura_de_dia
+    apertura_de_dia = True
+    return jsonify({'message': 'Día abierto'}), 200
+
+
+@app.route('/cerrar_dia', methods=['POST'])
+def cerrar_dia():
+    global apertura_de_dia
+    apertura_de_dia = False
+    return jsonify({'message': 'Día cerrado'}), 200
+
+
+@app.route('/estado_dia', methods=['GET'])
+def estado_dia():
+    global apertura_de_dia
+    return jsonify({'apertura_de_dia': apertura_de_dia}), 200
+
+# Interceptor
 @app.before_request
 def check_time():
+    global apertura_de_dia
     current_time = datetime.now().time()
     start_time = datetime.strptime("07:00", "%H:%M").time()
     end_time = datetime.strptime("22:00", "%H:%M").time()
 
-    if not (start_time <= current_time <= end_time):
-        return jsonify({"error": "El día está cerrado. Por favor, intente entre las 7:00 y las 22:00"}), 403
+
+    if request.path in ['/abrir_dia', '/cerrar_dia', '/estado_dia']:
+        return
+
+    if not (start_time <= current_time <= end_time) or not apertura_de_dia:
+        return jsonify({"error": "El servicio no está disponible. Por favor, intente entre las 7:00 y las 22:00, o verifique si el día está abierto."}), 403
 
 @app.route('/', methods=['GET'])
 def index():
@@ -49,5 +76,5 @@ def load_config(env):
         return config.get(env, {})
 
 if __name__ == '__main__':
-    config = load_config('development') # Carga los valores de 'development' 
+    config = load_config('development') # Carga los valores de 'development'
     app.run(host='0.0.0.0', port=config.get('port'), debug=True)
