@@ -11,6 +11,7 @@ class Visitor(db.Model):
     finishDate = db.Column(db.Text)
     isActive = db.Column(db.Integer)
     createDate = db.Column(db.Text)
+    isEnter = db.Column(db.Integer)
     
     # Relación con tabla Enterprice
     enterprice = db.relationship('Enterprice', backref=db.backref('visitors', lazy=True))
