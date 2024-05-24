@@ -31,6 +31,7 @@ app.register_blueprint(place_bp, url_prefix='/place')
 app.register_blueprint(visitor_bp, url_prefix='/visitor')
 app.register_blueprint(category_bp, url_prefix='/category')
 app.register_blueprint(institute_bp, url_prefix='/institute')
+app.register_blueprint(enterprice_bp, url_prefix='/enterprice')
 app.register_blueprint(api_bp, url_prefix='/api')
 
 def load_config(env):
