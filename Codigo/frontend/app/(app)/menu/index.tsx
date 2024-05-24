@@ -10,6 +10,18 @@ export const Menu = () => {
       <View style={styles.listBtns}>
         <View style={styles.row}>
           <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/faceRecognition/user")}>
+              <Text style={styles.textBtnMenu}>Autorizar Usuario</Text>
+            </Pressable>
+          </View>
+          <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/faceRecognition/visitor")}>
+              <Text style={styles.textBtnMenu}>Autorizar Visitante</Text>
+            </Pressable>
+          </View>
+        </View>  
+        <View style={styles.row}>
+          <View style={styles.col}>
             <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/image/user")}>
               <Text style={styles.textBtnMenu}>Registrar Imagen de Usuario</Text>
             </Pressable>

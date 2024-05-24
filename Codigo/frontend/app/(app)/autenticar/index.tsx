@@ -1,215 +1,78 @@
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet } from "react-native";
 import React, { useRef, useState } from "react";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
+import Boton from "@/ui/Boton";
+import { CameraType } from "expo-camera/build/legacy/Camera.types";
+import { useRouter } from "expo-router";
+import { Alert } from "react-native";
 
-const CardRow = ({ campo = "Campo", valor = "Valor" }) => {
-  return (
-    <View
-      style={{
-        width: "100%",
-        borderBottomWidth: 2,
-        borderBottomColor: "white",
-        flexDirection: "row",
-        justifyContent: "center",
-        paddingVertical: 8,
-      }}
-    >
-      <View style={{ flex: 1, alignItems: "flex-start" }}>
-        <Text style={{ color: "white", fontSize: 15, fontWeight: "bold" }}>
-          {campo}:{" "}
-        </Text>
-      </View>
-      <View style={{ flex: 1, alignItems: "flex-end" }}>
-        <Text style={{ color: "white", fontSize: 15, fontWeight: "bold" }}>
-          {valor}
-        </Text>
-      </View>
-    </View>
-  );
-};
+const Login = () => {
+  const navigator = useRouter();
 
-const CardUser = () => {
-  return (
-    <View
-      style={{
-        backgroundColor: "#000",
-        flex: 1,
-        alignItems: "center",
-        padding: 20,
-        paddingTop: 60,
-        borderTopWidth: 3,
-        borderTopColor: "#1f41f2",
-      }}
-    >
-      <CardRow campo="Nombre" valor="Juan Gabriel" />
-      <CardRow campo="Apellido" valor="Castaño" />
-      <CardRow campo="Categoria" valor="Docente" />
-      <CardRow campo="Lugares" valor="Mod7, 3066" />
-    </View>
-  );
-};
+  const [cameraPermission, setCameraPermission] = useCameraPermissions();
+  const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
+  const cameraRef = useRef<any>();
+  const [imagen, setImagen] = useState(null);
 
-const AccesoNoPermitido = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        padding: 20,
-        paddingTop: 60,
-        borderTopWidth: 3,
-        borderTopColor: "#fff",
-        justifyContent: "center"
-      }}
-    >
-      <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
-        Acceso no permitido
-      </Text>
-    </View>
-  );
-};
-
-type AutorizadoState = boolean | null;
-
-const AutenticarScreen = () => {
-  const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef();
-
-  const [showCard, setShowCard] = useState(false);
-  const [autorizado, setAutorizado] = useState<AutorizadoState>(null);
-  const [user, setUser] = useState("");
-
-  const handleAutenticacion = () => {
-    setUser("JUAN");
-    setShowCard(!showCard);
-    setAutorizado(true)
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
+      const photo = await cameraRef.current.takePictureAsync(options);
+      setImagen(photo.uri);
+      return photo.uri;
+    }
   };
 
-  if (!permission) {
-    return (
-      <View>
-        <Text> CARGANDO </Text>
-      </View>
-    );
-  }
-
-  if (!permission.granted) {
-    return (
-      <View>
-        <Text>NO TIENES ACCESSO PELOTUDO</Text>
-      </View>
-    );
-  }
-
-  const renderBoton = () => {
-    if (showCard && autorizado) {
-      return (
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            backgroundColor: "#000",
-            height: "80%",
-            width: "100%",
-            padding: 0,
-          }}
-        >
-          <CardUser />
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              margin: 20,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                backgroundColor: "green",
-                padding: 12,
-                width: "90%",
-                alignItems: "center",
-                borderRadius: 20,
-                borderWidth: 2,
-                borderColor: "white",
-              }}
-              onPress={handleAutenticacion}
-            >
-              <Text
-                style={{ color: "white", fontSize: 25, fontWeight: "bold" }}
-              >
-                Continuar
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    } else {
-      if (false) {
-        return (
-          <View
-            style={{
-              position: "absolute",
-              bottom: 0,
-              backgroundColor: "#d13a3aa7",
-              height: "80%",
-              width: "100%",
-              padding: 0,
-            }}
-          >
-            <AccesoNoPermitido />
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                margin: 20,
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#ff2222",
-                  padding: 12,
-                  width: "90%",
-                  alignItems: "center",
-                  borderRadius: 20,
-                  borderWidth: 2,
-                  borderColor: "#fff",
-                }}
-                onPress={handleAutenticacion}
-              >
-                <Text
-                  style={{ color: "#fff", fontSize: 25, fontWeight: "bold" }}
-                >
-                  Continuar
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-      } else {
-        return (
-          <View style={styles.buttonContainer}>
-            <Pressable
-              style={styles.button}
-              onPress={() => handleAutenticacion()}
-            >
-              <Text style={styles.text}>Autenticar</Text>
-            </Pressable>
-          </View>
-        );
-      }
+  const handleAuterizar = async () => {
+    console.log('presionado')
+    try {
+      takePicture().then((foto) => {
+        const formData = new FormData();
+        formData.append("image", { // Ignora el error de append esta alpedo jodiendo
+          uri: foto,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+        fetch('http://192.168.58.170:5001/faceRecognition/visitor', {
+          method: 'POST',
+          body: formData
+        }).then((respuesta) => {
+          console.log(respuesta);
+          if (respuesta.status == 200) {
+            Alert.alert("AUTENTICACION EXITOSA: " + respuesta.data);
+            navigator.navigate("/menu");
+          } else {
+            Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO");
+          }
+        });
+      });
+    } catch (error) {
+      Alert.alert("No se pudo sacar la foto");
     }
   };
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing="front" ref={() => cameraRef} />
-      {renderBoton()}
+      <CameraView style={{ flex: 1 }} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef} />
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          flex: 1,
+          marginBottom: 20,
+          width: "100%",
+          alignSelf: "center",
+          alignItems: "center",
+        }}
+      >
+        <Boton
+          text="Autenticar"
+          styleText={styles.text}
+          style={styles.button}
+          onPress={handleAuterizar}
+          hoverColor="#000000aa"
+        />
+      </View>
     </View>
   );
 };
@@ -217,36 +80,21 @@ const AutenticarScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
-
-  buttonContainer: {
-    position: "absolute",
-    bottom: 20,
-    width: "100%",
-  },
-
   button: {
-    backgroundColor: "#000",
-    width: "80%",
+    backgroundColor: "#000b",
+    width: 300,
     padding: 20,
     borderRadius: 12,
-    alignSelf: "center",
   },
-
   text: {
     color: "#fff",
     textAlign: "center",
-    fontSize: 25,
   },
-
-  // Camera
   camera: {
     flex: 1,
     width: "100%",
-    height: "100%",
   },
 });
 
-export default AutenticarScreen;
+export default Login;

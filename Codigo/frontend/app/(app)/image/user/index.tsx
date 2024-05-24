@@ -63,7 +63,7 @@ const UserImage = () => {
             name: "photoTEST.jpg",
             type: "image/jpeg",
           })
-            fetch('http://192.168.0.208:5000/image/user',{
+            fetch('http://192.168.0.208:5001/image/user',{
             method : 'POST',
             body: formData
           }).then((respuesta) => {

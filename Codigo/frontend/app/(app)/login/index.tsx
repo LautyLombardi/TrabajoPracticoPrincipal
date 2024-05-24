@@ -17,7 +17,7 @@ const Login = () => {
 
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
+      const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
       const photo = await cameraRef.current.takePictureAsync(options);
       setImagen(photo.uri);
       return photo.uri
@@ -26,14 +26,14 @@ const Login = () => {
   
   const handleAuterizar = async () => {
       try{
-        /* takePicture().then((foto) => {
+        takePicture().then((foto) => {
           const formData= new FormData()
           formData.append("image", { // Ignora el error de append esta alpedo jodiendo
             uri: foto,
             name: "photo.jpg",
             type: "image/jpeg",
           })
-            fetch('http://192.168.0.208:5000/faceRecognition/user',{
+            fetch('http://192.168.0.208:5001/faceRecognition/user',{
             method : 'POST',
             body: formData
           }).then((respuesta) => {
@@ -42,11 +42,10 @@ const Login = () => {
               Alert.alert("AUTENTICACION EXITOSA: ")
               navigator.navigate("/menu")
             }else{
-              Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO")
+              Alert.alert("Error al autenticar usuario: ")
             }
           })
-        }) */
-        navigator.navigate("/menu")
+        })
       }catch(error){
         Alert.alert("No se pudo sacar la foto")
       }
