@@ -68,6 +68,15 @@ export const Menu = () => {
             </Pressable>
           </View>  
         </View>
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/excepciones")}>
+              <Text style={styles.textBtnMenu}>Cargar Excepción</Text>
+            </Pressable>
+          </View>  
+          <View style={styles.col}>
+          </View>  
+        </View>
       </View>
 
       <View style={styles.bottomButton}>
