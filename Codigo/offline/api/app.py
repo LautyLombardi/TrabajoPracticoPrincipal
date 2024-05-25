@@ -21,22 +21,22 @@ with app.app_context():
 
 apertura_de_dia = True
 
-@app.route('/abrir_dia', methods=['POST'])
-def abrir_dia():
+@app.route('/open_day', methods=['POST'])
+def open_day():
     global apertura_de_dia
     apertura_de_dia = True
     return jsonify({'message': 'Día abierto'}), 200
 
 
-@app.route('/cerrar_dia', methods=['POST'])
-def cerrar_dia():
+@app.route('/close_day', methods=['POST'])
+def close_day():
     global apertura_de_dia
     apertura_de_dia = False
     return jsonify({'message': 'Día cerrado'}), 200
 
 
-@app.route('/estado_dia', methods=['GET'])
-def estado_dia():
+@app.route('/status_dia', methods=['GET'])
+def check_status_dia():
     global apertura_de_dia
     return jsonify({'apertura_de_dia': apertura_de_dia}), 200
 
@@ -49,11 +49,11 @@ def check_time():
     end_time = datetime.strptime("22:00", "%H:%M").time()
 
 
-    if request.path in ['/abrir_dia', '/cerrar_dia', '/estado_dia']:
+    if request.path in ['/open_day', '/close_day', '/check_status_dia']:
         return
 
     if not (start_time <= current_time <= end_time) or not apertura_de_dia:
-        return jsonify({"error": "El servicio no está disponible. Por favor, intente entre las 7:00 y las 22:00, o verifique si el día está abierto."}), 403
+        return jsonify({"error": "el dia esta cerrado"}), 403
 
 @app.route('/', methods=['GET'])
 def index():
