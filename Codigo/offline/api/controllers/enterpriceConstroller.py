@@ -125,8 +125,10 @@ def validate(data):
         if data.get(field) is None:
             return jsonify({'error': f'No se pasó el campo {field}'}), 422
 
-    for field in ['name', 'cuit']:
-        if not isinstance(data.get(field), str) or not data.get(field).strip():
-            return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 422
+    if not isinstance(data.get('name'), str) or not data.get('name').strip():
+        return jsonify({'error': 'El campo name debe ser un string no vacío'}), 422
 
+    if not isinstance(data.get('cuit'), int) or data.get('cuit') <= 0:
+            return jsonify({'error': 'El campo cuit debe ser un integer mayor a 0'}), 422
+    
     return None

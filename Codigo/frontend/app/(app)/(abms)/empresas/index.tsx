@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
+import { Empresa } from '@/api/model/interfaces';
+import { getEmpresas } from '@/api/services/empresa';
 
 
 type PropsCol = {
@@ -48,12 +50,14 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 };
 
 type PropsTable = {
+  empresas: Empresa[];
+
   viewState: boolean,
   editState: boolean,
   deleteState: boolean
 };
 
-const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState }) => {
+const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState, empresas }) => {
 
   const iconVerMas = () => {
     return (
@@ -72,7 +76,7 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState 
       <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
     )
   }
-  const handleToggleIcon = (): JSX.Element => {
+  const handleToggleIcon = (id: number): JSX.Element => {
     if (editState) {
       return modifyIcon();
     } else if (deleteState) {
@@ -90,24 +94,18 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState 
         <Col text='Cuil'/>
         <Col text='' flexWidth={0.8}/>
       </Row>
-      <Row>
-        <Col text='1'flexWidth={0.8}/>
-        <Col text='Coca Cola S.A' flexWidth={3}/>
-        <Col text='27567323239'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='2'flexWidth={0.8}/>
-        <Col text='Lo de Victor' flexWidth={3}/>
-        <Col text='23185678439'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='3'flexWidth={0.8}/>
-        <Col text='Plomeria SA' flexWidth={3}/>
-        <Col text='23126547894'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
+      {
+        empresas.map(empresa =>(
+          <Row key={empresa.id}>
+            <Col text={empresa.id?.toString() || ''} flexWidth={0.8}/>
+            <Col text={empresa.name} flexWidth={3} />
+            <Col text={empresa.cuit.toString()} flexWidth={3} />
+            <View style={{ flex: 0.8, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
+              {handleToggleIcon(empresa.id)}
+          </View>
+          </Row>
+        ))
+      }
     </View>
   );
 };
@@ -128,6 +126,14 @@ const AdministracionEmpresas = () => {
       setTrash(icon == "delete")        
     }
   };
+
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+
+  useEffect(() => {
+    getEmpresas().then((enterprices) => setEmpresas(enterprices))
+
+  }, [])
+  
 
   return (
     <View style={styles.container}>
@@ -154,7 +160,7 @@ const AdministracionEmpresas = () => {
         </View>
 
         {/** Tabla */}
-        <TablaEmpresa viewState={view} editState={edit} deleteState={trash}/>
+        <TablaEmpresa viewState={view} editState={edit} deleteState={trash} empresas={empresas}/>
 
     </View>
   )

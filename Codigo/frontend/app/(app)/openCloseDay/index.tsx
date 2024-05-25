@@ -2,14 +2,21 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, Alert } from 'react-native';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { closeDay, openDay } from '@/api/services/openCloseDay';
+import { router } from 'expo-router'
 
 const OpenCloseDay = () => {
 
   const handleOpenDay = async () => {
     try {
       console.log('open day');
-      await openDay()
-      Alert.alert("Dia Abierto")
+      await openDay();
+      Alert.alert(
+        "Día Abierto",
+        "",
+        [
+          { text: "OK", onPress: () => router.navigate("/menu") }
+        ]
+      );
     } catch (error) {
       console.error('Error al abrir el dia: ', error);
     }
@@ -18,8 +25,14 @@ const OpenCloseDay = () => {
   const handleCloseDay = async () => {
     try {
       console.log('close day');
-      await closeDay()
-      Alert.alert("Dia Cerrado")
+      await closeDay();
+      Alert.alert(
+        "Día Cerrado",
+        "",
+        [
+          { text: "OK", onPress: () => router.navigate("/menu") }
+        ]
+      );
     } catch (error) {
       console.error('Error al cerrar el dia: ', error);
     }

@@ -27,6 +27,15 @@ export interface Visitante{
     category: string,
 }
 
+
+export interface Empresa{
+    id: number,
+    name: string,
+    cuit: number,
+    isActive?:number,
+    createDate?:string
+}
+
 // Definición de la interfaz para la entidad Categoria
 export interface Categoria {
     id?: number | undefined; // Opcional, en caso de tener un identificador
