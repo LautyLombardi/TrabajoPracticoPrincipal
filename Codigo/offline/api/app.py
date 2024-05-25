@@ -38,15 +38,18 @@ def close_day():
 @app.route('/status_dia', methods=['GET'])
 def check_status_dia():
     global apertura_de_dia
-    return jsonify({'apertura_de_dia': apertura_de_dia}), 200
-
+    if apertura_de_dia:
+        return jsonify({'message': 'Día abierto'}), 200
+    else:
+        return jsonify({'message': 'Día cerrado'}), 403
+    
 # Interceptor
 @app.before_request
 def check_time():
     global apertura_de_dia
     current_time = datetime.now().time()
     start_time = datetime.strptime("07:00", "%H:%M").time()
-    end_time = datetime.strptime("22:00", "%H:%M").time()
+    end_time = datetime.strptime("23:00", "%H:%M").time()
 
 
     if request.path in ['/open_day', '/close_day', '/check_status_dia']:
