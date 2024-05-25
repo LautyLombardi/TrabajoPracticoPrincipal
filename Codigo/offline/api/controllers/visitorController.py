@@ -14,7 +14,7 @@ def create_visitor():
         print(missing_fields)
         return jsonify({'error': 'Faltan campos en la solicitud', 'missing_fields': missing_fields}), 422
 
-    response =saveVisitor(data)
+    response =SV.saveVisitor(data)
 
     if response == True:
         return jsonify({'message': 'Visitante Registrado'}), 201

@@ -120,8 +120,9 @@ def visitorList(visitors):
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
             'createDate': visitor.createDate,
-            'category': getCategoryForVisitor(visitor.dni)["name"],
-            'institutes':getInstituteByNames(visitor.dni)
+            'isEnter': visitor.isEnter,
+            #'category': getCategoryForVisitor(visitor.dni)["name"],
+            #'institutes':getInstituteByNames(visitor.dni)
         }
         visitor_list.append(visitor_dict)
     return visitor_list 
@@ -175,4 +176,4 @@ def getCategoryForVisitor(id):
     except Exception as e:
         print(e)
         return None     
-    return visitor_list  
+    
