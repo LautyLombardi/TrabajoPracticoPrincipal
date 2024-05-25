@@ -12,3 +12,20 @@ export async function getEmpresas(): Promise<Empresa[]> {
         return [];
     }
 }
+
+export async function createEmpresa(nombre: string, cuit: number): Promise<number> {
+    try {
+        const response = await axios.post(BASE_URL,{
+            "name": nombre,
+            "cuit": cuit
+        },{
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error al obtener las empresas: ', error);
+        return 400
+    }
+}

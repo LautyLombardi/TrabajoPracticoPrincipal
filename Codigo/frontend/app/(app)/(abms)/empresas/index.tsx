@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -91,7 +92,7 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
       <Row>
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Cuil'/>
+        <Col text='Cuit' flexWidth={3}/>
         <Col text='' flexWidth={0.8}/>
       </Row>
       {
@@ -128,12 +129,17 @@ const AdministracionEmpresas = () => {
   };
 
   const [empresas, setEmpresas] = useState<Empresa[]>([])
+  
+  useFocusEffect(
+    useCallback(() => {
+      getEmpresas().then((enterprices) => setEmpresas(enterprices))
+    }, [])
+  );
 
   useEffect(() => {
     getEmpresas().then((enterprices) => setEmpresas(enterprices))
 
   }, [])
-  
 
   return (
     <View style={styles.container}>
