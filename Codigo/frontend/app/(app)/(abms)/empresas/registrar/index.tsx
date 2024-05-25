@@ -1,78 +1,110 @@
-import React, { useState } from "react";
-import { Text, View, TextInput } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import Boton from "@/ui/Boton";
-import CustomInputText from "@/components/registrar/CustomInputText";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import { router } from 'expo-router';
+import { createEmpresa } from '@/api/services/empresa';
 
-const RegistroEmpresa = () => {
-  const [dateIngreso, setDateIngreso] = useState(new Date());
-  const [dateEgreso, setDateEgreso] = useState(new Date());
-  const [Empresa, setEmpresa] = useState("");
+const RegistrarEmpresa = () => {
+  const [nombre, setNombre] = useState<string>("");
+  const [cuit, setCuit] = useState<string>("");
 
-
-  // Route
-  const handleGoBack = () => {
-    const canGoBack = router.canGoBack();
-    if (canGoBack) {
-      router.back();
+  const handleTerminar = async () => {
+    const cuitNumber = parseInt(cuit, 10); 
+    if (!isNaN(cuitNumber)) {
+      const response = await createEmpresa(nombre, cuitNumber);
+      if(response === 201){
+        Alert.alert(
+          "Empresa guardada",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/empresas") }
+          ]
+        );
+      } else {
+        Alert.alert("Error al guardar empresa");
+      }
     } else {
-      router.navigate("/empresas");
+      Alert.alert("CUIT no válido");
     }
   };
 
-  const handleTerminar = () => {
-    router.navigate("/empresas")
-  }
-
   return (
-    <View
-      style={{
-        backgroundColor: "#000051",
-        flex: 1,
-        paddingVertical: 30,
-        alignItems: "center",
-      }}
-    >
-      {/** HEADER */}
-      <View
-        style={{
-          height: 50,
-          backgroundColor: "white",
-          width: "100%",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          padding: 10,
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
-        <Ionicons name="arrow-back-outline" size={20} onPress={handleGoBack} />
-        <Text style={{ fontWeight: "bold" }}>Registro Empresa</Text>
+    <View style={styles.container}>
+      <HandleGoBackReg title='Registro Empresa' route='empresas' />
+
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Nombre:</Text>
+          <TextInput 
+            placeholder='Example' 
+            placeholderTextColor={"gray"} 
+            onChangeText={setNombre} 
+            value={nombre} 
+            style={styles.input}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Cuit:</Text>
+          <TextInput 
+            placeholder='20123456781' 
+            placeholderTextColor={"gray"} 
+            onChangeText={setCuit} 
+            value={cuit} 
+            keyboardType='numeric'
+            style={styles.input}
+          />
+        </View>
       </View>
 
-
-
-      <View style={{ flex: 1, marginTop: 20 }}>
-        <CustomInputText label="Nombre" value="Fontanero" />
-        <CustomInputText label="Descripcion" value="arregla cañeria" />        
-      </View>
-
-      <View style={{ width: 300 }}>
-        <Boton
-          backgroundColor="black"
-          padding={20}
-          text="Continuar"
-          color="white"
-          textAlign="center"
-          fontSze={20}
-          borderRadius={10}
-          onPress={handleTerminar}
-        />
-      </View>
-
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
     </View>
   );
 };
 
-export default RegistroEmpresa;
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#000051',
+    flex: 1,
+    paddingVertical: 30,
+    alignItems: 'center',
+  },
+  formContainer: {
+    flex: 1,
+    marginTop: 20,
+    width: '90%',
+  },
+  inputContainer: {
+    height: 70,
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 20, 
+  },
+  labelText: {
+    color: "white",
+    fontSize: 18,
+    textAlign: "left",
+    width: "30%",
+  },
+  input: {
+    backgroundColor: "white",
+    padding: 10,
+    flex: 1,
+    borderRadius: 5,
+    color: 'black',
+  },
+  button: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%', 
+  },
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
+  },
+});
+
+export default RegistrarEmpresa;
