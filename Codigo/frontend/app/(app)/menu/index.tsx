@@ -48,7 +48,19 @@ export const Menu = () => {
               <Text style={styles.textBtnMenu}>Autorizar Visitante</Text>
             </Pressable>
           </View>
-        </View>  
+        </View>
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/user")}>
+              <Text style={styles.textBtnMenu}>Login Manual de Usuario</Text>
+            </Pressable>
+          </View>
+          <View style={styles.col}>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/visitor")}>
+              <Text style={styles.textBtnMenu}>Login Manual de Visitante</Text>
+            </Pressable>
+          </View>
+        </View>    
         <View style={styles.row}>
           <View style={styles.col}>
             <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/user")}>
@@ -99,24 +111,24 @@ export const Menu = () => {
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/Reportes")}>
-              <Text style={styles.textBtnMenu}>Reportes</Text>
-            </Pressable>
-          </View>  
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/lugares")}>
-              <Text style={styles.textBtnMenu}>Administracion de Lugares2</Text>
-            </Pressable>
-          </View>  
-        </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
             <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
               <Text style={styles.textBtnMenu}>Cargar Excepción</Text>
             </Pressable>
           </View>  
           <View style={styles.col}>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
+              <Text style={styles.textBtnMenu}>Reportes</Text>
+            </Pressable>
+          </View>    
+        </View>
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/logs")}>
+              <Text style={styles.textBtnMenu}>Logs</Text>
+            </Pressable>
           </View>  
+          <View style={styles.col}>
+          </View>    
         </View>
       </View>
 

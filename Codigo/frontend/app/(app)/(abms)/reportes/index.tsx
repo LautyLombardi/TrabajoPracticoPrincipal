@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { getVisitantes } from '@/api/services/visitantes';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 const Reportes: React.FC = () => {
   const [fechas, setFechas] = useState<string[]>([]);
@@ -48,32 +49,35 @@ const Reportes: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pantalla de Reportes de toke</Text>
-      <BarChart
-  data={data}
-  width={Dimensions.get('window').width - 16}
-  height={220}
-  yAxisLabel=""
-  yAxisSuffix=""
-  yAxisInterval={1}
-  chartConfig={{
-    backgroundColor: '#1cc910',
-    backgroundGradientFrom: '#eff3ff',
-    backgroundGradientTo: '#efefef',
-    decimalPlaces: 0, 
-    color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16
-    }
-  }}
-  fromZero={true} 
-  showValuesOnTopOfBars={true} 
-  style={{
-    marginVertical: 8,
-    borderRadius: 16
-  }}
-/>
-
+      {/** Header Menu */}
+      <HandleGoBack title='Reportes' route='menu' />
+      <View style={styles.chartContainer}>
+        <Text style={styles.title}>Reportes de Visitantes * Día</Text>
+        <BarChart
+          data={data}
+          width={Dimensions.get('window').width - 16}
+          height={220}
+          yAxisLabel=""
+          yAxisSuffix=""
+          yAxisInterval={1}
+          chartConfig={{
+            backgroundColor: '#1cc910',
+            backgroundGradientFrom: '#eff3ff',
+            backgroundGradientTo: '#efefef',
+            decimalPlaces: 0, 
+            color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
+            style: {
+              borderRadius: 16
+            }
+          }}
+          fromZero={true} 
+          showValuesOnTopOfBars={true} 
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}
+        />
+      </View>
     </View>
   );
 };
@@ -81,9 +85,13 @@ const Reportes: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
+  },
+  chartContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
   },
   title: {
     fontSize: 24,
