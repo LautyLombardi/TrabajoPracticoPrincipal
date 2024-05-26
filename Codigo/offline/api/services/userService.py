@@ -1,13 +1,14 @@
 from db.db import db
 from models.User import User
 from utils.date import createDate
+from utils.passHash import hashPassword
 
 def saveUser(data):
     try:
         user = User(
             name=data.get('name'), 
             lastname=data.get('lastname'), 
-            password=data.get('password'), 
+            password=hashPassword(data.get('password')), 
             role_id=data.get('role_id'),
             dni=data.get('dni'),
             isActive=1,
@@ -31,7 +32,7 @@ def updateUser(id,data):
     try:
         user.name = data.get('name')
         user.lastname = data.get('lastname')
-        user.password = data.get('password')
+        user.password = hashPassword(data.get('password'))
         user.role_id = data.get('role_id')
         db.session.commit()
         
@@ -118,4 +119,5 @@ def userList(users):
             'createDate': user.createDate
         }
         user_list.append(user_dict)
-    return user_list   
+    return user_list
+
