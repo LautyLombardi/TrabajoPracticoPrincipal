@@ -2,17 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
-import CustomInputText from "@/components/registrar/CustomInputText";
-import Header from "@/ui/Header";
-import LugaresCheckBox from "@/components/lugaresCheckBox/LugaresCheckBox";
 import { createInstituto } from "@/api/services/institutos";
 import { getLugares } from "@/api/services/place";
 import { Lugar } from "@/api/model/interfaces";
-import SelectItem from "@/components/seleccionar/SelectItem";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import Checkbox from "expo-checkbox";
-
-const ejemploLugares = ["mod1", "mod2", "mod3", "mod4"]
 
 const RegistroInstituto = () => {
   const [nombre, setNombre] = useState<string>("");

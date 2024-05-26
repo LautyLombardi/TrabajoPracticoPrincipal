@@ -25,8 +25,8 @@ export interface Visitante{
     institutes?: string,
     empresa?: string,
     category: string,
+    createDate: any;
 }
-
 
 export interface Empresa{
     id: number,
@@ -57,3 +57,20 @@ export interface Rol {
     description: string,
     createDate?: string,
 }
+
+export interface Logs {
+    id: string;
+    userId: number;
+    exceptionId: number;
+    visitorId: number;
+    hasAccess: number;
+    isFaceRecognition: number;
+    abm: string;
+    abmType: string;
+    description: string;
+    aperturaCierre: string;
+    createDate: string;
+    isEnter: number;
+    isAutomatic: number;
+}
+  

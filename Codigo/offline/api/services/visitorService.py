@@ -5,6 +5,7 @@ from models.CategoryVisitor import CategoryVisitor
 from models.CategoryInstitute import CategoryInstitute
 from models.Institute import Institute
 from services.categoryService import getCategoryById
+from utils.passHash import hashPassword
 
 def saveVisitor(data):
     try:
@@ -16,7 +17,8 @@ def saveVisitor(data):
             startDate=data.get('startDate'), 
             finishDate=data.get('finishDate'),
             isActive=1,
-            createDate=createDate()
+            createDate=createDate(),
+            password=hashPassword(data.get('password'))
         )
         db.session.add(visitor)
         db.session.commit()
@@ -40,6 +42,7 @@ def updateVisitor(id, data):
         visitor.email=data.get('email')
         visitor.startDate=data.get('startDate')
         visitor.finishDate=data.get('finishDate')
+        visitor.password = hashPassword(data.get('password'))
         db.session.commit()
 
         return 200
@@ -58,7 +61,8 @@ def getVisitorById(id):
             'startDate': visitor.startDate,
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
-            'createDate': visitor.createDate
+            'createDate': visitor.createDate,
+            'password':visitor.password
         }
     else:
         return None
@@ -120,8 +124,10 @@ def visitorList(visitors):
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
             'createDate': visitor.createDate,
-            'category': getCategoryForVisitor(visitor.dni)["name"],
-            'institutes':getInstituteByNames(visitor.dni)
+            'isEnter': visitor.isEnter,
+            'password':visitor.password
+            #'category': getCategoryForVisitor(visitor.dni)["name"],
+            #'institutes':getInstituteByNames(visitor.dni)
         }
         visitor_list.append(visitor_dict)
     return visitor_list 
@@ -175,4 +181,4 @@ def getCategoryForVisitor(id):
     except Exception as e:
         print(e)
         return None     
-    return visitor_list  
+    
