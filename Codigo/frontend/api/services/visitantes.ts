@@ -96,6 +96,23 @@ export const instituteVisitor = async (id: number): Promise<Instituto[]> => {
     return response.data
 };
 
+export async function loginVisitor(dni: string, password: string): Promise<number> {
+    try {
+        const response = await axios.post(`${BASE_URL}/login`,{
+            "dni": dni,
+            "password": password
+        },{
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error al realizar logueo: ', error);
+        return 400
+    }
+}
+
 const formatDate = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;

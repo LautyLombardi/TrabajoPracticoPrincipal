@@ -10,17 +10,12 @@ type PropsGoBack = {
 
 const HandleGoBack: React.FC<PropsGoBack> = ({ title = "Menu", route="menu" }) => {
   const goBack = () => {
-    const canGoBack = router.canGoBack()
-    if (canGoBack) {
-      router.back()
-    } else {
-      router.navigate(`/${route}`)
-    }
+      
   }
 
   return (
     <View style={styles.container}>
-      <Ionicons name='arrow-back-outline' size={25} onPress={goBack} />
+      <Ionicons name='arrow-back-outline' size={25} onPress={()=> router.navigate(`/${route}`)} />
       <Text style={styles.title}>{title}</Text>
     </View>
   )
