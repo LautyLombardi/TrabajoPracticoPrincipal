@@ -8,8 +8,9 @@ def saveInstitute(data):
     try:
         institute = Institute(
             name=data.get('name'),
-            isActive=1,
-            createDate=createDate()
+            cuit=data.get('cuit'),
+            isActive="1",
+            createDate= createDate()
         )
         db.session.add(institute)
         db.session.commit()
