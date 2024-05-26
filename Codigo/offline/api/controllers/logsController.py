@@ -10,7 +10,7 @@ def get_manual_registration_user_logs():
         response=getLogRegistrationUsuario()
    
         if response is None:
-            return jsonify({'error': 'No hay usuarios guardados, en la base de datos, que '}), 404     
+            return jsonify({'error': 'No hay usuarios guardados, en la base de datos'}), 404     
         else:
             return jsonify(response), 200
 
@@ -20,10 +20,10 @@ def get_manual_registration_user_logs():
 @logs_bp.route('/manualregistration/visitor', methods=['GET'])
 def get_manual_registration_visitor_logs():
     try:
-        response=getlogsListRegistrationVisitante()
+        response=getlogsRegistrationVisitante()
 
         if response is None:
-            return jsonify({'error': 'No hay usuarios guardados, en la base de datos, que '}), 404     
+            return jsonify({'error': 'No hay visitantes guardados, en la base de datos'}), 404     
         else:
             return jsonify(response), 200
 
@@ -32,8 +32,30 @@ def get_manual_registration_visitor_logs():
 
 @logs_bp.route('/loginfacerecognition/user', methods=['GET'])
 def get_login_face_recognition_user_logs():
-    
-    return jsonify({'message': 'Lista de logs de imágenes de usuarios'}), 200
+    try:
+        response=getlogsIsFaceRecognitionUsuario()
+
+        if response is None:
+            return jsonify({'error': 'No hay datos guardados sobre usuarios que hicieron el login por reconocimineto facial'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Lista de logs del usuario que hicieron el login por reconocimineto facial'}), 200
+
+
+@logs_bp.route('/loginfacerecognition/visitor', methods=['GET'])
+def get_login_face_recognition_visitor_logs():
+    try:
+        response=getlogsIsFaceRecognitionVisitante()
+
+        if response is None:
+            return jsonify({'error': 'No hay datos guardados sobre usuarios que hicieron el login por reconocimineto facial'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Lista de logs del usuario que hicieron el login por reconocimineto facial'}), 200
 
 
 # Rutas para logs de imágenes de usuarios
@@ -51,8 +73,16 @@ def get_image_visitor_logs():
 # Ruta general para logs
 @logs_bp.route('/', methods=['GET'])
 def get_logs():
-    
-    return jsonify({'message': 'Lista de todos los logs disponibles'}), 200
+    try:
+        response=getLogAll()
+   
+        if response is None:
+            return jsonify({'error': 'No hay logs'}), 404     
+        else:
+            return jsonify(response), 200
+
+    except Exception as e: 
+        return jsonify({'message': 'Lista de todos los logs disponibles'}), 200
 
 #/logs/facerecognicion/user
 #/logs/facerecognicion/visitor
