@@ -63,7 +63,7 @@ const RegistroCategoria = () => {
             gap: 10,
           }}
         >
-          <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria" values={["interno", "isExterno"]} />
+          <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria" values={["interno", "Externo"]} />
         </View>
       </View>
 
