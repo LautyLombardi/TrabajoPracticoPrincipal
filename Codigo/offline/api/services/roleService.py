@@ -7,7 +7,6 @@ def saveRole(data):
         role = Role(
             name=data.get('name'),
             description=data.get('description'),
-            isActive=1,
             createDate=createDate()
         )
         db.session.add(role)

@@ -49,7 +49,7 @@ def check_time():
     global apertura_de_dia
     current_time = datetime.now().time()
     start_time = datetime.strptime("07:00", "%H:%M").time()
-    end_time = datetime.strptime("23:00", "%H:%M").time()
+    end_time = datetime.strptime("23:59", "%H:%M").time()
 
 
     if request.path in ['/open_day', '/close_day', '/check_status_dia']:
