@@ -35,7 +35,13 @@ def get_manual_recognition_user_logs():
 @logs_bp.route('/facerecognition/visitor', methods=['GET'])
 def get_face_recognition_visitor_logs():
     
+
     return jsonify({'message': 'Lista de logs de reconocimiento facial de visitantes'}), 200
+
+@logs_bp.route('/manualrecognition/visitor', methods=['GET'])
+def get_face_recognition_visitor_logs():
+    
+    return jsonify({'message': 'Lista de logs de reconocimiento manual de visitantes'}), 200
 
 # Rutas para logs de imágenes de usuarios
 @logs_bp.route('/image/user', methods=['GET'])

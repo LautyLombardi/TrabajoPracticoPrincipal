@@ -39,7 +39,8 @@ def recordUserRegistration(user_id):
         nuevo_log = Logs(
             userId=user_id,
             isFaceRecognition=1,
-            abmType='ABM USUARIO',
+            abm='ABM USUARIO',
+            abmType ='ALTA',
             description='Alta de usuaruio por registro facial',
             createDate= createDate(),
             isAutomatic=1
@@ -55,7 +56,8 @@ def recordUserRegistrationManual(user_id,visitor_id,has_access):
         nuevo_log = Logs(
             userId=user_id,
             isFaceRecognition=0,
-            abmType='ABM USUARIO',
+            abm='ABM USUARIO',
+            abmType ='ALTA',
             description='Alta de usuaruio por registro manual',
             createDate= createDate(),
             isAutomatic=0
@@ -66,14 +68,45 @@ def recordUserRegistrationManual(user_id,visitor_id,has_access):
     except Exception as e:
         return e
     
-def getLogFaceRecognition(reconocimiento):
-    users = Logs.query.all()
-    responce=getlogsListFaceRecognition(users,reconocimiento)
-    return responce
 
-def getLogAll():
-    users = Logs.query.all()
-    return logsList(users)
+
+def recordVisitorRegistration(user_id,visitor_id):
+    try:
+        nuevo_log = Logs(
+            userId=user_id,
+            visitorId= visitor_id,
+            isFaceRecognition=1,
+            abm='ABM VISITANTE',
+            abmType = 'ALTA',
+            description='Alta de visitante por registro facial',
+            createDate= createDate(),
+            isAutomatic=1
+        )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e
+
+
+def recordVisitorRegistrationManual(user_id,visitor_id):
+    try:
+        nuevo_log = Logs(
+            userId=user_id,
+            visitorId= visitor_id,
+            isFaceRecognition=0,
+            abm='ABM VISITANTE',
+            abmType = 'ALTA',
+            description='Alta de visitante por registro manual',
+            createDate= createDate(),
+            isAutomatic=0
+        )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e
+
     
 def logsList(logs):
     log_list = []
@@ -96,10 +129,14 @@ def logsList(logs):
         log_list.append(log_dict)
     return log_list 
 
-def getlogsListFaceRecognition(logs, reconociimento):
+def getLogAll():
+    users = Logs.query.all()
+    return logsList(users)
+
+def getlogsListFaceRecognition(logs, reconocimento):
     log_list = []
     for log in logs:
-        if log.get('isFaceRecognition') == reconociimento:
+        if log.get('isFaceRecognition') == reconocimento and log.get('visitorId') == Null:
             log_dict = {
                 'id': log.id,
                 'userId': log.name,
@@ -117,3 +154,8 @@ def getlogsListFaceRecognition(logs, reconociimento):
         }
         log_list.append(log_dict)
     return log_list
+
+def getLogFaceRecognition(reconocimiento):
+    users = Logs.query.all()
+    responce=getlogsListFaceRecognition(users,reconocimiento)
+    return responce
