@@ -73,6 +73,7 @@ app.register_blueprint(category_bp, url_prefix='/category')
 app.register_blueprint(institute_bp, url_prefix='/institute')
 app.register_blueprint(enterprice_bp, url_prefix='/enterprice')
 app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(exception_bp, url_prefix='/exception')
 
 def load_config(env):
     with open(os.path.join(current_directory, './config.json')) as f:
