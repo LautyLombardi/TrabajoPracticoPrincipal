@@ -8,7 +8,7 @@ type PropsGoBack = {
   route: string,
 }
 
-const HandleGoBack: React.FC<PropsGoBack> = ({ title, route }) => {
+const HandleGoBack: React.FC<PropsGoBack> = ({ title = "Menu", route="menu" }) => {
   const goBack = () => {
     const canGoBack = router.canGoBack()
     if (canGoBack) {
@@ -45,4 +45,5 @@ const styles = StyleSheet.create({
     marginLeft: '3%'
   },
 })
+
 export default HandleGoBack

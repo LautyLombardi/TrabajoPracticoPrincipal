@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Link, Stack } from 'expo-router'
-import Menu from './menu'
+import { Link } from 'expo-router'
+import { LogBox } from 'react-native';
 
-const dev = true
+LogBox.ignoreAllLogs(true);
 
 const Welcome = () => {
   return (<>

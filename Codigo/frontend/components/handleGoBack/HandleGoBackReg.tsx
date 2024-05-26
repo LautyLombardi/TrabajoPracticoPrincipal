@@ -8,7 +8,7 @@ type PropsGoBack = {
   route: string,
 };
 
-const HandleGoBackReg: React.FC<PropsGoBack> = ({ title, route }) => {
+const HandleGoBackReg: React.FC<PropsGoBack> = ({ title = "Volver", route = "menu" }) => {
   const goBack = () => {
     const canGoBack = router.canGoBack();
     if (canGoBack) {
