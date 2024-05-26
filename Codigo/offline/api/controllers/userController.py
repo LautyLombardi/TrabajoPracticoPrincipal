@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from services.userService import updateUser,saveUser, getUserById, getUserAll, getUserAllActive, getUserAllDesactive, setActive, setDesactive
 from services.roleService import exist_rol
 from utils.date import check_date_format
+from utils.passHash import hashPassword
 
 user_bp = Blueprint('user', __name__)
 
@@ -121,6 +122,27 @@ def set_desactive_user(id):
         return jsonify({'error': 'usuario no encontrado'}), 404
     else:
         return jsonify({'message': 'Error al modificar usuario', 'error': str(response)}), 400 
+
+@user_bp.route('/login', methods=['POST'])
+def set_login_user():
+    data = request.json
+    if data.get('password')==None:
+        return jsonify({'error':'no se ingreso password'}),404
+    if data.get('dni')==None:
+        return jsonify({'error':'no se ingreso dni'}),404
+    password = hashPassword(data.get('password'))
+    response = getUserAll()
+
+    print("password ingresado: ",password)
+    print("dni ingresado: ",data.get('dni'))
+
+    for user in response:
+        
+        
+        if  str(user.get('dni'))==str(data.get('dni')) and user.get('password')==password:
+            return jsonify({'message': 'usuario logeado'}), 200
+    return jsonify({'error':'no se ingreso una password o dni correcto'}),404
+    
 
 def validate(data):
     required_fields = ['name', 'lastname', 'role_id', 'password']

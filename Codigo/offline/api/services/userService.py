@@ -1,6 +1,7 @@
 from db.db import db
 from models.User import User
 from utils.date import createDate
+from utils.passHash import hashPassword
 
 def saveUser(data):
     try:
@@ -110,7 +111,7 @@ def userList(users):
             'dni': user.dni,
             'name': user.name,
             'lastname': user.lastname,
-            'password':user.password,            
+            'password':hashPassword(user.password),            
             'rol':user.role_id,
             'isActive' :user.isActive,
             'motive': user.motive,
@@ -118,4 +119,5 @@ def userList(users):
             'createDate': user.createDate
         }
         user_list.append(user_dict)
-    return user_list   
+    return user_list
+
