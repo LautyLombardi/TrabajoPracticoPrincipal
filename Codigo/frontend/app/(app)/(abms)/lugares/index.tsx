@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Lugar } from '@/api/model/interfaces';
 import { getLugares } from '@/api/services/place';
-import { useEffect } from 'react';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 type PropsCol = {
@@ -105,11 +105,10 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
       <Row>
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Abreviación'/>
-        <Col text='openTime'/>
-        <Col text='closeTime'/>
-        <Col text='createdDate'/>
-        <Col text='' flexWidth={0.8}/>
+        <Col text='Abreviación' flexWidth={3}/>
+        <Col text='openTime' flexWidth={3}/>
+        <Col text='closeTime' flexWidth={3}/>
+        <Col text='' flexWidth={1.5}/>
       </Row>
       {lugares.map((lugar) => (
         <Row key={lugar.id}>
@@ -118,10 +117,9 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
           <Col text={lugar.abbreviation} flexWidth={3} />
           <Col text={lugar.openTime} flexWidth={3} />
           <Col text={lugar.closeTime} flexWidth={3} />
-          <Col text={lugar.createDate} flexWidth={1} />
           {/* <Col flexWidth={0.8} icon={handleToggleIcon()} /> */} 
           {/** Icono de columna */}
-          <View style={{ flex: 0.8, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
+          <View style={{ flex: 1.5, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
               {handleToggleIcon(lugar.id)}
           </View>
         </Row>
@@ -153,6 +151,12 @@ const AdministracionLugares = () => {
 
   const [lugares, setLugares] = useState<Lugar[]>([]);
 
+  useFocusEffect(
+    useCallback(() => {
+      getLugares().then((places) => setLugares(places))
+    }, [])
+  );
+
   useEffect(() => {
     getLugares().then((places) => setLugares(places))
 
@@ -178,14 +182,15 @@ const AdministracionLugares = () => {
           <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
             <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
           </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/categorias/registrar")}>
+          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/lugares/registrar")}>
             <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
           </Pressable>
         </View>
 
         {/** Tabla */}
-        <Tablacategorias viewState={view} editState={edit} deleteState={trash} lugares={lugares} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={handleDeleteCategoria}/>
-
+        <ScrollView style={styles.tableContainer}>
+          <Tablacategorias viewState={view} editState={edit} deleteState={trash} lugares={lugares} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={handleDeleteCategoria}/>
+        </ScrollView>
     </View>
   )
 }
@@ -195,6 +200,9 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#000051',
       alignItems: 'center',
+  },
+  tableContainer: {
+    width: '100%',
   },
 });
 
