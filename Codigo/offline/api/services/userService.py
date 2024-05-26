@@ -8,7 +8,7 @@ def saveUser(data):
         user = User(
             name=data.get('name'), 
             lastname=data.get('lastname'), 
-            password=data.get('password'), 
+            password=hashPassword(data.get('password')), 
             role_id=data.get('role_id'),
             dni=data.get('dni'),
             isActive=1,
