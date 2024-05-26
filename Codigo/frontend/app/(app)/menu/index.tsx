@@ -109,6 +109,15 @@ export const Menu = () => {
             </Pressable>
           </View>    
         </View>
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/logs")}>
+              <Text style={styles.textBtnMenu}>Logs</Text>
+            </Pressable>
+          </View>  
+          <View style={styles.col}>
+          </View>    
+        </View>
       </View>
 
       <View style={styles.dayButton}>
