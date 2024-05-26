@@ -8,7 +8,7 @@ def saveUser(data):
         user = User(
             name=data.get('name'), 
             lastname=data.get('lastname'), 
-            password=data.get('password'), 
+            password=hashPassword(data.get('password')), 
             role_id=data.get('role_id'),
             dni=data.get('dni'),
             isActive=1,
@@ -32,7 +32,7 @@ def updateUser(id,data):
     try:
         user.name = data.get('name')
         user.lastname = data.get('lastname')
-        user.password = data.get('password')
+        user.password = hashPassword(data.get('password'))
         user.role_id = data.get('role_id')
         db.session.commit()
         
@@ -111,7 +111,7 @@ def userList(users):
             'dni': user.dni,
             'name': user.name,
             'lastname': user.lastname,
-            'password':hashPassword(user.password),            
+            'password':user.password,            
             'rol':user.role_id,
             'isActive' :user.isActive,
             'motive': user.motive,
