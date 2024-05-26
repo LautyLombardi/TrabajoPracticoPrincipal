@@ -99,24 +99,15 @@ export const Menu = () => {
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/Reportes")}>
-              <Text style={styles.textBtnMenu}>Reportes</Text>
-            </Pressable>
-          </View>  
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/lugares")}>
-              <Text style={styles.textBtnMenu}>Administracion de Lugares2</Text>
-            </Pressable>
-          </View>  
-        </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
             <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
               <Text style={styles.textBtnMenu}>Cargar Excepción</Text>
             </Pressable>
           </View>  
           <View style={styles.col}>
-          </View>  
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
+              <Text style={styles.textBtnMenu}>Reportes</Text>
+            </Pressable>
+          </View>    
         </View>
       </View>
 
