@@ -51,15 +51,12 @@ def validate(data):
     if not data.get('name').strip() or not data.get('description').strip()  or not data.get('description').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
 
-
-
     user_dni = data.get('user_dni')
     category_id = data.get('category_id')
     place_id = data.get('place_id')
 
     if   not isinstance(user_dni, int) or not isinstance(category_id, int) or not isinstance(place_id, int) :
         return jsonify({'error': ' user_dni, category_id y place_id  deben ser un entero'}), 422
-
 
     return None     
 

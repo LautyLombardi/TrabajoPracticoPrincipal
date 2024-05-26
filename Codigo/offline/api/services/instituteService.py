@@ -8,7 +8,6 @@ def saveInstitute(data):
     try:
         institute = Institute(
             name=data.get('name'),
-            cuit=data.get('cuit'),
             isActive="1",
             createDate= createDate()
         )

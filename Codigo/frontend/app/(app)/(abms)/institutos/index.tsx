@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -122,6 +123,12 @@ const AdministracionInstitutos = () => {
   };
 
   const [institutos, setInstitutos] = useState<Instituto[]>([])
+
+  useFocusEffect(
+    useCallback(() => {
+      getInstitutos().then((institutes) => setInstitutos(institutes))
+    }, [])
+  );
 
   useEffect(() => {
     getInstitutos().then((institutes) => setInstitutos(institutes))

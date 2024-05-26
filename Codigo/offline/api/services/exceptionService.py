@@ -8,10 +8,8 @@ from models.Category import Category
 from utils.date import createDate
 
 
-
 def saveException(data):
-    try:
-        
+    try:        
         user = User.query.filter_by(dni=data.get('user_dni')).first()
         if not user:
             return '404c'
@@ -58,6 +56,7 @@ def saveException(data):
         db.session.add(new_exception_category)
  
         db.session.commit()
+        
         
         return 201
     except Exception as e:
