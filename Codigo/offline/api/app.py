@@ -5,10 +5,14 @@ from controllers import *
 from flask_cors import CORS
 from db.Populate import populate_places, populate_institutes, populate_institute_places
 from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
 from services.logsService import registrarApertura, registrarCierre,recordUserRegistration
+
+#----------------borrar despues-------------------
 
 app = Flask(__name__)
 CORS(app)
+
 
 # Configurar e inicializar la base de datos
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -21,6 +25,24 @@ with app.app_context():
     populate_institute_places()
 
 apertura_de_dia = True
+
+def apertura():
+        with app.app_context():
+            global apertura_de_dia
+            registrarApertura()
+            apertura_de_dia = True
+
+def cierre():
+    with app.app_context():
+        global apertura_de_dia
+        registrarCierre()
+        apertura_de_dia = False
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(apertura, 'cron', hour=7)  # Configura la hora y minuto deseado
+scheduler.add_job(cierre, 'cron', hour=23)  # Configura la hora y minuto deseado
+scheduler.start()
+
 
 @app.route('/open_day', methods=['POST'])
 def open_day():
