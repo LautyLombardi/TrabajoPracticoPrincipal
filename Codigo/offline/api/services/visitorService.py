@@ -93,7 +93,25 @@ def getVisitorById(id):
 
 def getVisitorAll():
     visitors = Visitor.query.all()
-    return visitorList(visitors)
+    visitor_list = []
+    for visitor in visitors:
+        visitor_dict = {
+            'dni': visitor.dni,
+            'enterprice_id': visitor.enterprice_id,
+            'name': visitor.name,
+            'lastname': visitor.lastname,
+            'email': visitor.email,
+            'startDate': visitor.startDate,
+            'finishDate': visitor.finishDate,
+            'isActive': visitor.isActive,
+            'createDate': visitor.createDate,
+            'isEnter': visitor.isEnter,
+            'password':visitor.password,
+            'category': getCategoryForVisitor(visitor.dni)["name"]
+            #'institutes':getInstituteByNames(visitor.dni)
+        }
+        visitor_list.append(visitor_dict)
+    return visitor_list 
    
 def getVisitorAllActive():
     visitors = Visitor.query.filter_by(isActive=1).all()

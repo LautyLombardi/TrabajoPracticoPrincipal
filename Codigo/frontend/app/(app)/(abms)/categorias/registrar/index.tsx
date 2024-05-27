@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, View, StyleSheet } from 'react-native';
+import { Text, TextInput, View, StyleSheet, Alert } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
@@ -24,9 +24,18 @@ const RegistroCategoria = () => {
   // Comportamiento Terminar
   const handleTerminar = async () => {
     try {
-      await crearCategoria(nombre, descripcion, isExtern);
-      // Navegar de regreso a la pantalla de categorías
-      router.navigate("/categorias");
+      const response = await crearCategoria(nombre, descripcion, isExtern);
+      if(response === 201){
+        Alert.alert(
+          "Categoria guardada",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/categorias") }
+          ]
+        );
+      } else {
+        Alert.alert("Error al guardar categoria");
+      }
     } catch (error) {
       console.error('Error al registrar la categoría:', error);
     }

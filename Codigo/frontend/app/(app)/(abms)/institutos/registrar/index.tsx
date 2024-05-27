@@ -84,7 +84,7 @@ const RegistroInstituto = () => {
         </View>
 
         <View style={{ padding: 10 }}>
-          <Text style={{ color: "white", fontSize: 15 }}>Lugaress</Text>
+          <Text style={{ color: "white", fontSize: 15 }}>Lugares</Text>
           {lugares.map((lugar) => (
             <View key={lugar.id} style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox
