@@ -10,7 +10,6 @@ user_bp = Blueprint('user', __name__)
 def get_users():
     try:
         response=getUserAll()
-   
         if response is None:
             return jsonify({'error': 'No hay usuarios guardados en la base de datos'}), 404     
         else:
@@ -26,9 +25,10 @@ def create_user():
     error = validate(data)
     if error  is not None:
         return error 
-    recordUserRegistration(data)
+
     response = saveUser(data)
     if response == True:
+        recordUserRegistration(data)
         return jsonify({'message': 'User Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400

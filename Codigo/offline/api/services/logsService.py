@@ -4,13 +4,11 @@ from utils.date import createDate
 from datetime import datetime
 
 def registrarApertura():
-    # Crear un nuevo registro de log para la apertura del día
     nuevo_log = Logs(
-        aperturaCierre='Apertura',  # Indica que es una apertura
+        aperturaCierre='Apertura',
         createDate=createDate(),
         description='Registro de apertura del día'
     )
-
     # Guardar el nuevo registro en la base de datos
     try:
         db.session.add(nuevo_log)
@@ -26,8 +24,6 @@ def registrarCierre():
         createDate=createDate(),
         description='Registro del cierre del día'
     )
-
-    # Guardar el nuevo registro en la base de datos
     try:
         db.session.add(nuevo_log)
         db.session.commit()
@@ -36,13 +32,13 @@ def registrarCierre():
         return 400
 
 #Usuario registrado y carga del log
-def recordUserRegistration(data):
+def recordUserRegistrationManual(data):
     try:
         nuevo_log = Logs(
             userId=data.get('dni'),
             abm='ABM USUARIO',
             abmType ='ALTA',
-            description='Alta de usuaruio por registro facial',
+            description='Alta de usuario por registro facial',
             createDate= createDate(),
             isAutomatic=0
         )
@@ -52,45 +48,15 @@ def recordUserRegistration(data):
     except Exception as e:
         return e
 
-#Armado de lista de los logs de usuarios registrados
-def getlogsListRegistrationUsuario(logs):
-    log_list = []
-    for log in logs:
-        if log.get('visitorId') == None:
-            log_dict = {
-                'id': log.id,
-                'userId': log.name,
-                'exceptionId': log.exceptionId,
-                'visitorId':log.visitorId,            
-                'hasAccess':log.hasAccess,
-                'isFaceRecognition' :log.isFaceRecognition,
-                'abm': log.abm,
-                'abmType' :log.abmType,
-                'description': log.description,
-                'aperturaCierre':log.aperturaCierre,
-                'createDate':log.createDate,
-                'isEnter':log.isEnter,
-                'isAutomatic':log.isAutomatic
-        }
-        log_list.append(log_dict)
-    return log_list
-
-#Devuelvo la lista de logs (ESTA DE MAS???)
-def getLogRegistrationUsuario():
-    users = Logs.query.all()
-    responce=getlogsListRegistrationUsuario(users)
-    return responce
-
-#Login del usuario por reconocimiento facial y guardado del log
-def recordUserFaceRecognitionLogin(data):
+def recordImageUser(user_dni):
     try:
         nuevo_log = Logs(
-            userId=data.get('dni'),
-            hasAccess = data.get('hasAccess'),
-            isFaceRecognition =1,
-            description='Ingreso de usuaruio por registro facial',
+            userId=user_dni,
+            abm='ABM Imagen',
+            abmType ='ALTA',
+            description='Se asocia una imagen a un usuario',
             createDate= createDate(),
-            isAutomatic=1
+            isAutomatic=0
         )
         db.session.add(nuevo_log)
         db.session.commit()
@@ -98,50 +64,28 @@ def recordUserFaceRecognitionLogin(data):
     except Exception as e:
         return e
 
-def getlogsListIsFaceRecognitionUsuario(logs):
-    log_list = []
-    for log in logs:
-        if log.get('visitorId') == None and log.get('isFaceRecognition') == 1:
-            log_dict = {
-                'id': log.id,
-                'userId': log.name,
-                'exceptionId': log.exceptionId,
-                'visitorId':log.visitorId,            
-                'hasAccess':log.hasAccess,
-                'isFaceRecognition' :log.isFaceRecognition,
-                'abm': log.abm,
-                'abmType' :log.abmType,
-                'description': log.description,
-                'aperturaCierre':log.aperturaCierre,
-                'createDate':log.createDate,
-                'isEnter':log.isEnter,
-                'isAutomatic':log.isAutomatic
-        }
-        log_list.append(log_dict)
-    return log_list
-
-def getlogsIsFaceRecognitionUsuario():
-    users = Logs.query.all()
-    responce=getlogsIsFaceRecognitionUsuario(users)
-    return responce
-
-
-
-
-
-
-
-
-
-
+def recordImageVisitor(visitor_dni):
+    try:
+        nuevo_log = Logs(
+            visitorId=visitor_dni,
+            abm='ABM Imagen',
+            abmType ='ALTA',
+            description='Se asocia una imagen a un visitante',
+            createDate= createDate(),
+            isAutomatic=0
+        )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e
 
 
 #Registro del visitante y guardado del log
-def recordVisitorRegistration(data):
+def recordVisitorRegistrationManual(data):
     try:
         nuevo_log = Logs(
-            userId=data.get('userDni'),
-            visitorId= data.get('dni'),
+            visitorId= data.get('visitor_dni'),
             abm='ABM VISITANTE',
             abmType = 'ALTA',
             description='Alta de visitante por registro manual',
@@ -155,11 +99,10 @@ def recordVisitorRegistration(data):
         return e
     
 #Login del visitante por reconocimiento facial y guardado del log
-def recordVisitorRegistration(data):
+def recordVisitorLoginAutomatic(data):
     try:
         nuevo_log = Logs(
-            userId=data.get('userDni'),
-            visitorId= data.get('dni'),
+            visitorId= data.get('visitor_dni'),
             hasAccess = data.get('hasAccess'),
             isFaceRecognition =1,
             description='Login del visitante por registro reconociminto facial',
@@ -172,75 +115,13 @@ def recordVisitorRegistration(data):
     except Exception as e:
         return e
 
-
-#Listado de los visitates registrados
-def getlogsListRegistrationVisitante(logs):
-    log_list = []
-    for log in logs:
-        if log.get('visitorId') is not None:
-            log_dict = {
-                'id': log.id,
-                'userId': log.name,
-                'exceptionId': log.exceptionId,
-                'visitorId':log.visitorId,            
-                'hasAccess':log.hasAccess,
-                'isFaceRecognition' :log.isFaceRecognition,
-                'abm': log.abm,
-                'abmType' :log.abmType,
-                'description': log.description,
-                'aperturaCierre':log.aperturaCierre,
-                'createDate':log.createDate,
-                'isEnter':log.isEnter,
-                'isAutomatic':log.isAutomatic
-        }
-        log_list.append(log_dict)
-    return log_list
-
-
-
-
-def getlogsListIsFaceRecognitionVisitante(logs):
-    log_list = []
-    for log in logs:
-        if log.get('visitorId') is not None and log.get('isFaceRecognition') == 1:
-            log_dict = {
-                'id': log.id,
-                'userId': log.name,
-                'exceptionId': log.exceptionId,
-                'visitorId':log.visitorId,            
-                'hasAccess':log.hasAccess,
-                'isFaceRecognition' :log.isFaceRecognition,
-                'abm': log.abm,
-                'abmType' :log.abmType,
-                'description': log.description,
-                'aperturaCierre':log.aperturaCierre,
-                'createDate':log.createDate,
-                'isEnter':log.isEnter,
-                'isAutomatic':log.isAutomatic
-        }
-        log_list.append(log_dict)
-    return log_list
-
-
-
-def getlogsRegistrationVisitante():
-    users = Logs.query.all()
-    responce=getlogsListRegistrationUsuario(users)
-    return responce
-
-
-def getlogsIsFaceRecognitionVisitante():
-    users = Logs.query.all()
-    responce=getlogsListIsFaceRecognitionVisitante(users)
-    return responce
-
 #Lista de todos los logs
 def logsList(logs):
     log_list = []
     for log in logs:
         log_dict = {
             'id': log.id,
-            'userId': log.name,
+            'userId': log.userId,
             'exceptionId': log.exceptionId,
             'visitorId':log.visitorId,            
             'hasAccess':log.hasAccess,

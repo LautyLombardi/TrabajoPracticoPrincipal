@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from services.imageService import saveUserImage, saveVisitorImage
 from flask_cors import CORS
 
+
+
 image_bp = Blueprint('image', __name__)
 CORS(image_bp)
 
@@ -27,7 +29,6 @@ def insert_user():
         return jsonify({'error': 'El dni debe ser una entero'}), 422
 
     response = saveUserImage(image, user_dni)
-
     if response:
         return jsonify({'message': 'Imagen insertada correctamente en la base de datos.'}), 200
     else:

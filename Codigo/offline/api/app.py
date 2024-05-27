@@ -8,7 +8,6 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from services.logsService import registrarApertura, registrarCierre,recordUserRegistration
 
-#----------------borrar despues-------------------
 
 app = Flask(__name__)
 CORS(app)
@@ -107,4 +106,4 @@ def load_config(env):
 
 if __name__ == '__main__':
     config = load_config('development') # Carga los valores de 'development'
-    app.run(host='0.0.0.0', port=config.get('port'), debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
