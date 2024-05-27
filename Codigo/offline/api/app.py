@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from db.db import init_db
 from controllers import *
 from flask_cors import CORS
-from db.Populate import populate_places, populate_institutes, populate_institute_places
+from db.Populate import populate_places, populate_institutes, populate_institute_places, populate_roles
 from datetime import datetime
 
 app = Flask(__name__)
@@ -18,6 +18,7 @@ with app.app_context():
     populate_places()
     populate_institutes()
     populate_institute_places()
+    populate_roles()
 
 apertura_de_dia = True
 
