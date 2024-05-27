@@ -38,12 +38,12 @@ export interface Empresa{
 
 // Definición de la interfaz para la entidad Categoria
 export interface Categoria {
-    id?: number | undefined; // Opcional, en caso de tener un identificador
+    id: number; // Opcional, en caso de tener un identificador
     name: string;
     description: string;
     isExtern: number; // Nuevo atributo
     createDate?: string;
-  }
+}
   
 export interface Instituto {
     id?: number;
@@ -73,4 +73,15 @@ export interface Logs {
     isEnter: number;
     isAutomatic: number;
 }
-  
+
+export interface Excepcion {
+    id: number;
+    user_id: number;
+    name: string;
+    description: string;
+    duration: string;
+    createDate: string;
+    place_name: string;
+    category_name: string;
+
+}
