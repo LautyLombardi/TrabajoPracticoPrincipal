@@ -22,7 +22,7 @@ def saveUser(data):
         return e
 
 def updateUser(id,data):
-    user = User.query.get(id)
+    user = User.query.getg(id)
     
     if not user:
         return 404
@@ -32,7 +32,7 @@ def updateUser(id,data):
     try:
         user.name = data.get('name')
         user.lastname = data.get('lastname')
-        user.password = data.get('password')
+        user.password = hashPassword(data.get('password'))
         user.role_id = data.get('role_id')
         db.session.commit()
         
@@ -111,7 +111,7 @@ def userList(users):
             'dni': user.dni,
             'name': user.name,
             'lastname': user.lastname,
-            'password':hashPassword(user.password),            
+            'password':user.password,            
             'rol':user.role_id,
             'isActive' :user.isActive,
             'motive': user.motive,

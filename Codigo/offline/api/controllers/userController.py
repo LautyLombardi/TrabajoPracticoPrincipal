@@ -132,10 +132,6 @@ def set_login_user():
         return jsonify({'error':'no se ingreso dni'}),404
     password = hashPassword(data.get('password'))
     response = getUserAll()
-
-    print("password ingresado: ",password)
-    print("dni ingresado: ",data.get('dni'))
-
     for user in response:
         
         
