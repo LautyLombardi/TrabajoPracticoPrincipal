@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, TextInput, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
-import { TextInput } from 'react-native-gesture-handler';
 import Checkbox from 'expo-checkbox';
 import { Categoria, Lugar } from '@/api/model/interfaces';
 import { getLugares } from '@/api/services/place';
@@ -31,8 +30,12 @@ const Excepciones = () => {
     );
   };
 
-  const handleTerminar = async () => {
-    const category = categorias.find(categoria => categoria.name === categoriaSeleccionadaName);
+  const handleTerminar = async () => {    
+    const category = categorias.find(categoria => {
+      console.log(`Comparando: ${categoria.name} con ${categoriaSeleccionadaName}`);
+      return categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase();
+    });
+
     if (!isValidTime(duration)) {
       Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
       return;
@@ -64,10 +67,9 @@ const Excepciones = () => {
     const fetchLugares = async () => {
       try {
         const lugaresData = await getLugares();
-        const nombresLugares = lugaresData.map(lugar => lugar.name);
         setLugares(lugaresData);
       } catch (error) {
-        console.error("Error al obtener las categorías:", error);
+        console.error("Error al obtener los lugares:", error);
       }
     };
 
@@ -92,22 +94,20 @@ const Excepciones = () => {
       {<HandleGoBackReg title='Registro Categoria' route='categorias' />}
 
       <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Dni:</Text>
-          <TextInput 
-            placeholder='12345678' 
-            placeholderTextColor={"gray"} 
-            onChangeText={setDni} 
-            keyboardType="numeric"
-            value={dni} 
-            style={styles.input}
-          />
-        </View>
-        <View style={styles.inputRow}>
-          <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Nombre</Text>
+        <ScrollView>
+          <View style={styles.inputContainer}>
+            <Text style={styles.labelText}>Dni:</Text>
+            <TextInput 
+              placeholder='12345678' 
+              placeholderTextColor={"gray"} 
+              onChangeText={setDni} 
+              keyboardType="numeric"
+              value={dni} 
+              style={styles.input}
+            />
           </View>
-          <View style={styles.textInputContainer}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.labelText}>Nombre</Text>
             <TextInput 
               placeholder='Example' 
               placeholderTextColor={"gray"} 
@@ -116,12 +116,8 @@ const Excepciones = () => {
               style={styles.input}
             />
           </View>
-        </View>
-        <View style={styles.inputRow}>
-          <View style={styles.labelContainer}>
+          <View style={styles.inputContainer}>
             <Text style={styles.labelText}>Descripcion</Text>
-          </View>
-          <View style={styles.textInputContainer}>
             <TextInput 
               placeholder='Example' 
               placeholderTextColor={"gray"} 
@@ -130,42 +126,43 @@ const Excepciones = () => {
               style={styles.input}
             />
           </View>
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Hora de Apertura:</Text>
-          <TextInput 
-            placeholder='00:00' 
-            placeholderTextColor={"gray"} 
-            onChangeText={setDuration} 
-            value={duration} 
-            style={styles.input}
-            keyboardType="numeric"
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.labelText}>Hora de Apertura:</Text>
+            <TextInput 
+              placeholder='00:00' 
+              placeholderTextColor={"gray"} 
+              onChangeText={setDuration} 
+              value={duration} 
+              style={styles.input}
+            />
+          </View>
 
-        {/** Seleccionar la categoria */}
-        <View style={styles.selectContainer}>
-          <SelectItem
-            fieldName="Categoria"
-            value={categoriaSeleccionadaName}
-            onValueChange={setCategoriaSeleccionadaName}
-            values={categoriasName}
-          />
-        </View>
-        
-        {/** Seleccionar la lugares */}
-        <View style={styles.campo}>
-          <Text style={[styles.campoText, {flex: 1}]}>Lugares a los que se le aplica la excepción</Text>
-          {lugares.map((lugar) => (
-            <View key={lugar.id} style={styles.checkboxContainer}>
-              <Checkbox
-                value={lugaresSeleccionados.includes(lugar.id)}
-                onValueChange={() => handleLugarSeleccionado(lugar.id)}
-              />
-              <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+          {/** Seleccionar la categoria */}
+          <View style={styles.inputContainer}>
+            <SelectItem
+              fieldName="Categoria"
+              value={categoriaSeleccionadaName}
+              onValueChange={setCategoriaSeleccionadaName}
+              values={categoriasName}
+            />
+          </View>
+          
+          {/** Seleccionar la lugares */}
+          <View style={styles.campo}>
+            <Text style={[styles.campoText]}>Lugares a los que se le aplica la excepción</Text>
+            <View style={styles.lugaresContainer}>
+              {lugares.map((lugar, index) => (
+                <View key={lugar.id} style={styles.checkboxContainer}>
+                  <Checkbox
+                    value={lugaresSeleccionados.includes(lugar.id)}
+                    onValueChange={() => handleLugarSeleccionado(lugar.id)}
+                  />
+                  <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
+          </View>
+        </ScrollView>
       </View>
 
       {/** Enviar Excepcion al backend */}
@@ -207,49 +204,32 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: 'black',
   },
-  inputRow: {
-    height: 70,
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 10,
-  },
-  labelContainer: {
-    width: "23%",
-  },
-  textInputContainer: {
-    backgroundColor: "white",
-    padding: 12,
-    flex: 1,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  selectContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    padding: 10,
-    gap: 10,
-  },
   campo: {
     flexDirection: 'column',
-    flex: 1,
     alignItems: "center",
+    marginTop: 20,
   },
   campoText: {
     color: "white",
     fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
-    textAlignVertical: "center",
-    flex: 1,
+    marginBottom: 10,
+  },
+  lugaresContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
+    width: '48%',
+    marginBottom: 10,
   },
   checkboxLabel: {
     marginLeft: '2%',
-    marginBottom: '2%',
     color: "white",
   },
   button: {

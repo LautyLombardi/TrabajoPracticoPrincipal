@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Excepcion } from '@/api/model/interfaces';
 import { getExcepciones } from '@/api/services/excepciones';
-import { useEffect } from 'react';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 type PropsCol = {
@@ -154,12 +154,17 @@ const AdministracionCategorias = () => {
   // Listado de Excepciones
   const [excepciones, setExcepciones] = useState<Excepcion[]>([]);
 
+  useFocusEffect(
+    useCallback(() => {
+      getExcepciones().then((exceptions) => setExcepciones(exceptions))
+    }, [])
+  );
+
   useEffect(() => {
     getExcepciones().then((exceptions) => setExcepciones(exceptions))
 
   }, []);
-
-
+  
   return (
     <View style={styles.container}>
         {/** Header Menu */}
