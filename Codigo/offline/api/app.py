@@ -5,7 +5,7 @@ from controllers import *
 from flask_cors import CORS
 from db.Populate import populate_places, populate_institutes, populate_institute_places
 from datetime import datetime
-from services.logsService import registrarApertura, registrarCierre, recordUserRegistrationManual, recordUserRegistration
+from services.logsService import registrarApertura, registrarCierre,recordUserRegistration
 
 app = Flask(__name__)
 CORS(app)
@@ -75,7 +75,7 @@ app.register_blueprint(visitor_bp, url_prefix='/visitor')
 app.register_blueprint(category_bp, url_prefix='/category')
 app.register_blueprint(institute_bp, url_prefix='/institute')
 app.register_blueprint(enterprice_bp, url_prefix='/enterprice')
-app.register_blueprint(logs_bp,url_perfix='/logs')
+app.register_blueprint(logs_bp, url_prefix='/logs')
 app.register_blueprint(api_bp, url_prefix='/api')
 
 def load_config(env):

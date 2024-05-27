@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from services.userService import updateUser,saveUser, getUserById, getUserAll, getUserAllActive, getUserAllDesactive, setActive, setDesactive
 from services.roleService import exist_rol
 from utils.date import check_date_format
+from services.logsService import recordUserRegistration
 
 user_bp = Blueprint('user', __name__)
 
@@ -25,7 +26,7 @@ def create_user():
     error = validate(data)
     if error  is not None:
         return error 
-    
+    recordUserRegistration(data)
     response = saveUser(data)
     if response == True:
         return jsonify({'message': 'User Registrado'}), 201

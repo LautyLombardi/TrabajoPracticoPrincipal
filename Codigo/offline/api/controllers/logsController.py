@@ -3,25 +3,11 @@ from services.logsService import *
 from utils.date import check_date_format
 
 logs_bp = Blueprint('logs', __name__)
-
-# Rutas para logs de reconocimiento facial de usuarios
-@logs_bp.route('/facerecognition/user', methods=['GET'])
-def get_face_recognition_user_logs():
-    try:
-        response=getLogFaceRecognition(1)
-
-        if response is None:
-            return jsonify({'error': 'No hay usuarios guardados, en la base de datos, que se hayan registrado por reconocimiento facial'}), 404     
-        else:
-            return jsonify(response), 200
-
-    except Exception as e: 
-        return jsonify({'message': 'Lista de logs de reconocimiento facial de usuarios'}), 200
     
-@logs_bp.route('/manualrecognition/user', methods=['GET'])
-def get_manual_recognition_user_logs():
+@logs_bp.route('/manualregistration/user', methods=['GET'])
+def get_manual_registration_user_logs():
     try:
-        response=getLogFaceRecognition(0)
+        response=getLogRegistrationUsuario()
    
         if response is None:
             return jsonify({'error': 'No hay usuarios guardados, en la base de datos, que '}), 404     
@@ -31,17 +17,24 @@ def get_manual_recognition_user_logs():
     except Exception as e: 
         return jsonify({'message': 'Lista de logs de reconocimiento facial de usuarios'}), 200
 
-# Rutas para logs de reconocimiento facial de visitantes
-@logs_bp.route('/facerecognition/visitor', methods=['GET'])
-def get_face_recognition_visitor_logs():
-    
+@logs_bp.route('/manualregistration/visitor', methods=['GET'])
+def get_manual_registration_visitor_logs():
+    try:
+        response=getlogsListRegistrationVisitante()
 
-    return jsonify({'message': 'Lista de logs de reconocimiento facial de visitantes'}), 200
+        if response is None:
+            return jsonify({'error': 'No hay usuarios guardados, en la base de datos, que '}), 404     
+        else:
+            return jsonify(response), 200
 
-@logs_bp.route('/manualrecognition/visitor', methods=['GET'])
-def get_face_recognition_visitor_logs():
+    except Exception as e: 
+        return jsonify({'message': 'Lista de logs de reconocimiento manual de visitantes'}), 400
+
+@logs_bp.route('/loginfacerecognition/user', methods=['GET'])
+def get_login_face_recognition_user_logs():
     
-    return jsonify({'message': 'Lista de logs de reconocimiento manual de visitantes'}), 200
+    return jsonify({'message': 'Lista de logs de imágenes de usuarios'}), 200
+
 
 # Rutas para logs de imágenes de usuarios
 @logs_bp.route('/image/user', methods=['GET'])
