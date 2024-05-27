@@ -1,205 +1,207 @@
-import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native'
-import { useState, useEffect } from 'react'
-import ContenedorVista from '@/ui/ContenedorVista'
-import Boton from '@/components/Boton'
-import { Ionicons } from '@expo/vector-icons'
-import pickDate from '@/util/pickDate'
-import { DropdownPicker } from '@/components/DropdownPicker'
-import CheckboxList from '@/components/CheckboxList'
-import { router } from 'expo-router'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
+import { TextInput } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { Excepcion } from '@/api/model/interfaces';
+import { getExcepciones } from '@/api/services/excepciones';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
-// Funciones de ejemplo 
+type PropsCol = {
+  text?: string,
+  flexWidth?: number,
+  icon?: React.ReactNode
+};
 
-// Deberia ser cambiada por la funcion que devuelve todas las categorias
-const obtenerCategorias = async () => {
-  return [{
-    id: 1,
-    name: "Docente",
-  },
-  {
-    id: 2,
-    name: "Arquitecto",
-  },
-  {
-    id: 3,
-    name: "Pancho",
-  },
-  ]
-}
+const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
 
-// Deberia ser cambiada por l afuncion que devuelve todos los lugares
-const obtenerLugares = async () => {
-  return [{
-    id: 1,
-    name: "mod1"
-  },
-  {
-    id: 2,
-    name: "mod2"
-  },
-  {
-    id: 3,
-    name: "mod3"
-  },
-  {
-    id: 4,
-    name: "mod4"
-  },
-  {
-    id: 5,
-    name: "mod5"
-  },
-  {
-    id: 6,
-    name: "mod6"
-  },
-  {
-    id: 7,
-    name: "vicor cafeteria"
-  },
-  {
-    id: 1,
-    name: "modulo1"
-  },
-  ]
-}
-
-const excepciones = () => {
-
-  // Manejo de las fechas de inicio y de cierre
-  const [fechaInicio, setFechaInicio] = useState(new Date(Date.now()))
-  const [fechaCierre, setFechaCierre] = useState(new Date(Date.now()))
-  const handleFechaIncio = () => {
-    pickDate(fechaInicio, setFechaInicio)
-  }
-  const handleFechaCierre = () => {
-    pickDate(fechaCierre, setFechaCierre)
-  }
-
-  // Lista de las categorias disponibles
-  const [listaCategorias, setLstaCategorias] = useState([])
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
-
-  useEffect(() => {
-    obtenerCategorias().then((lista: any) => {
-      setLstaCategorias(lista)
-    }).catch(() => console.log("No se pudo cargar las categorias"))
-  }, [])
-
-  // Manejo de los lugares 
-  const [listaDeLugares, setListaDeLugares] = useState([])
-  const [lugaresSeleccionados, setLugaresSeleccionados] = useState([])
-
-  useEffect(() => {
-    obtenerLugares().then((lista: any) => { setListaDeLugares(lista) }).catch(() => console.log("No se pudo cargar los lugares"))
-  }, [])
-
-  const handleCambiosEnLugaresSeleccionados = (LugaresNuevos: any) => {
-    setLugaresSeleccionados(LugaresNuevos)
-  }
-
-  // Terminar el registro de excepcion
-  const enviarDatosAlBackend = async (datos?: any) => {
-    console.log("datos enviados")
-  }
-
-  const handleTerminarRegistro = () => {
-    enviarDatosAlBackend().then(() => {
-      console.log("exito")
-      router.navigate("/admin")
-    }).catch(
-      () => console.log("no exito")
-    )
+  const renderChildren = () => {
+    if((text || text=='') && !icon){
+      return (
+      <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+      )
+    }else{
+      if(icon){
+        return (icon) 
+      }else {
+        return <Text>Not Found</Text>
+      }
+    }
   }
 
   return (
-    <ContenedorVista>
-      {/* Formulario */}
-      {/** Datos pedidos en la card:
-       * Fecha de inicio de fin de la excepcion
-       * Poder elegir lugares entre todos los disponibles en el sistema
-       */}
-      <View style={styles.formulario}>
-        {/** Campo fecha de inicio */}
-        <View style={styles.campo}>
-          <Text style={styles.campoText}>Coloque la fecha de inicio</Text>
-          <Boton styles={[styles.campoInput, { gap: 5 }]} onPress={handleFechaIncio}>
-            <Text style={{ color: "black", fontSize: 15 }}>{fechaInicio.toLocaleDateString()}</Text>
-            <Ionicons name='calendar' color={"black"} size={20} />
-          </Boton>
+    <View style={{ flex: flexWidth, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
+        {renderChildren()}
+    </View>
+  );
+};
+
+type PropsRow = {
+  children: React.ReactNode;
+};
+
+const Row: React.FC<PropsRow> = ({ children }) => {
+  return (
+    <View style={{ flexDirection: 'row', borderBottomColor: 'white', borderBottomWidth: 2, alignItems: 'center' }}>
+      {children}
+    </View>
+  );
+};
+
+type PropsTable = {
+  excepciones: Excepcion[];
+
+  viewState: boolean,
+  editState: boolean,
+  deleteState: boolean,
+  
+  handleView: (id: number) => void;
+  handleEdit: (id: number) => void;
+  handleDelete: (id: number) => void;
+};
+
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, excepciones }) => {
+
+  const handleDesactivarCategoria = async (id: number) => {
+    try {
+      //await desactivarCategoria(id);
+      // Realizar cualquier otra acción necesaria después de desactivar la categoría
+    } catch (error) {
+      console.error('Error al desactivar la categoría:', error);
+    }
+  };
+
+  const iconVerMas = (id: any) => {
+    return (
+      <Ionicons name='eye-outline' style={{fontSize: 20, backgroundColor: "black", padding: 7, borderRadius: 100}} color={"white"} />
+    )
+  }
+
+  const deleteIcon = (id: any) => {
+    return (
+
+      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
+    )
+  }
+
+  const modifyIcon = (id: any) => {
+    return (
+      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+    )
+  }
+  const handleToggleIcon = (id: any): JSX.Element => {
+    if (editState) {
+      return modifyIcon(id);
+    } else if (deleteState) {
+      return deleteIcon(id);
+    } else {
+      return iconVerMas(id);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
+      <Row>
+        <Col text='ID'flexWidth={0.8}/>
+        <Col text='DNI'flexWidth={3}/>
+        <Col text='Nombre' flexWidth={3}/>
+        <Col text='Duracion' flexWidth={2}/>
+        <Col text='Lugar' flexWidth={3}/>
+        <Col text='Categoria' flexWidth={3}/>
+        <Col text='' flexWidth={0.8}/>
+      </Row>
+      {excepciones.map((excepcion) => (
+        <Row key={excepcion.id}>
+          <Col text={excepcion.id?.toString() || ''} flexWidth={0.8} />
+          <Col text={excepcion.user_id?.toString() || ''} flexWidth={3} />
+          <Col text={excepcion.name} flexWidth={3} />
+          <Col text={excepcion.duration} flexWidth={2} />
+          <Col text={excepcion.place_name} flexWidth={3} />
+          <Col text={excepcion.category_name} flexWidth={3} />
+          {/* <Col flexWidth={0.8} icon={handleToggleIcon()} /> */} 
+          {/** Icono de columna */}
+          <View style={{ flex: 0.8, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
+              {handleToggleIcon(excepcion.id)}
+          </View>
+        </Row>
+      ))}
+    </View>
+  );
+};
+
+const AdministracionCategorias = () => {
+  const [view, setView] = useState(true);
+  const [edit, setEdit] = useState(false);
+  const [trash, setTrash] = useState(false);
+
+  // HandleDeleteCategoria 
+  const handleDeleteCategoria = () => {
+
+  }
+
+  // Cambio de iconos
+  function handleToggleIco(icon : string){
+    if(icon == "edit" && edit || icon == "delete" && trash){
+      setEdit(false)
+      setTrash(false)
+    }else {
+      setEdit(icon == "edit")
+      setTrash(icon == "delete")        
+    }
+  };
+
+  // Listado de Excepciones
+  const [excepciones, setExcepciones] = useState<Excepcion[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getExcepciones().then((exceptions) => setExcepciones(exceptions))
+    }, [])
+  );
+
+  useEffect(() => {
+    getExcepciones().then((exceptions) => setExcepciones(exceptions))
+
+  }, []);
+  
+  return (
+    <View style={styles.container}>
+        {/** Header Menu */}
+        <HandleGoBack title='Administración de Categorías' route='menu' />
+
+        {/** Buscador */}
+        <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
+          <TextInput placeholder='Buscar' style={{backgroundColor: "white", color:"black", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, flex: 2, borderWidth: 1, borderColor: "black"}}/>
+          <Ionicons name='search' color={"white"} style={{fontSize: 27, backgroundColor: "black", borderWidth: 1, borderColor: "white", borderRadius: 25, padding: 5}}/>
         </View>
 
-        {/** Campo fecha de Cierre */}
-        <View style={styles.campo}>
-          <Text style={styles.campoText}>Coloque la fecha de Cierre</Text>
-          <Boton styles={[styles.campoInput, { gap: 5 }]} onPress={handleFechaCierre}>
-            <Text style={{ color: "black", fontSize: 15 }}>{fechaCierre.toLocaleDateString()}</Text>
-            <Ionicons name='calendar' color={"black"} size={20} />
-          </Boton>
+        {/** Botones CRUD */}
+        <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end", marginVertical: 15, alignItems: "center", paddingHorizontal: 20, gap: 5}}>
+          <Pressable style={{padding: 10, backgroundColor: trash ? 'red' : 'black', borderRadius: 20}} onPress={() => handleToggleIco("delete")}>
+            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de baja</Text>
+          </Pressable>
+          <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
+            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
+          </Pressable>
+          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/excepciones/registrar")}>
+            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
+          </Pressable>
         </View>
 
-        {/** Campo seleccionar  categoria afectada */}
-        <View style={styles.campo}>
-          <Text style={styles.campoText}>Selecione la Categoria</Text>
-          <DropdownPicker style={styles.campoInput} itemList={listaCategorias} valor={categoriaSeleccionada} setValor={setCategoriaSeleccionada} />
-        </View>
+        {/** Tabla */}
+        <Tablacategorias viewState={view} editState={edit} deleteState={trash} excepciones={excepciones} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={handleDeleteCategoria}/>
 
-        {/** Selecionar los lugares a los que se le aplica la excepcion */}
-        {/** Campo seleccionar  categoria afectada */}
-        <View style={[styles.campo, {flexDirection: 'column', flex: 1, alignItems: "center"}]}>
-          <Text style={[styles.campoText, {flex: 1}]}>Seleccionar los lugares a los que se le aplica la excepción</Text>
-          {/* Renderizar el componente CheckboxList con la lista de lugares */}
-          <CheckboxList
-            items={listaDeLugares}
-            checkedList={lugaresSeleccionados}
-            onCheckboxChange={handleCambiosEnLugaresSeleccionados}
-          />
-          {/* Puedes usar lugaresSeleccionados para hacer algo con los lugares seleccionados */}
-        </View>
-      </View>
-
-      {/** Enviar Excepcion al backend */}
-      <View style={{flex: 1, justifyContent: "flex-end", padding: 40}}>
-        <TouchableOpacity 
-            style={{backgroundColor:"black", padding: 10, borderRadius: 10, borderColor:"white", borderWidth: 2}}
-            onPress={handleTerminarRegistro}
-          >
-          <Text style={{width: 200, height: 30, color: "white", textAlign: "center", textAlignVertical: "center"}}>Registrar Excepcion</Text>
-        </TouchableOpacity>
-      </View>
-    </ContenedorVista>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  formulario: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
+  container: {
+      flex: 1,
+      backgroundColor: '#000051',
+      alignItems: 'center',
   },
-  campo: {
-    flexDirection: "row",
-    gap: 20,
-    padding: 5,
-    alignItems: "center"
-  },
-  campoText: {
-    color: "white",
-    fontSize: 15,
-    fontWeight: "bold",
-    textAlign: "center",
-    textAlignVertical: "center",
-    flex: 1
-  },
-  campoInput: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    flex: 2,
-    backgroundColor: "white",
-    borderRadius: 5,
-    padding: 10
-  },
-})
+});
 
-export default excepciones
+export default AdministracionCategorias

@@ -1,8 +1,12 @@
 import { View, Text, StyleSheet, Pressable,TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import VisitorModal from '@/components/Modal/ModalUser';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
+import { Visitante } from '@/api/model/interfaces';
+import { getVisitantes } from '@/api/services/visitantes';
+import { useFocusEffect } from '@react-navigation/native';
 
 type PropsCol = {
   text?: string,
@@ -46,13 +50,14 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 };
 
 type PropsTable = {
+  visitantes: Visitante[]
   viewState: boolean,
   editState: boolean,
   deleteState: boolean,
   handleShowUser: () => void,
 };
 
-const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteState, handleShowUser }) => {
+const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteState, handleShowUser, visitantes }) => {
 
   const iconVerMas = () => {
     return (
@@ -88,54 +93,25 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
+        <Col text='DNI'flexWidth={3}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Categoria'/>
-        <Col text='Institutos'/>
+        <Col text='Apellido' flexWidth={3}/>
+        <Col text='Fecha Incio' flexWidth={3.5}/>
+        <Col text='Fecha Fin' flexWidth={3.5}/>
+        <Col text='Categoria' flexWidth={3}/>
         <Col text='' flexWidth={0.8}/>
       </Row>
-      <Row>
-        <Col text='1'flexWidth={0.8}/>
-        <Col text='Juan Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Docente'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='2'flexWidth={0.8}/>
-        <Col text='Juan Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Docente'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='3'flexWidth={0.8}/>
-        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Alumno'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='3'flexWidth={0.8}/>
-        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Alumno'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='3'flexWidth={0.8}/>
-        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Alumno'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
-      <Row>
-        <Col text='3'flexWidth={0.8}/>
-        <Col text='Carlos Gabriel Castaño' flexWidth={3}/>
-        <Col text='Alumno'/>
-        <Col text='ICI, IDEI'/>
-        <Col flexWidth={0.8} icon={handleToggleIcon()}/>
-      </Row>
+      {visitantes.map((visitante) => 
+              <Row key={visitante.dni} >
+              <Col text={visitante.dni.toString()} flexWidth={3} />
+              <Col text={visitante.name} flexWidth={3} />
+              <Col text={visitante.lastname} flexWidth={3} />
+              <Col text={visitante.startDate} flexWidth={3.5} />
+              <Col text={visitante.finishDate} flexWidth={3.5} />
+              <Col text={visitante.category} flexWidth={3} />
+              <Col text='' flexWidth={0.8} />
+            </Row>
+      )}
     </View>
   );
 };
@@ -158,19 +134,6 @@ const AdministracionVisitantes = () => {
       setTrash(icon == "delete")        
     }
   };
-
-
-  // Open modal ejemplo
-  const usuarioEjemplo = {
-    nombre: "Juan",
-    apellido: "Castaño",
-    email: "ejemplo@gmail.com",
-    dni: 223333,
-    categoria: "Docente",
-    lugares: ["mod7", "222", "5555"],
-  };
-  const [visitante, setVisitante] = useState(usuarioEjemplo);
-
   const handleOpenUserModal = () => {
     setShowUser(true);
   };
@@ -179,40 +142,52 @@ const AdministracionVisitantes = () => {
     setShowUser(false);
   };
 
+  const [visitantes, setVisitantes] = useState<Visitante[]>([]);
 
-  // Visitantes
+  useFocusEffect(
+    useCallback(() => {
+      getVisitantes().then((visitors) => setVisitantes(visitors))
+    }, [])
+  );
 
-  return (<>
+  useEffect(() => {
+    getVisitantes().then((visitors) => setVisitantes(visitors))
+
+  }, []);
+  
+  return (
     <View style={styles.container}>
-        {/** Header Menu */}
+      {/** Header Menu */}
+      <HandleGoBack title='Administraion de Visitantes' route='menu' />
 
-        {/** Buscador */}
-        <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
-          <TextInput placeholder='Buscar' style={{backgroundColor: "white", color:"black", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, flex: 2, borderWidth: 1, borderColor: "black"}}/>
-          <Ionicons name='search' color={"white"} style={{fontSize: 27, backgroundColor: "black", borderWidth: 1, borderColor: "white", borderRadius: 25, padding: 5}}/>
-        </View>
+      {/** Buscador */}
+      <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
+        <TextInput placeholder='Buscar' style={{backgroundColor: "white", color:"black", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, flex: 2, borderWidth: 1, borderColor: "black"}}/>
+        <Ionicons name='search' color={"white"} style={{fontSize: 27, backgroundColor: "black", borderWidth: 1, borderColor: "white", borderRadius: 25, padding: 5}}/>
+      </View>
 
-        {/** Botones CRUD */}
-        <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end", marginVertical: 15, alignItems: "center", paddingHorizontal: 20, gap: 5}}>
-          <Pressable style={{padding: 10, backgroundColor: trash ? 'red' : 'black', borderRadius: 20}} onPress={() => handleToggleIco("delete")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de baja</Text>
-          </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
-          </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/visitantes/registrar")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
-          </Pressable>
-        </View>
+      {/** Botones CRUD */}
+      <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end", marginVertical: 15, alignItems: "center", paddingHorizontal: 20, gap: 5}}>
+        <Pressable style={{padding: 10, backgroundColor: trash ? 'red' : 'black', borderRadius: 20}} onPress={() => handleToggleIco("delete")}>
+          <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de baja</Text>
+        </Pressable>
+        <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
+          <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
+        </Pressable>
+        <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/visitantes/registrar")}>
+          <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
+        </Pressable>
+      </View>
 
-        {/** Tabla */}
-        <TablaVisitantes viewState={view} editState={edit} deleteState={trash} handleShowUser={handleOpenUserModal}/>
+      {/** Tabla */}
+      <TablaVisitantes viewState={view} editState={edit} deleteState={trash} handleShowUser={handleOpenUserModal} visitantes={visitantes}/>
 
 
+      {/* cosito del ojito, very important para S4 */}
+      {/* {showUser && <VisitorModal usuario={visitantes} handleCloseModal={handleCloseUserModal} />} */}
+      {/** Card User */}
     </View>
-            {/** Card User */}
-            {showUser && <VisitorModal usuario={visitante} handleCloseModal={handleCloseUserModal} />}
-            </>)
+  )
 }
 
 const styles = StyleSheet.create({
@@ -220,7 +195,6 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#000051',
       alignItems: 'center',
-      paddingVertical: 25
   },
 });
 

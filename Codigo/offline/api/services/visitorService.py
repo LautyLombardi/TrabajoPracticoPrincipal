@@ -3,8 +3,11 @@ from models.Visitor import Visitor
 from utils.date import createDate
 from models.CategoryVisitor import CategoryVisitor
 from models.CategoryInstitute import CategoryInstitute
+from models.Role import Role
 from models.Institute import Institute
+from models.VisitorHistory import VisitorHistory
 from services.categoryService import getCategoryById
+from utils.passHash import hashPassword
 
 def saveVisitor(data):
     try:
@@ -16,7 +19,8 @@ def saveVisitor(data):
             startDate=data.get('startDate'), 
             finishDate=data.get('finishDate'),
             isActive=1,
-            createDate=createDate()
+            createDate=createDate(),
+            password=hashPassword(data.get('password'))
         )
         db.session.add(visitor)
         db.session.commit()
@@ -26,20 +30,43 @@ def saveVisitor(data):
         return e
 
 def updateVisitor(id, data):
-    visitor = Visitor.query.get(id) 
-       
+    visitor = Visitor.query.get(id)
+    role = Role.query.get(data.get('admid'))
+    if not role or role.name != "RRHH":
+        return 401
     if not visitor:
         return 404
     if visitor.isActive == 0:
         return 400
     
     try:
+        # Crear una instancia de VisitorHistory con los datos actuales del visitante
+        visitor_history = VisitorHistory(
+            dni=visitor.dni,
+            enterprice_id=visitor.enterprice_id,
+            name=visitor.name,
+            lastname=visitor.lastname,
+            email=visitor.email,
+            startDate=visitor.startDate,
+            finishDate=visitor.finishDate,
+            isActive=0,
+            createDate=visitor.createDate,
+            isEnter=visitor.isEnter,
+            password=visitor.password
+        )
+
+        # Guardar la instancia de VisitorHistory en la base de datos
+        db.session.add(visitor_history)
+        db.session.commit()
+
+        # Actualizar los datos del visitante en la tabla Visitor
         visitor.enterprice_id = data.get('enterprice_id')
         visitor.name = data.get('name')
-        visitor.lastname=data.get('lastname') 
-        visitor.email=data.get('email')
-        visitor.startDate=data.get('startDate')
-        visitor.finishDate=data.get('finishDate')
+        visitor.lastname = data.get('lastname') 
+        visitor.email = data.get('email')
+        visitor.startDate = data.get('startDate')
+        visitor.finishDate = data.get('finishDate')
+        visitor.password = hashPassword(data.get('password'))
         db.session.commit()
 
         return 200
@@ -58,14 +85,33 @@ def getVisitorById(id):
             'startDate': visitor.startDate,
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
-            'createDate': visitor.createDate
+            'createDate': visitor.createDate,
+            'password':visitor.password
         }
     else:
         return None
 
 def getVisitorAll():
     visitors = Visitor.query.all()
-    return visitorList(visitors)
+    visitor_list = []
+    for visitor in visitors:
+        visitor_dict = {
+            'dni': visitor.dni,
+            'enterprice_id': visitor.enterprice_id,
+            'name': visitor.name,
+            'lastname': visitor.lastname,
+            'email': visitor.email,
+            'startDate': visitor.startDate,
+            'finishDate': visitor.finishDate,
+            'isActive': visitor.isActive,
+            'createDate': visitor.createDate,
+            'isEnter': visitor.isEnter,
+            'password':visitor.password,
+            'category': getCategoryForVisitor(visitor.dni)["name"]
+            #'institutes':getInstituteByNames(visitor.dni)
+        }
+        visitor_list.append(visitor_dict)
+    return visitor_list 
    
 def getVisitorAllActive():
     visitors = Visitor.query.filter_by(isActive=1).all()
@@ -120,8 +166,10 @@ def visitorList(visitors):
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
             'createDate': visitor.createDate,
-            'category': getCategoryForVisitor(visitor.dni)["name"],
-            'institutes':getInstituteByNames(visitor.dni)
+            'isEnter': visitor.isEnter,
+            'password':visitor.password
+            #'category': getCategoryForVisitor(visitor.dni)["name"],
+            #'institutes':getInstituteByNames(visitor.dni)
         }
         visitor_list.append(visitor_dict)
     return visitor_list 
@@ -175,4 +223,4 @@ def getCategoryForVisitor(id):
     except Exception as e:
         print(e)
         return None     
-    return visitor_list  
+    

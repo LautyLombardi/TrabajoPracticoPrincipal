@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from db.db import init_db
 from controllers import *
 from flask_cors import CORS
-from db.Populate import populate_places, populate_institutes, populate_institute_places
+from db.Populate import populate_places, populate_institutes, populate_institute_places, populate_roles
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from services.logsService import registrarApertura, registrarCierre,recordUserRegistration
@@ -22,6 +22,7 @@ with app.app_context():
     populate_places()
     populate_institutes()
     populate_institute_places()
+    populate_roles()
 
 apertura_de_dia = True
 
@@ -98,6 +99,7 @@ app.register_blueprint(institute_bp, url_prefix='/institute')
 app.register_blueprint(enterprice_bp, url_prefix='/enterprice')
 app.register_blueprint(logs_bp, url_prefix='/logs')
 app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(exception_bp, url_prefix='/exception')
 
 def load_config(env):
     with open(os.path.join(current_directory, './config.json')) as f:

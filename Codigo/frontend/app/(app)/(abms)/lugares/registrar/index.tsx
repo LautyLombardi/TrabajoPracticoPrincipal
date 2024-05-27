@@ -6,13 +6,13 @@ import { router } from 'expo-router';
 import { createLugar } from '@/api/services/place';
 
 const RegistrarLugar = () => {
-  const [nombre, setNombre] = useState("");
-  const [abbreviation, setAbbreviation] = useState("");
-  const [description, setDescription] = useState("");
-  const [openTime, setOpenTime] = useState("");
-  const [closeTime, setCloseTime] = useState("");
-  const [isOpenPickerVisible, setIsOpenPickerVisible] = useState(false);
-  const [isClosePickerVisible, setIsClosePickerVisible] = useState(false);
+  const [nombre, setNombre] = useState<string>("");
+  const [abbreviation, setAbbreviation] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [openTime, setOpenTime] = useState<string>("");
+  const [closeTime, setCloseTime] = useState<string>("");
+  const [isOpenPickerVisible, setIsOpenPickerVisible] = useState<boolean>(false);
+  const [isClosePickerVisible, setIsClosePickerVisible] = useState<boolean>(false);
 
   const handleConfirmOpenTime = (date: any) => {
     setOpenTime(date.toTimeString().slice(0, 5));

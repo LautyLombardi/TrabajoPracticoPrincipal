@@ -1,9 +1,10 @@
 from db.db import db
 
 # Modelo para la tabla 'visitor'
-class Visitor(db.Model):
-    dni = db.Column(db.Integer, primary_key=True)
-    enterprice_id = db.Column(db.Integer, db.ForeignKey('enterprice.id'))
+class VisitorHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    dni = db.Column(db.Integer)
+    enterprice_id = db.Column(db.Integer)
     name = db.Column(db.Text)
     lastname = db.Column(db.Text)
     email = db.Column(db.Text)
@@ -14,5 +15,3 @@ class Visitor(db.Model):
     isEnter = db.Column(db.Integer)
     password = db.Column(db.Text)
     
-    # Relación con tabla Enterprice
-    enterprice = db.relationship('Enterprice', backref=db.backref('visitors', lazy=True))

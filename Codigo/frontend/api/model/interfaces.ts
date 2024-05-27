@@ -17,16 +17,29 @@ export interface Lugar{
 }
 
 export interface Visitante{
-    id: number,
     dni:number,
+    enterprice_id:number,
     name: string,
     lastname: string,
-    places: string[],
+    email: string,
+    startDate: string,
+    finishDate: string,
+    isActive:number,
+    createDate:string,
+    isEnter:number,
+    places?: string[],
     institutes?: string,
     empresa?: string,
-    category: string,
+    category?: string,
 }
 
+export interface Categoria {
+    id: number; 
+    name: string;
+    description: string;
+    isExtern: number;
+    createDate?: string;
+}
 
 export interface Empresa{
     id: number,
@@ -36,14 +49,6 @@ export interface Empresa{
     createDate?:string
 }
 
-// Definición de la interfaz para la entidad Categoria
-export interface Categoria {
-    id?: number | undefined; // Opcional, en caso de tener un identificador
-    name: string;
-    description: string;
-    isExtern: number; // Nuevo atributo
-    createDate?: string;
-  }
   
 export interface Instituto {
     id?: number;
@@ -56,4 +61,32 @@ export interface Rol {
     name: string,
     description: string,
     createDate?: string,
+}
+
+export interface Logs {
+    id: string;
+    userId: number;
+    exceptionId: number;
+    visitorId: number;
+    hasAccess: number;
+    isFaceRecognition: number;
+    abm: string;
+    abmType: string;
+    description: string;
+    aperturaCierre: string;
+    createDate: string;
+    isEnter: number;
+    isAutomatic: number;
+}
+
+export interface Excepcion {
+    id: number;
+    user_id: number;
+    name: string;
+    description: string;
+    duration: string;
+    createDate: string;
+    place_name: string;
+    category_name: string;
+
 }

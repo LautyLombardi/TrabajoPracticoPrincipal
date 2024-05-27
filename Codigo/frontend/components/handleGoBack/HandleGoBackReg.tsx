@@ -8,22 +8,14 @@ type PropsGoBack = {
   route: string,
 };
 
-const HandleGoBackReg: React.FC<PropsGoBack> = ({ title, route }) => {
-  const goBack = () => {
-    const canGoBack = router.canGoBack();
-    if (canGoBack) {
-      router.back();
-    } else {
-      router.navigate(`/${route}`);
-    }
-  };
+const HandleGoBackReg: React.FC<PropsGoBack> = ({ title = "Volver", route = "menu" }) => {
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior='height'
     >
-      <Ionicons name='arrow-back-outline' size={25} onPress={goBack} />
+      <Ionicons name='arrow-back-outline' size={25} onPress={()=> router.navigate(`/${route}`)} />
       <Text style={styles.title}>{title}</Text>
     </KeyboardAvoidingView>
   );

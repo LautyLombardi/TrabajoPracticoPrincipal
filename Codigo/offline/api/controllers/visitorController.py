@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 import services.visitorService as SV
-from services.logsService import recordVisitorRegistration
+from utils.passHash import hashPasswordfrom services.logsService import recordVisitorRegistration
 
 
 visitor_bp = Blueprint('visitor', __name__)
@@ -9,7 +9,7 @@ visitor_bp = Blueprint('visitor', __name__)
 def create_visitor():
     data = request.json
 
-    required_fields = ['dni', 'enterprice_id', 'name', 'lastname', 'email', 'startDate', 'finishDate']
+    required_fields = ['dni', 'enterprice_id', 'name', 'lastname', 'email', 'startDate', 'finishDate','password']
     missing_fields = [field for field in required_fields if not data.get(field)]
 
     if missing_fields:
@@ -27,7 +27,7 @@ def create_visitor():
 def update_visitor(id):
     data = request.json
 
-    if not data.get('enterprice_id').strip() or not data.get('name').strip() or not data.get('lastname').strip() or not data.get('email').strip() or not data.get('startDate').strip() or not data.get('finishDate').strip():
+    if not data.get('enterprice_id').strip() or not data.get('name').strip() or not data.get('lastname').strip() or not data.get('email').strip() or not data.get('startDate').strip() or not data.get('finishDate').strip() or not data.get('password').strip():
         return jsonify({'error': 'Faltan campos en la solicitud'}), 422
     
     response = SV.updateVisitor(id,data)
@@ -36,10 +36,26 @@ def update_visitor(id):
         return jsonify({'message': 'Visitante Guardado'}), 200
     elif response == 400:
         return jsonify({'error': 'el Visitante no se encuentra activado'}), 400
+    elif response == 401:
+        return jsonify({'error': 'Administrador no autorizado para realizar el cambio'}), 401
     elif response == 404:
         return jsonify({'error': 'Visitante no encontrado'}), 404
     else:
         return jsonify({'message': 'Error al modificar el visitante', 'error': str(response)}), 400
+    
+@visitor_bp.route('/login', methods=['POST'])
+def set_login_visitor():
+    data = request.json
+    if data.get('password')==None:
+        return jsonify({'error':'no se ingreso password'}),404
+    if data.get('dni')==None:
+        return jsonify({'error':'no se ingreso dni'}),404
+    password = hashPassword(data.get('password'))
+    response = SV.getVisitorAll()
+    for user in response:
+        if  str(user.get('dni'))==str(data.get('dni')) and user.get('password')==password:
+            return jsonify({'message': 'usuario logeado'}), 200
+    return jsonify({'error':'no se ingreso una password o dni correcto'}),404
 
 @visitor_bp.route('/<int:id>', methods=['GET'])
 def get_visitor_by_id(id):
