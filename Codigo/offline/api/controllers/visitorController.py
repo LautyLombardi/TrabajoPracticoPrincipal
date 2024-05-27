@@ -34,6 +34,8 @@ def update_visitor(id):
         return jsonify({'message': 'Visitante Guardado'}), 200
     elif response == 400:
         return jsonify({'error': 'el Visitante no se encuentra activado'}), 400
+    elif response == 401:
+        return jsonify({'error': 'Administrador no autorizado para realizar el cambio'}), 401
     elif response == 404:
         return jsonify({'error': 'Visitante no encontrado'}), 404
     else:

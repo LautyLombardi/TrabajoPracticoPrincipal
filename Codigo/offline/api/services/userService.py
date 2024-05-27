@@ -1,5 +1,7 @@
 from db.db import db
 from models.User import User
+from models.Role import Role
+from models.UserHistory import UserHistory
 from utils.date import createDate
 from utils.passHash import hashPassword
 
@@ -21,15 +23,36 @@ def saveUser(data):
     except Exception as e:
         return e
 
-def updateUser(id,data):
+def updateUser(id, data):
     user = User.query.get(id)
-    
+    role = Role.query.get(data.get('admid'))
+    if not role or role.name != "RRHH":
+        return 401
     if not user:
         return 404
     if user.isActive == 0:
         return 400
     
     try:
+        # Crear una instancia de UserHistory con los datos actuales del usuario
+        user_history = UserHistory(
+            dni=user.dni,
+            role_id=user.role_id,
+            name=user.name,
+            lastname=user.lastname,
+            password=user.password,
+            isActive=0,
+            motive=user.motive,
+            activeDate=user.activeDate,
+            createDate=user.createDate,
+            barcode=user.barcode
+        )
+
+        # Guardar la instancia de UserHistory en la base de datos
+        db.session.add(user_history)
+        db.session.commit()
+
+        # Actualizar los datos del usuario en la tabla User
         user.name = data.get('name')
         user.lastname = data.get('lastname')
         user.password = hashPassword(data.get('password'))

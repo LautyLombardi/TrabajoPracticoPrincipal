@@ -47,6 +47,8 @@ def update_user(id):
         return jsonify({'message': 'usuario Guardado'}), 200
     elif response == 400:
         return jsonify({'error': 'el usuario no se encuentra activado'}), 400
+    elif response == 401:
+        return jsonify({'error': 'Administrador no autorizado para realizar el cambio'}), 401
     elif response == 404:
         return jsonify({'error': 'usuario no encontrado'}), 404
     else:
