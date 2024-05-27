@@ -2,6 +2,7 @@ from utils.date import createDate
 from models.Place import Place
 from models.InstitutePlace import InstitutePlace
 from models.Institute import Institute
+from models.Role import Role
 from db.db import db
 
 places = [
@@ -64,4 +65,34 @@ def populate_institute_places():
                 if place:
                     institute_place = InstitutePlace(institute=institute, place=place)
                     db.session.add(institute_place)
+    db.session.commit()
+
+
+roles = [
+    ('seguridad','controla la seguridad de la institucion',createDate(),0,1,1,1,1,0,0,0,1,1,0),
+    ('Administrador tecnico','tecnico',createDate(),1,1,1,0,0,0,0,0,1,1,0),
+    ('RRHH','recurso humanos',createDate(),0,1,1,1,0,1,1,1,1,1,1),
+    ('Procesos automaticos','procesos que ocurren de manera automatica',createDate(),0,0,0,0,0,0,0,0,0,0,0),
+    ('Personal jerarquico','personal con mas jerarquia',createDate(),0,0,0,0,0,0,0,0,1,0,0)
+]    
+
+def populate_roles():
+    for role_data in roles:
+        role = Role(
+            name=role_data[0],
+            description=role_data[1],
+            createDate=role_data[2],
+            routingConnection=role_data[3],
+            onlineLogin=role_data[4],
+            offlineLogin=role_data[5],
+            dayStartEnd=role_data[6],
+            visitorAuthentication=role_data[7],
+            visitorAuthorization=role_data[8],
+            instituteConfiguration=role_data[9],
+            entityABMs=role_data[10],
+            systemReports=role_data[11],
+            systemLog=role_data[12],
+            exceptionLoading=role_data[13]
+        )
+        db.session.add(role)
     db.session.commit()
