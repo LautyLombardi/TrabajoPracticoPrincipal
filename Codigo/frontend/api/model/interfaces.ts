@@ -17,15 +17,28 @@ export interface Lugar{
 }
 
 export interface Visitante{
-    id: number,
     dni:number,
+    enterprice_id:number,
     name: string,
     lastname: string,
-    places: string[],
+    email: string,
+    startDate: string,
+    finishDate: string,
+    isActive:number,
+    createDate:string,
+    isEnter:number,
+    places?: string[],
     institutes?: string,
     empresa?: string,
-    category: string,
-    createDate: any;
+    category?: string,
+}
+
+export interface Categoria {
+    id: number; 
+    name: string;
+    description: string;
+    isExtern: number;
+    createDate?: string;
 }
 
 export interface Empresa{
@@ -36,14 +49,6 @@ export interface Empresa{
     createDate?:string
 }
 
-// Definición de la interfaz para la entidad Categoria
-export interface Categoria {
-    id: number; // Opcional, en caso de tener un identificador
-    name: string;
-    description: string;
-    isExtern: number; // Nuevo atributo
-    createDate?: string;
-}
   
 export interface Instituto {
     id?: number;

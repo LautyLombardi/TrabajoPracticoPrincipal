@@ -1,14 +1,18 @@
 import axios from 'axios';
 import { Instituto, Visitante } from '@/api/model/interfaces';
 import { URL } from '@/api/constantes'
-const BASE_URL = `${URL}/visitor`; // Reemplaza con la URL de tu API
+import { createVisitorCategoria } from './categorias';
+const BASE_URL = `${URL}/visitor`; 
 
 export const getVisitantes = async (): Promise<Visitante[]> => {
-    const response = await axios.get(BASE_URL);
-    if (response.status !== 200) {
+    try {
+        const response = await axios.get(BASE_URL);
+        
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener visitantes:', error);
         throw new Error('Error al obtener los visitantes');
     }
-    return response.data;
 };
 
 export const getVisitorById = async (id: number): Promise<Visitante> => {
@@ -21,18 +25,22 @@ export const getVisitorById = async (id: number): Promise<Visitante> => {
 
 export const createVisitante = async (
     dni: number,
+    empresaId: number,
+    categoriaId: number,
     name: string,
     lastname: string,
     email: string,
+    password: string,
     startDate: Date,
-    finishDate: Date): Promise<void> => {
+    finishDate: Date): Promise<number> => {
     try {
         const data = {
             dni: dni,
-            enterprice_id: 1,
+            enterprice_id: empresaId,
             name: name,
             lastname: lastname,
             email: email,
+            password: password,
             startDate: formatDate(startDate),
             finishDate: formatDate(finishDate)
         };
@@ -44,8 +52,10 @@ export const createVisitante = async (
         });
         if (response.status !== 201) {
             throw new Error('Error al crear el visitante');
+        }else{
+            await createVisitorCategoria(categoriaId, dni)
         }
-        return response.data;
+        return response.status;
     } catch (error) {
         console.error('Error en createVisitante:', error);
         throw error;

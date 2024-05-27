@@ -1,13 +1,11 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-
-
 import { Categoria } from '@/api/model/interfaces';
 import { obtenerCategorias } from '@/api/services/categorias';
-import { useEffect } from 'react';
 import { desactivarCategoria } from '@/api/services/categorias';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
@@ -106,20 +104,20 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
+        <Col text='ID'flexWidth={1.5}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Descripcion'/>
-        <Col text='Externo'/>
-        <Col text='fecha'/>
+        <Col text='Descripcion' flexWidth={3}/>
+        <Col text='Externo' flexWidth={3}/>
+        <Col text='fecha' flexWidth={4}/>
         <Col text='' flexWidth={0.8}/>
       </Row>
-      {categorias.map((categoria, index) => (
+      {categorias.map((categoria) => (
         <Row key={categoria.id}>
-          <Col text={categoria.id?.toString() || ''} flexWidth={0.8} />
+          <Col text={categoria.id?.toString() || ''} flexWidth={1.5} />
           <Col text={categoria.name} flexWidth={3} />
           <Col text={categoria.description} flexWidth={3} />
-          <Col text={categoria.isExtern.toString()} flexWidth={1} />
-          <Col text={categoria.createDate} flexWidth={1} />
+          <Col text={categoria.isExtern==0? "No":"Si"} flexWidth={3} />
+          <Col text={categoria.createDate} flexWidth={4} />
           {/* <Col flexWidth={0.8} icon={handleToggleIcon()} /> */} 
           {/** Icono de columna */}
           <View style={{ flex: 0.8, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
@@ -155,11 +153,16 @@ const AdministracionCategorias = () => {
   // Listado de categorias
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
+  useFocusEffect(
+    useCallback(() => {
+      obtenerCategorias().then((categories) => setCategorias(categories))
+    }, [])
+  );
+
   useEffect(() => {
     obtenerCategorias().then((categories) => setCategorias(categories))
 
   }, []);
-
 
   return (
     <View style={styles.container}>

@@ -15,12 +15,12 @@ export async function obtenerCategorias(): Promise<Categoria[]> {
 }
 
 // Funcion para crear una categoria
-export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<void> => {
+export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<number> => {
   try {
-    const data: Categoria = {
+    const data = {
       name: nombre,
       description: descripcion,
-      isExtern: isExtern
+      isExtern: isExtern,
     };
 
     const response = await fetch(BASE_URL, {
@@ -30,12 +30,11 @@ export const crearCategoria = async (nombre: string, descripcion: string, isExte
       },
       body: JSON.stringify(data)
     });
-
-    if (!response.ok) {
+    if (response.status !== 201) {
       throw new Error('Error al registrar la categoría');
     }
+    return response.status;
 
-    // Si se registró correctamente, no necesitamos devolver ningún dato adicional
   } catch (error) {
     console.error('Error al registrar la categoría:', error);
     throw new Error('Error al registrar la categoría');
@@ -70,3 +69,24 @@ export const desactivarCategoria = async (id: number): Promise<void> => {
     throw new Error('Error al desactivar la categoría');
   }
 };
+
+export async function createVisitorCategoria(id: number, dni: number): Promise<void> {
+  try {
+    const response = await axios.post(`${BASE_URL}/visitor`, {
+      "visitor_dni": dni,
+      "category_id": id
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.status !== 201) {
+      throw new Error('Error al crear el visitante');
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Error en createVisitante:', error);
+    throw error;
+  }
+}
