@@ -6,7 +6,8 @@ import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import axios from 'axios';
 import { faceRecognition } from '@/api/services/faceRecognition';
-import { ABM_DNI, ONLINE,URL } from "@/api/constantes";
+import { ONLINE,URL } from "@/api/constantes";
+import { getAbmDni } from "@/api/services/openCloseDay";
 
 const VisitorFaceRecognition = () => {
   const navigator = useRouter();
@@ -54,7 +55,7 @@ const VisitorFaceRecognition = () => {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ visitor_dni: ABM_DNI, hasAccess : 0}),
+              body: JSON.stringify({ visitor_dni: getAbmDni(), hasAccess : 0}),
             });
 
             if (logResponse.status === 201) {

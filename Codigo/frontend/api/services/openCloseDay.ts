@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { URL, ABM_DNI } from '@/api/constantes'
+import { URL } from '@/api/constantes'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //----------------------------local storage--------------------------
@@ -12,7 +12,7 @@ const getStorage = async (): Promise<string | null> => {
         return null;
     }
 }
-const getAbmDni = async (): Promise<string | null> => {
+export const getAbmDni = async (): Promise<string | null> => {
     try {
         const storageData = await getStorage();
         if (storageData) {

@@ -6,10 +6,11 @@ import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import { Alert} from "react-native";
-import { ONLINE,URL, ABM_DNI } from "@/api/constantes";
+import { ONLINE,URL} from "@/api/constantes";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserById } from "@/api/services/user";
+import { getAbmDni } from "@/api/services/openCloseDay";
 
 
 const Login = () => {
@@ -87,7 +88,7 @@ const Login = () => {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ user_dni: ABM_DNI, hasAccess : 0}),
+                body: JSON.stringify({ user_dni: getAbmDni(), hasAccess : 0}),
               });
 
               if (logResponse.status === 201) {
