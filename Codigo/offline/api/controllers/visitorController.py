@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 import services.visitorService as SV
-from utils.passHash import hashPasswordfrom services.logsService import recordVisitorRegistration
+from utils.passHash import hashPassword 
+from services.logsService import recordVisitorRegistrationManual
 
 
 visitor_bp = Blueprint('visitor', __name__)
@@ -18,7 +19,7 @@ def create_visitor():
     response =SV.saveVisitor(data)
 
     if response == True:
-        recordVisitorRegistration(data)
+        recordVisitorRegistrationManual(data)
         return jsonify({'message': 'Visitante Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear visitante', 'error': str(response)}), 400

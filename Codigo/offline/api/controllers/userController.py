@@ -3,7 +3,7 @@ from services.userService import updateUser,saveUser, getUserById, getUserAll, g
 from services.roleService import exist_rol
 from utils.date import check_date_format
 from utils.passHash import hashPassword
-from services.logsService import recordUserRegistration
+from services.logsService import recordUserRegistrationManual
 
 user_bp = Blueprint('user', __name__)
 
@@ -29,7 +29,7 @@ def create_user():
 
     response = saveUser(data)
     if response == True:
-        recordUserRegistration(data)
+        recordUserRegistrationManual(data)
         return jsonify({'message': 'User Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400

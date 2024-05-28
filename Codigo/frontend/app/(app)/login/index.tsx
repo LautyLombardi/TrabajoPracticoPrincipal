@@ -37,7 +37,7 @@ const Login = () => {
             method : 'POST',
             body: formData
           }).then((respuesta) => {
-            console.log(respuesta)
+            console.log(respuesta + "respuesta autenticacion ")
             if(respuesta.status == 200){
               Alert.alert("AUTENTICACION EXITOSA: ")
               navigator.navigate("/menu")

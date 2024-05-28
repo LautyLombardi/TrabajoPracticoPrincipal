@@ -6,7 +6,7 @@ from flask_cors import CORS
 from db.Populate import populate_places, populate_institutes, populate_institute_places, populate_roles
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from services.logsService import registrarApertura, registrarCierre,recordUserRegistration
+from services.logsService import registrarApertura, registrarCierre
 
 
 app = Flask(__name__)
