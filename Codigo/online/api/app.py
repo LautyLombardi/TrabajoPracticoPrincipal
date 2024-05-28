@@ -36,6 +36,7 @@ def load_config(env):
         return config.get(env, {})
 
 if __name__ == '__main__':
-    config = load_config('development') # Carga los valores de 'development' 
-    app.run("0.0.0.0",port=config.get('port'), debug=True)
+    config = load_config('development')  # Carga los valores de 'development' 
+    app.run(host="0.0.0.0", port=5001, debug=True)
+
 

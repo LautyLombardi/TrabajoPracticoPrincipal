@@ -9,14 +9,26 @@ const OpenCloseDay = () => {
   const handleOpenDay = async () => {
     try {
       console.log('open day');
-      await openDay();
-      Alert.alert(
-        "Día Abierto",
-        "",
-        [
-          { text: "OK", onPress: () => router.navigate("/menu") }
-        ]
-      );
+      const response = await openDay();
+      if(response === 200){
+        Alert.alert(
+          "Día Abierto",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/menu") }
+          ]
+        );
+      } 
+      if(response === 204){
+        Alert.alert(
+          "El día ya se encuentra abierto",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/menu") }
+          ]
+        );
+      }
+      
     } catch (error) {
       console.error('Error al abrir el dia: ', error);
     }
@@ -25,14 +37,25 @@ const OpenCloseDay = () => {
   const handleCloseDay = async () => {
     try {
       console.log('close day');
-      await closeDay();
-      Alert.alert(
-        "Día Cerrado",
-        "",
-        [
-          { text: "OK", onPress: () => router.navigate("/menu") }
-        ]
-      );
+      const response = await closeDay();
+      if(response === 200){
+        Alert.alert(
+          "Día Cerrado",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/menu") }
+          ]
+        );
+      } 
+      if(response === 204){
+        Alert.alert(
+          "El día ya se encuentra cerrado",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/menu") }
+          ]
+        );
+      }
     } catch (error) {
       console.error('Error al cerrar el dia: ', error);
     }

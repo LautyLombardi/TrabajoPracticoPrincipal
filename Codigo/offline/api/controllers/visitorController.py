@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify
 import services.visitorService as SV
-from utils.passHash import hashPassword
+from utils.passHash import hashPassword 
+from services.logsService import recordVisitorRegistrationManual
+
+
 visitor_bp = Blueprint('visitor', __name__)
 
 @visitor_bp.route('/', methods=['POST'])
@@ -13,14 +16,14 @@ def create_visitor():
     if missing_fields:
         print(missing_fields)
         return jsonify({'error': 'Faltan campos en la solicitud', 'missing_fields': missing_fields}), 422
-
     response =SV.saveVisitor(data)
 
     if response == True:
+        recordVisitorRegistrationManual(data)
         return jsonify({'message': 'Visitante Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear visitante', 'error': str(response)}), 400
-    
+
 @visitor_bp.route('/<int:id>', methods=['PUT'])
 def update_visitor(id):
     data = request.json

@@ -3,6 +3,7 @@ from services.userService import updateUser,saveUser, getUserById, getUserAll, g
 from services.roleService import exist_rol
 from utils.date import check_date_format
 from utils.passHash import hashPassword
+from services.logsService import recordUserRegistrationManual
 
 user_bp = Blueprint('user', __name__)
 
@@ -10,7 +11,6 @@ user_bp = Blueprint('user', __name__)
 def get_users():
     try:
         response=getUserAll()
-   
         if response is None:
             return jsonify({'error': 'No hay usuarios guardados en la base de datos'}), 404     
         else:
@@ -26,9 +26,10 @@ def create_user():
     error = validate(data)
     if error  is not None:
         return error 
-    
+
     response = saveUser(data)
     if response == True:
+        recordUserRegistrationManual(data)
         return jsonify({'message': 'User Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400

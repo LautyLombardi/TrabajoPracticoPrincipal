@@ -1,8 +1,11 @@
-interface Usuario{  
-    id: number,
+export interface Usuario{  
+    dni: number,
+    role_id: number,
     name: string,
     lastname: string,
-    rol: string,
+    createDate:string,
+    barcode: string,
+    rol?: string,
 }
 
 export interface Lugar{
@@ -57,10 +60,10 @@ export interface Instituto {
 }
 
 export interface Rol {
-    id?: number | undefined,
+    id: number,
     name: string,
     description: string,
-    createDate?: string,
+    createDate: string,
 }
 
 export interface Logs {

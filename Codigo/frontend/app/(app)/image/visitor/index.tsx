@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import axios from 'axios';
 import { insertImage } from '@/api/services/image';
 import { sendImageToBackend } from '@/api/services/util'
+import { URL,ABM_DNI } from '@/api/constantes'
 
 const UserImage = () => {
   const navigator = useRouter();
@@ -53,35 +54,59 @@ const UserImage = () => {
   
 
   const handleTerminarBien = async () => {
-    if(dni){
-      try{
-        takePicture().then((foto) => {
-          const formData= new FormData()
-          formData.append('visitor_dni',dni)
-          formData.append("image", { // Ignora el error de append esta alpedo jodiendo
-            uri: foto,
-            name: "photoTEST.jpg",
-            type: "image/jpeg",
-          })
-            fetch('http://192.168.0.208:5001/image/visitor',{
-            method : 'POST',
-            body: formData
-          }).then((respuesta) => {
-            if(respuesta.status == 200){
-              Alert.alert("REGISTRACION DE IMAGEN DE VISITOR EXITOSA")
-              navigator.navigate("/menu")
-            }else{
-              Alert.alert("FALLO EL REGISTRO DE IMAGEN DE VISITOR")
-            }
-          })
-        })
-      }catch(error){
-        Alert.alert("No se pudo sacar la foto")
-      }
-    }else {
-      Alert.alert("Te falta regstrar el dni")
+    if (!dni) {
+      Alert.alert("Error", "Por favor, ingrese el DNI del usuario");
+      return;
     }
-  }
+
+    try {
+      const photoUri = await takePicture();
+      if (photoUri) {
+        const formData = new FormData();
+        formData.append('visitor_dni', dni);
+        formData.append("image", {
+          uri: photoUri,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+
+        // Primera solicitud para registrar la imagen del usuario
+        const response = await fetch('http://192.168.0.208:5001/image/visitor', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.status === 200) {
+          Alert.alert("Éxito", "Registro de imagen de visitante exitoso");
+
+          // Segunda solicitud para guardar el log del usuario
+          const logResponse = await fetch('http://192.168.0.208:5000/logs/image/visitor', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ visitor_dni: ABM_DNI }),
+          });
+
+          if (logResponse.status === 201) {
+            navigator.navigate("/menu");
+          } else {
+            const logErrorData = await logResponse.json();
+            Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
+          }
+        } else {
+          const errorData = await response.json();
+          Alert.alert("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
+        }
+      } else {
+        Alert.alert("Error", "No se pudo tomar la foto");
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo registrar el visitante");
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>

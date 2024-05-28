@@ -6,6 +6,8 @@ import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import axios from 'axios';
 import { faceRecognition } from '@/api/services/faceRecognition';
+import { ONLINE,URL, ABM_DNI } from "@/api/constantes";
+
 
 const UserFaceRecognition = () => {
   const navigator = useRouter();
@@ -13,23 +15,66 @@ const UserFaceRecognition = () => {
   const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
+ 
   const handleAutenticacion = async () => {
-    await takePicture();
-
-    if (!imagen) {
-      return;
-    }
-  
     try {
-      await faceRecognition(imagen, 'user');
-      Alert.alert("Éxito", "Autenticación exitosa");
-      navigator.navigate("/menu");
+      takePicture().then((foto) => {
+        const formData = new FormData();
+        formData.append("image", { // Ignora el error de append esta alpedo jodiendo
+          uri: foto,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+        fetch(`${ONLINE}/faceRecognition/user`, {
+          method: 'POST',
+          body: formData
+        }).then(async (respuesta) => {
+          if (respuesta.status == 200) {
+            Alert.alert("AUTENTICACION EXITOSA: " + respuesta);
+            const data = await respuesta.json(); // Convertir la respuesta a JSON
+
+            const logResponse = await fetch(`${URL}/logs/loginfacerecognition/user`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ user_dni: data.dni, hasAccess : 1}),
+            });
+  
+            if (logResponse.status === 201) {
+              Alert.alert("se creo el log de face recognition")
+              navigator.navigate("/menu");
+            } else {
+              const logErrorData = await logResponse.json();
+              Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
+            }  
+
+          } else {
+            Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO");
+            const data = await respuesta.json(); // Convertir la respuesta a JSON
+            console.log("Respuesta del servidor:", data);
+            
+            const logResponse = await fetch(`${URL}/logs/loginfacerecognition/user`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ user_dni: ABM_DNI, hasAccess : 0}),
+            });
+
+            if (logResponse.status === 201) {
+              Alert.alert("se creo el log de face recognition")
+              navigator.navigate("/menu");
+            } else {
+              const logErrorData = await logResponse.json();
+              Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
+            } 
+            navigator.navigate("/menu");
+          }
+        });
+      });
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        Alert.alert("Error", `Error al cargar la imagen: ${error.response?.data?.message || error.message}`);
-      } else {
-        Alert.alert("Error", `Error al cargar la imagen`);
-      }
+      Alert.alert("No se pudo sacar la foto");
     }
   };
   
