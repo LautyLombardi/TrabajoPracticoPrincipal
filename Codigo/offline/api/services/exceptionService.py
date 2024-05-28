@@ -5,6 +5,7 @@ from models.CategoryException import CategoryException
 from models.User import User
 from models.Place import Place
 from models.Category import Category
+from models.Logs import Logs
 from utils.date import createDate
 
 
@@ -43,21 +44,34 @@ def saveException(data):
         db.session.add(new_exception)
         db.session.flush()
 
+        id_exception =new_exception.id
+
         new_exception_place = PlaceException( 
             place_id = data.get('place_id'),
-            exception_id=new_exception.id
+            exception_id=id_exception
         )
         db.session.add(new_exception_place)
     
         new_exception_category = CategoryException( 
             category_id = data.get('category_id'),
-            exception_id=new_exception.id
+            exception_id=id_exception
         )
         db.session.add(new_exception_category)
  
+        nuevo_log = Logs(
+            userId= data.get('user_dni'),
+            exceptionId=id_exception,
+            hasAccess = 1,
+            abm = 'ALTA',
+            abmType = 'ALTA de excepcion',
+            description='Se dio alta a una excepcion',
+            createDate= createDate(),
+            isAutomatic=1
+        )
+        db.session.add(nuevo_log)
+ 
         db.session.commit()
-        
-        
+
         return 201
     except Exception as e:
         return e

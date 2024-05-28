@@ -38,7 +38,7 @@ def recordUserRegistrationManual(data):
             userId=data.get('dni'),
             abm='ABM USUARIO',
             abmType ='ALTA',
-            description='Alta de usuario por registro facial',
+            description='se da de alta un usuario',
             createDate= createDate(),
             isAutomatic=0
         )
