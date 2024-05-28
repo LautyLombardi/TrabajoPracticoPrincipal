@@ -115,6 +115,22 @@ def recordVisitorLoginAutomatic(data):
     except Exception as e:
         return e
 
+def recordUserLoginAutomatic(data):
+    try:
+        nuevo_log = Logs(
+            userId= data.get('user_dni'),
+            hasAccess = data.get('hasAccess'),
+            isFaceRecognition =1,
+            description='Login del usuario por registro reconociminto facial',
+            createDate= createDate(),
+            isAutomatic=1
+        )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e        
+
 #Lista de todos los logs
 def logsList(logs):
     log_list = []

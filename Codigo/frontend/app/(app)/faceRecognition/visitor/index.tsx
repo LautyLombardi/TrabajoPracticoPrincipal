@@ -14,6 +14,8 @@ const VisitorFaceRecognition = () => {
   const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
+  
+  
   const handleAutenticacion = async () => {
     try {
       takePicture().then((foto) => {

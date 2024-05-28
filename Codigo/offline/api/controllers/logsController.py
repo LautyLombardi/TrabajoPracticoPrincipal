@@ -32,8 +32,9 @@ def get_manual_registration_visitor_logs():
 
 @logs_bp.route('/loginfacerecognition/user', methods=['POST'])
 def save_login_face_recognition_user_logs():
+    
     data= request.json
-    response=recordVisitorRegistration(data)
+    response=recordUserLoginAutomatic(data)
 
     if response == True:
          return jsonify({'message': 'Log Registrado'}), 201
