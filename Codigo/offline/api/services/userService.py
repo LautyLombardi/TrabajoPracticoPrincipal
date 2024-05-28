@@ -81,7 +81,23 @@ def getUserById(id):
 
 def getUserAll():
     users = User.query.all()
-    return userList(users)
+    user_list = []
+    for user in users:
+        role = Role.query.get(user.role_id)
+        user_dict = {
+            'dni': user.dni,
+            'role_id':user.role_id,
+            'name': user.name,
+            'lastname': user.lastname,
+            'password':user.password,            
+            'rol':role.name,
+            'isActive' :user.isActive,
+            'motive': user.motive,
+            'activeDate' :user.activeDate,
+            'createDate': user.createDate
+        }
+        user_list.append(user_dict)
+    return user_list
 
 def getUserAllActive():
     users = User.query.filter_by(isActive=1).all()
