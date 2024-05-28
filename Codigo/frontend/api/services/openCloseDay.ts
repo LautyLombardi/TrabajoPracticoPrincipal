@@ -15,9 +15,12 @@ const getStorage = async (): Promise<string | null> => {
 export const getAbmDni = async (): Promise<string | null> => {
     try {
         const storageData = await getStorage();
+        console.log('Raw storage data:', storageData); // Log para ver los datos crudos
         if (storageData) {
             const parsedData = JSON.parse(storageData);
-            return parsedData.abm_dni;
+            console.log('Parsed storage data:', parsedData); // Log para ver los datos parseados
+            console.log('adm_dni:', parsedData.adm_dni); // Log para ver el campo específico
+            return parsedData.adm_dni;
         } else {
             console.log('No data found in AsyncStorage');
             return null;

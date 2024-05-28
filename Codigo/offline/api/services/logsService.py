@@ -79,6 +79,7 @@ def recordUserRegistrationManual(data):
         return e
 
 def recordImageUser(user_dni):
+    print(user_dni)
     try:
         nuevo_log = Logs(
             userId=user_dni,

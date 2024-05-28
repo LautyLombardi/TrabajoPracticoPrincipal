@@ -81,7 +81,7 @@ const UserImage = () => {
 
         if (response.status === 200) {
           Alert.alert("Éxito", "Registro de imagen de usuario exitoso");
-
+          console.log(getAbmDni())
           // Segunda solicitud para guardar el log del usuario
           const logResponse = await fetch(`${URL}/logs/image/user`, {
             method: 'POST',
