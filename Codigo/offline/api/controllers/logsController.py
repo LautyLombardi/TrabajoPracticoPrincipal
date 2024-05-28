@@ -92,7 +92,7 @@ def get_logs():
             return jsonify(response), 200
 
     except Exception as e: 
-        return jsonify({'message': 'Lista de todos los logs disponibles'}), 200
+        return jsonify({'message': 'Error al obtener logs', 'error': str(e)}), 400
 
 #/logs/facerecognicion/user
 #/logs/facerecognicion/visitor

@@ -96,7 +96,6 @@ def roleList(roles):
             'id':role.id,
             'name':role.name,
             'description':role.description,
-            'isActive': role.isActive,
             'createDate':role.createDate
         }
         role_list.append(role_dict)

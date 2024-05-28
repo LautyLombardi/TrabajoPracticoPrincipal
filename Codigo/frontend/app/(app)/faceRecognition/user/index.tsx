@@ -6,7 +6,7 @@ import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import axios from 'axios';
 import { faceRecognition } from '@/api/services/faceRecognition';
-import { ONLINE,URL } from "@/api/constantes";
+import { ONLINE,URL, ABM_DNI } from "@/api/constantes";
 
 
 const UserFaceRecognition = () => {
@@ -38,7 +38,7 @@ const UserFaceRecognition = () => {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ user_dni: data.dni, hasAcces : 1}),
+              body: JSON.stringify({ user_dni: data.dni, hasAccess : 1}),
             });
   
             if (logResponse.status === 201) {
@@ -48,6 +48,7 @@ const UserFaceRecognition = () => {
               const logErrorData = await logResponse.json();
               Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
             }  
+
           } else {
             Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO");
             const data = await respuesta.json();
@@ -57,9 +58,16 @@ const UserFaceRecognition = () => {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ user_dni: 1, hasAccess : 0}),
+              body: JSON.stringify({ user_dni: ABM_DNI, hasAccess : 0}),
             });
 
+            if (logResponse.status === 201) {
+              Alert.alert("se creo el log de face recognition")
+              navigator.navigate("/menu");
+            } else {
+              const logErrorData = await logResponse.json();
+              Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
+            } 
             navigator.navigate("/menu");
           }
         });

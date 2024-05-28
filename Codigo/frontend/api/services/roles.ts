@@ -4,9 +4,10 @@ import { URL } from '@/api/constantes'
 import { Role } from 'react-native';
 const BASE_URL = `${URL}/role`;
 
-export async function obtenerRoles(): Promise<any> {
+export async function obtenerRoles(): Promise<Rol[]> {
   try {
-    const response: AxiosResponse<any> = await axios.get(BASE_URL);
+    const response = await axios.get(BASE_URL);
+    
     return response.data;
   } catch (error) {
     console.error('Error al obtener los roles:', error);

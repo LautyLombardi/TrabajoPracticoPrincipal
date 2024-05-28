@@ -1,4 +1,4 @@
-export interface Usuario{
+export interface Usuario{  
     dni: number,
     role_id: number,
     name: string,
