@@ -6,7 +6,7 @@ from flask_cors import CORS
 from db.Populate import populate_places, populate_institutes, populate_institute_places, populate_roles
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from services.logsService import registrarApertura, registrarCierre
+from services.logsService import registrarApertura, registrarCierre, registrarAperturaManual, registrarCierreManual
 
 
 app = Flask(__name__)
@@ -47,18 +47,24 @@ scheduler.start()
 @app.route('/open_day', methods=['POST'])
 def open_day():
     global apertura_de_dia
-    apertura_de_dia = True
-    registrarApertura()
-    return jsonify({'message': 'Día abierto'}), 200
-
+    if apertura_de_dia == False:
+        apertura_de_dia = True
+        data = request.json
+        adm_dni = data.get('adm_dni')
+        registrarAperturaManual(adm_dni)
+        return jsonify({'message': 'Día abierto'}), 200
+    return jsonify({'message': 'El día ya se encuentra abierto'}), 204
 
 @app.route('/close_day', methods=['POST'])
 def close_day():
     global apertura_de_dia
-    registrarCierre()
-    apertura_de_dia = False
-    return jsonify({'message': 'Día cerrado'}), 200
-
+    if apertura_de_dia == True:
+        data = request.json
+        adm_dni = data.get('adm_dni')
+        registrarCierreManual(adm_dni)
+        apertura_de_dia = False
+        return jsonify({'message': 'Día cerrado'}), 200
+    return jsonify({'message': 'El día ya se encuentra cerrado'}), 204
 
 @app.route('/status_dia', methods=['GET'])
 def check_status_dia():

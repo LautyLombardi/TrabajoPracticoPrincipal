@@ -7,6 +7,7 @@ import { Usuario } from '@/api/model/interfaces';
 import { useFocusEffect } from '@react-navigation/native';
 import { getUsuarios } from '@/api/services/user';
 
+
 type PropsCol = {
   text?: string,
   flexWidth?: number,
@@ -58,34 +59,33 @@ type PropsTable = {
 
 const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState, handleShowUser, usuarios }) => {
 
-  const iconVerMas = () => {
+  const iconVerMas = (id: any) => {
     return (
       <Ionicons name='eye-outline' style={{fontSize: 20, backgroundColor: "black", padding: 7, borderRadius: 100}} color={"white"} />
     )
   }
 
-  const deleteIcon = () => {
+  const deleteIcon = (id: any) => {
     return (
       <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
     )
   }
 
-  const modifyIcon = () => {
+  const modifyIcon = (id: any) => {
     return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp'  
+        style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+        color={"orange"} 
+      />
     )
   }
-  const handleToggleIcon = (): JSX.Element => {
+  const handleToggleIcon = (id: any): JSX.Element => {
     if (editState) {
-      return  <Pressable >
-        {modifyIcon()}
-      </Pressable>;
+      return modifyIcon(id);
     } else if (deleteState) {
-      return <Pressable>{deleteIcon()}</Pressable>;
+      return deleteIcon(id);
     } else {
-      return <TouchableOpacity onPress={handleShowUser} style={{backgroundColor: "transparent"}}>
-       {iconVerMas()}
-      </TouchableOpacity>
+      return iconVerMas(id);
     }
   };
 
@@ -96,15 +96,17 @@ const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState
         <Col text='Nombre' flexWidth={3}/>
         <Col text='Apellido' flexWidth={3}/>
         <Col text='Rol' flexWidth={3}/>
-        <Col text='' flexWidth={0.8}/>
+        <Col text='' flexWidth={1.5}/>
       </Row>
-      {usuarios.map((visitante) => 
-              <Row key={visitante.dni} >
-              <Col text={visitante.dni.toString()} flexWidth={3} />
-              <Col text={visitante.name} flexWidth={3} />
-              <Col text={visitante.lastname} flexWidth={3} />
-              <Col text={visitante.rol} flexWidth={3} />
-              <Col text='' flexWidth={0.8} />
+      {usuarios.map((usuario) => 
+              <Row key={usuario.dni} >
+              <Col text={usuario.dni.toString()} flexWidth={3} />
+              <Col text={usuario.name} flexWidth={3} />
+              <Col text={usuario.lastname} flexWidth={3} />
+              <Col text={usuario.rol} flexWidth={3} />
+              <View style={{ flex: 1.5, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
+              {handleToggleIcon(usuario.dni)}
+          </View>
             </Row>
       )}
     </View>

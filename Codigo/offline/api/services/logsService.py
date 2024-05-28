@@ -17,9 +17,39 @@ def registrarApertura():
         db.session.rollback()
         return 400
 
+def registrarAperturaManual(adm_dni):
+    nuevo_log = Logs(
+        userId=adm_dni,
+        aperturaCierre='Apertura',
+        createDate=createDate(),
+        description='Registro de apertura del día'
+    )
+    # Guardar el nuevo registro en la base de datos
+    try:
+        db.session.add(nuevo_log)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return 400
+    
 def registrarCierre():
     # Crear un nuevo registro de log para el cierre del día
     nuevo_log = Logs(
+        aperturaCierre='Cierre',  # Indica que es una Cierre
+        createDate=createDate(),
+        description='Registro del cierre del día'
+    )
+    try:
+        db.session.add(nuevo_log)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return 400
+
+def registrarCierreManual(adm_dni):
+    # Crear un nuevo registro de log para el cierre del día
+    nuevo_log = Logs(
+        userId=adm_dni,
         aperturaCierre='Cierre',  # Indica que es una Cierre
         createDate=createDate(),
         description='Registro del cierre del día'
@@ -155,6 +185,6 @@ def logsList(logs):
 
 #Devuelve todos los logs
 def getLogAll():
-    users = Logs.query.all()
-    sorted_users = sorted(users, key=lambda x: datetime.strptime(x.fecha_y_hora, '%Y-%m-%d %H:%M'), reverse=True)
-    return logsList(sorted_users)
+    logs = Logs.query.all()
+    sorted_logs = sorted(logs, key=lambda x: datetime.strptime(x.createDate, '%Y-%m-%d %H:%M'), reverse=True)
+    return logsList(sorted_logs)
