@@ -33,8 +33,7 @@ const UserImage = () => {
   
     try {
       await sendImageToBackend(imagen, dni)
-      Alert.alert("Éxito", "Autenticación exitosa");
-      await 
+      Alert.alert("Éxito", "Autenticación exitosa"); 
       navigator.navigate("/menu"); // TODO change to faceRecognition/user
     } catch (error) {
       if (axios.isAxiosError(error)) {

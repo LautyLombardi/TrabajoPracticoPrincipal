@@ -46,19 +46,20 @@ const Login = () => {
             if(respuesta.status == 200){
              Alert.alert("AUTENTICACION EXITOSA: ")
 
+             //----------------------storage--------------
               const data = await respuesta.json(); // Convertir la respuesta a JSON
               
               const rol=await getUserById(data.dni)
 
-              const dni = [
+              const adm_data = [
                 {
-                  dni: data.dni,
+                  adm_dni: data.dni,
                   role: rol
                 },
               ];
               
-              await AsyncStorage.setItem('dni', JSON.stringify(dni));
-
+              await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+              //------------------------------------
 
               const logResponse = await fetch(`${URL}/logs/loginfacerecognition/user`, {
                 method: 'POST',

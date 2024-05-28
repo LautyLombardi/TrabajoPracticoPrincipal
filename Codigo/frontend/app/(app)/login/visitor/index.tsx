@@ -5,7 +5,6 @@ import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { loginVisitor } from "@/api/services/visitantes";
 import { Ionicons } from '@expo/vector-icons';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LogueoVisitanteManual = () => {
   const [dni, setDni] = useState<string>("");
@@ -22,7 +21,6 @@ const LogueoVisitanteManual = () => {
           { text: "OK", onPress: () => router.navigate("/menu") }
         ]
       );
-
     } else {
       Alert.alert("Visitante no logueado",
         "DNI o contraseña incorrectos"
