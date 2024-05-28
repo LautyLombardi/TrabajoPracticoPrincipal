@@ -40,7 +40,6 @@ def getRole(id):
             'id':role.id,
             'name':role.name,
             'description':role.description,
-            'isActive': role.isActive,
             'createDate':role.createDate
         }
     else:

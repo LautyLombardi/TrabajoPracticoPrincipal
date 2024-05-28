@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-nativ
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import { router } from 'expo-router';
 import { createEmpresa } from '@/api/services/empresa';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const RegistrarEmpresa = () => {
   const [nombre, setNombre] = useState<string>("");
@@ -20,6 +22,18 @@ const RegistrarEmpresa = () => {
             { text: "OK", onPress: () => router.navigate("/empresas") }
           ]
         );
+//----------------------------local storage--------------------------
+      // Recuperar el valor almacenado
+      const valor = await AsyncStorage.getItem('dni');
+
+      // Verificar si el valor es null o undefined
+      if (valor !== null && valor !== undefined) {
+        // Utilizar el valor recuperado
+        Alert.alert(valor); // Mostrará el valor almacenado bajo la clave 'clave'
+      } else {
+        Alert.alert('No se encontró ningún valor almacenado bajo la clave "clave"');
+      }
+//---------------------------------------------------------
       } else {
         Alert.alert("Error al guardar empresa");
       }

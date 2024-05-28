@@ -50,32 +50,24 @@ const UserFaceRecognition = () => {
             }  
           } else {
             Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO");
-            const data = await respuesta.json(); // Convertir la respuesta a JSON
-            console.log("Respuesta del servidor:", data);
+            const data = await respuesta.json();
             
             const logResponse = await fetch(`${URL}/logs/loginfacerecognition/user`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ user_dni: data.dni, hasAcces : 0}),
+              body: JSON.stringify({ user_dni: 1, hasAccess : 0}),
             });
 
-            if (logResponse.status === 201) {
-              Alert.alert("se creo el log de face recognition")
-              navigator.navigate("/menu");
-            } else {
-              const logErrorData = await logResponse.json();
-              Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
-            } 
-
+            navigator.navigate("/menu");
           }
         });
       });
     } catch (error) {
       Alert.alert("No se pudo sacar la foto");
-    }
-  };
+    }
+  };
   
   const takePicture = async () => {
     if (cameraRef.current) {

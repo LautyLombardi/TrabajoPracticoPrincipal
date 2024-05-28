@@ -5,8 +5,12 @@ import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo
 import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
-import { Alert } from "react-native";
+import { Alert} from "react-native";
 import { ONLINE,URL } from "@/api/constantes";
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserById } from "@/api/services/user";
+
 
 const Login = () => {
    const navigator = useRouter()
@@ -40,10 +44,22 @@ const Login = () => {
           }).then(async (respuesta) => {
             console.log(respuesta + "respuesta autenticacion ")
             if(respuesta.status == 200){
-              Alert.alert("AUTENTICACION EXITOSA: ")
+             Alert.alert("AUTENTICACION EXITOSA: ")
 
               const data = await respuesta.json(); // Convertir la respuesta a JSON
-  
+              
+              const rol=await getUserById(data.dni)
+
+              const dni = [
+                {
+                  dni: data.dni,
+                  role: rol
+                },
+              ];
+              
+              await AsyncStorage.setItem('dni', JSON.stringify(dni));
+
+
               const logResponse = await fetch(`${URL}/logs/loginfacerecognition/user`, {
                 method: 'POST',
                 headers: {

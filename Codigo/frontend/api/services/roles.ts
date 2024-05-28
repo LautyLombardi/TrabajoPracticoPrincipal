@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Rol } from '../model/interfaces';
 import { URL } from '@/api/constantes'
+import { Role } from 'react-native';
 const BASE_URL = `${URL}/role`;
 
 export async function obtenerRoles(): Promise<any> {
@@ -28,4 +29,14 @@ export const crearRol = async (nombre: string, descripcion: string) => {
       console.error('Error al registrar la categoría:', error);
       throw new Error('Error al registrar la categoría');
     }
+};
+
+export const getRolesById = async (id: number): Promise<Rol> => {
+  try {
+      console.log(id)
+      const response: AxiosResponse<any> = await axios.get(`${BASE_URL}/${id}`);
+      return response.data;
+  } catch (error) {
+      throw new Error(`Error al obtener el rol con id ${id}`);
+  }
 };
