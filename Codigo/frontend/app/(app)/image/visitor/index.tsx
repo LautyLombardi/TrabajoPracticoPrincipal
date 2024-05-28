@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 import axios from 'axios';
 import { insertImage } from '@/api/services/image';
 import { sendImageToBackend } from '@/api/services/util'
-import { URL } from '@/api/constantes'
+import { URL,ONLINE } from '@/api/constantes'
 import { getAbmDni } from "@/api/services/openCloseDay";
 
 const UserImage = () => {
@@ -72,7 +72,7 @@ const UserImage = () => {
         });
 
         // Primera solicitud para registrar la imagen del usuario
-        const response = await fetch('http://192.168.0.208:5001/image/visitor', {
+        const response = await fetch(`${ONLINE}/image/visitor`, {
           method: 'POST',
           body: formData,
         });
@@ -81,7 +81,7 @@ const UserImage = () => {
           Alert.alert("Éxito", "Registro de imagen de visitante exitoso");
 
           // Segunda solicitud para guardar el log del usuario
-          const logResponse = await fetch('http://192.168.0.208:5000/logs/image/visitor', {
+          const logResponse = await fetch(`${URL}/logs/image/visitor`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
