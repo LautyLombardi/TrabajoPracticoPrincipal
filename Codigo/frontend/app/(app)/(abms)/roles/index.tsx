@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { Rol } from '@/api/model/interfaces';
 import { obtenerRoles } from '@/api/services/roles'
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
@@ -88,18 +88,18 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, r
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
+        <Col text='ID'flexWidth={1}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Descripcion'/>
-        <Col text='CreateDate'/>
+        <Col text='Descripcion' flexWidth={5}/>
+        <Col text='CreateDate' flexWidth={4}/>
         <Col text='' flexWidth={0.8}/>
       </Row>
       {roles.map((rol) => 
               <Row key={rol.id}>
-              <Col text={rol.id? rol.id.toString() : ''} flexWidth={0.8} />
+              <Col text={rol.id? rol.id.toString() : ''} flexWidth={1} />
               <Col text={rol.name} flexWidth={3} />
-              <Col text={rol.description} flexWidth={3} />
-              <Col text={rol.createDate} flexWidth={1} />
+              <Col text={rol.description} flexWidth={5} />
+              <Col text={rol.createDate} flexWidth={4} />
               <Col text='' flexWidth={0.8} />
             </Row>
       )}
@@ -128,11 +128,15 @@ const AdministracionRoles = () => {
 
   const [roles, setRoles] = useState<Rol[]>([])
 
+  useFocusEffect(
+    useCallback(() => {
+      obtenerRoles().then((rols) => setRoles(rols))
+    }, [])
+  );
+
   useEffect(() => {
     obtenerRoles().then((rols) => setRoles(rols))
   }, []);
-
-
 
   return (
     <View style={styles.container}>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
 import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { statusDay } from '@/api/services/openCloseDay';
-import { useFocusEffect } from '@react-navigation/native';
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
@@ -75,15 +75,15 @@ export const Menu = () => {
         </View>          
         <View style={styles.row}> 
           <View style={styles.col}>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/usuarios")}>
+              <Text style={styles.textBtnMenu}>Administración de Usuarios</Text>
+            </Pressable>
+          </View>
+          <View style={styles.col}>
             <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/visitantes")}>
               <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
             </Pressable>
           </View>       
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/institutos")}>
-              <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
-            </Pressable>
-          </View>
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
@@ -114,12 +114,12 @@ export const Menu = () => {
             <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
               <Text style={styles.textBtnMenu}>Administracion de Excepciones</Text>
             </Pressable>
-          </View>  
+          </View>
           <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
-              <Text style={styles.textBtnMenu}>Reportes</Text>
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/institutos")}>
+              <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
             </Pressable>
-          </View>    
+          </View>      
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
@@ -128,7 +128,10 @@ export const Menu = () => {
             </Pressable>
           </View>  
           <View style={styles.col}>
-          </View>    
+            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
+              <Text style={styles.textBtnMenu}>Reportes</Text>
+            </Pressable>
+          </View> 
         </View>
       </View>
 
