@@ -86,8 +86,8 @@ def check_time():
     if request.path in ['/open_day', '/close_day', '/check_status_dia']:
         return
 
-   # if not (start_time <= current_time <= end_time) or not apertura_de_dia:
-    #    return jsonify({"error": "el dia esta cerrado"}), 403
+    if not (start_time <= current_time <= end_time) or not apertura_de_dia:
+        return jsonify({"error": "el dia esta cerrado"}), 403
 
 @app.route('/', methods=['GET'])
 def index():

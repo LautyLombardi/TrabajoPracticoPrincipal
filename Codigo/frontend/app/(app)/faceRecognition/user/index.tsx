@@ -6,7 +6,8 @@ import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import axios from 'axios';
 import { faceRecognition } from '@/api/services/faceRecognition';
-import { ONLINE,URL, ABM_DNI } from "@/api/constantes";
+import { ONLINE,URL } from "@/api/constantes";
+import { getAbmDni } from "@/api/services/openCloseDay";
 
 
 const UserFaceRecognition = () => {
@@ -51,15 +52,14 @@ const UserFaceRecognition = () => {
 
           } else {
             Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO");
-            const data = await respuesta.json(); // Convertir la respuesta a JSON
-            console.log("Respuesta del servidor:", data);
+            const data = await respuesta.json();
             
             const logResponse = await fetch(`${URL}/logs/loginfacerecognition/user`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ user_dni: ABM_DNI, hasAccess : 0}),
+              body: JSON.stringify({ user_dni: getAbmDni(), hasAccess : 0}),
             });
 
             if (logResponse.status === 201) {
@@ -75,8 +75,8 @@ const UserFaceRecognition = () => {
       });
     } catch (error) {
       Alert.alert("No se pudo sacar la foto");
-    }
-  };
+    }
+  };
   
   const takePicture = async () => {
     if (cameraRef.current) {

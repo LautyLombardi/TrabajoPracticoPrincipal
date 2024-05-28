@@ -8,7 +8,7 @@ export async function getLogs(): Promise<Logs[]> {
         const response = await axios.get(BASE_URL);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener las empresas: ', error);
+        console.error('Error al obtener los logs: ', error);
         return [];
     }
 }

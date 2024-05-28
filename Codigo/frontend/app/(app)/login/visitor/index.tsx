@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, StyleSheet, Pressable, Alert,TouchableOpacity } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity } from 'react-native';
 import { router } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { loginVisitor } from "@/api/services/visitantes";
-import { Ionicons } from '@expo/vector-icons';  
+import { Ionicons } from '@expo/vector-icons';
+
 
 const LogueoVisitanteManual = () => {
   const [dni, setDni] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); 
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const handleTerminar = async () => {
     const response = await loginVisitor(dni, password);
-    if(response === 200){
+    if (response === 200) {
       Alert.alert(
         "Visitante logueado",
         "",
@@ -35,23 +36,23 @@ const LogueoVisitanteManual = () => {
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Text style={styles.labelText}>Dni:</Text>
-          <TextInput 
-            placeholder='12345678' 
-            placeholderTextColor={"gray"} 
-            onChangeText={setDni} 
+          <TextInput
+            placeholder='12345678'
+            placeholderTextColor={"gray"}
+            onChangeText={setDni}
             keyboardType="numeric"
-            value={dni} 
+            value={dni}
             style={styles.input}
           />
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.labelText}>Contraseña:</Text>
           <View style={styles.passwordContainer}>
-            <TextInput 
-              placeholder='Password' 
-              placeholderTextColor={"gray"} 
-              onChangeText={setPassword} 
-              value={password} 
+            <TextInput
+              placeholder='Password'
+              placeholderTextColor={"gray"}
+              onChangeText={setPassword}
+              value={password}
               secureTextEntry={!isPasswordVisible}
               style={styles.inputPassword}
             />
@@ -60,7 +61,7 @@ const LogueoVisitanteManual = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>  
+      </View>
 
       <Pressable onPress={handleTerminar} style={styles.button}>
         <Text style={styles.buttonText}>Ingresar</Text>
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     height: 70,
     alignItems: "center",
     flexDirection: "row",
-    marginBottom: 20, 
+    marginBottom: 20,
   },
   labelText: {
     color: "white",
@@ -117,13 +118,13 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
-    width: '90%', 
+    width: '90%',
   },
   buttonText: {
     color: '#000051',
     fontSize: 16,
   },
-  icon:{
+  icon: {
     marginRight: 5
   }
 });

@@ -7,7 +7,8 @@ import { useRouter } from "expo-router";
 import axios from 'axios';
 import { insertImage } from '@/api/services/image';
 import { sendImageToBackend } from '@/api/services/util'
-import { URL,ABM_DNI } from '@/api/constantes'
+import { URL } from '@/api/constantes'
+import { getAbmDni } from "@/api/services/openCloseDay";
 
 const UserImage = () => {
   const navigator = useRouter();
@@ -85,7 +86,7 @@ const UserImage = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ visitor_dni: ABM_DNI }),
+            body: JSON.stringify({ visitor_dni: getAbmDni() }),
           });
 
           if (logResponse.status === 201) {
