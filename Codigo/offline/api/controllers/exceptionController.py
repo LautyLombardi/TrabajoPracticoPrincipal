@@ -22,9 +22,9 @@ def create_exception():
     elif response == '404a':
         return jsonify({'error': 'el Place no existe'}), 404
     elif response == '404b':
-        return jsonify({'error': 'la Categoria no existe'}), 404
+        return jsonify({'error': 'la Categoria no existe'}), 402
     elif response == '404c':
-        return jsonify({'error': 'el Usuario no existe'}), 404        
+        return jsonify({'error': 'el Usuario no existe'}), 403        
     elif response == '409':
         return jsonify({'error': 'La exception ya existe'}), 409
     else:

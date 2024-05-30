@@ -5,10 +5,9 @@ import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import axios from 'axios';
-import { insertImage } from '@/api/services/image';
 import { sendImageToBackend } from '@/api/services/util'
-import { URL,ONLINE } from '@/api/constantes'
-import { getAbmDni } from "@/api/services/openCloseDay";
+import { ONLINE } from '@/api/constantes'
+import { logimageVisitor } from "@/api/services/log";
 
 const UserImage = () => {
   const navigator = useRouter();
@@ -78,26 +77,18 @@ const UserImage = () => {
         });
 
         if (response.status === 200) {
-          Alert.alert("Éxito", "Registro de imagen de visitante exitoso");
-
-          // Segunda solicitud para guardar el log del usuario
-          const logResponse = await fetch(`${URL}/logs/image/visitor`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ visitor_dni: getAbmDni() }),
-          });
-
-          if (logResponse.status === 201) {
-            navigator.navigate("/menu");
-          } else {
-            const logErrorData = await logResponse.json();
-            Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
-          }
+          await logimageVisitor(dni)
+          Alert.alert(
+            "Registro de imagen de visitante exitoso",
+            "",
+            [
+              { text: "OK", onPress: () => navigator.navigate("/menu") }
+            ]
+          );
         } else {
           const errorData = await response.json();
-          Alert.alert("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
+          console.log("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
+          Alert.alert("Fallo el registro de imagen de visitante")
         }
       } else {
         Alert.alert("Error", "No se pudo tomar la foto");

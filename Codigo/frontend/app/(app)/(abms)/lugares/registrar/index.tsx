@@ -33,7 +33,7 @@ const RegistrarLugar = () => {
     const response = await createLugar(nombre, abbreviation, description, openTime, closeTime);
     if (response === 201) {
       Alert.alert(
-        "Empresa guardada",
+        "Lugar guardado",
         "",
         [
           { text: "OK", onPress: () => router.navigate("/lugares") }
