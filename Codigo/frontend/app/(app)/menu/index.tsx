@@ -1,12 +1,18 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { statusDay } from '@/api/services/openCloseDay';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Entypo from '@expo/vector-icons/Entypo';
+import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Foundation } from '@expo/vector-icons';
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const handlerDay = async () => {
     try {
@@ -18,11 +24,14 @@ export const Menu = () => {
       }
     } catch (error) {
       console.error('Error al obtener el estado del día: ', error);
-      setStatusDay(false); // Asumimos que el día está cerrado en caso de error
+      setStatusDay(false); 
     }
   };
 
-  // Utilizar useFocusEffect para ejecutar handlerDay cuando la pantalla del menú se enfoca
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   useFocusEffect(
     useCallback(() => {
       handlerDay();
@@ -35,7 +44,38 @@ export const Menu = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/** Menu */}
+      {/* Config button */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.gearButton} onPress={toggleMenu}>
+          <FontAwesome6 name="gear" size={24} color="black" />
+        </TouchableOpacity>
+        {isMenuOpen && (
+          <View style={styles.menu}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Ruteo')}>
+              <MaterialIcons name="router" size={24} color="black" />
+              <Text style={styles.menuText}>Ruteo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de mail')}>
+              <Foundation name="mail" size={24} color="black" />
+              <Text style={styles.menuText}>Cambio de mail</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Horatio de entrenamiento de la IA')}>
+              <MaterialCommunityIcons name="clock" size={24} color="black" />
+              <Text style={styles.menuText}>Horatio de entrenamiento de la IA</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de imagen institucional')}>
+              <MaterialCommunityIcons name="city-variant" size={24} color="black" />
+              <Text style={styles.menuText}>Cambio de imagen institucional</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.navigate("/logs")}>
+              <Entypo name="code" size={24} color="black" />
+              <Text style={styles.menuText}>Logs</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+      
+      {/* Menu */}
       <View style={styles.listBtns}>
         <View style={styles.row}>
           <View style={styles.col}>
@@ -123,12 +163,10 @@ export const Menu = () => {
         </View>
         <View style={styles.row}>
           <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/logs")}>
-              <Text style={styles.textBtnMenu}>Logs</Text>
-            </Pressable>
           </View>  
           <View style={styles.col}>
             <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
+              <Entypo name="bar-graph" size={24} color="black" />
               <Text style={styles.textBtnMenu}>Reportes</Text>
             </Pressable>
           </View> 
@@ -150,23 +188,59 @@ export const Menu = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000051',
-    alignItems: 'center',
+    backgroundColor: '#00759c',
   },
   header: {
     width: "100%",
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-end",
+    padding: 20,
+    zIndex: 3,
+  },
+  gearButton: {
+    backgroundColor: '#fff',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  menu: {
+    position: 'absolute',
+    marginTop:8,
+    top: 60,
+    right: 20,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 0,
+    paddingLeft: 15,
+    width: 350,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+  },
+  menuItem: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E8E8',
+  },
+  menuText: {
+    fontSize: 16,
+    marginLeft: 10,
   },
   headerText: {
     fontWeight: "bold",
   },
-  // Menu de Botones
   listBtns: {
     flexDirection: 'column',
     width: 350,
     marginTop: 40,
+    alignSelf: "center",
   },
   row: {
     flexDirection: 'row',
@@ -182,11 +256,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
-    elevation: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
