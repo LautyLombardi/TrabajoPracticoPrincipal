@@ -2,11 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Link, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { statusDay } from '@/api/services/openCloseDay';
+// Icons
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Entypo from '@expo/vector-icons/Entypo';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
 
@@ -31,22 +31,13 @@ export const Menu = () => {
     }
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = (menu: string) => {
+    setIsMenuOpen(menu === 'main' ? !isMenuOpen : false);
+    setAuthMenuOpen(menu === 'auth' ? !isAuthMenuOpen : false);
+    setLoginMenuOpen(menu === 'login' ? !isLoginMenuOpen : false);
+    setImageMenuOpen(menu === 'image' ? !isImageMenuOpen : false);
   };
-
-  const toggleAuthMenu = () => {
-    setAuthMenuOpen(!isAuthMenuOpen);
-  };
-
-  const toggleLoginMenu = () => {
-    setLoginMenuOpen(!isLoginMenuOpen);
-  };
-
-  const toggleImageMenu = () => {
-    setImageMenuOpen(!isImageMenuOpen);
-  };
-
+  
   useFocusEffect(
     useCallback(() => {
       handlerDay();
@@ -61,7 +52,7 @@ export const Menu = () => {
     <SafeAreaView style={styles.container}>
       {/* Config button */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.gearButton} onPress={toggleMenu}>
+        <TouchableOpacity style={styles.gearButton} onPress={() =>toggleMenu('main')}>
           <FontAwesome6 name="gear" size={24} color="black" />
         </TouchableOpacity>
         {isMenuOpen && (
@@ -76,7 +67,7 @@ export const Menu = () => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Horatio de entrenamiento de la IA')}>
               <MaterialCommunityIcons name="clock" size={24} color="black" />
-              <Text style={styles.menuText}>Horatio de entrenamiento de la IA</Text>
+              <Text style={styles.menuText}>Horario de entrenamiento de la IA</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de imagen institucional')}>
               <MaterialCommunityIcons name="city-variant" size={24} color="black" />
@@ -93,20 +84,20 @@ export const Menu = () => {
       {/* Main Menu */}
       <View style={styles.mainMenu}>
         <View style={styles.mainMenuItem}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={toggleAuthMenu}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('auth')}>
             <MaterialCommunityIcons name="face-recognition" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autorizar</Text>
           </Pressable>
         </View>
         {isAuthMenuOpen && (
           <>
-            <View style={styles.mainMenuItem}>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/user")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Autorizar Usuario</Text>
               </Pressable>
             </View>
-            <View style={styles.mainMenuItem}>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/visitor")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Autorizar Visitante</Text>
@@ -114,21 +105,21 @@ export const Menu = () => {
             </View>
           </>
         )}
-        <View style={styles.mainMenuItem}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={toggleLoginMenu}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('login')}>
             <MaterialCommunityIcons name="login" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Login Manual</Text>
           </Pressable>
         </View>
         {isLoginMenuOpen && (
           <>
-            <View style={styles.mainMenuItem}>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/user")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Login Manual de Usuario</Text>
               </Pressable>
             </View>
-            <View style={styles.mainMenuItem}>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/visitor")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Login Manual de Visitante</Text>
@@ -136,21 +127,21 @@ export const Menu = () => {
             </View>
           </>
         )}
-        <View style={styles.mainMenuItem}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={toggleImageMenu}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('image')}>
             <Entypo name="camera" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Registrar Imagen</Text>
           </Pressable>
         </View>
         {isImageMenuOpen && (
           <>
-            <View style={styles.mainMenuItem}>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/user")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Registrar Imagen de Usuario</Text>
               </Pressable>
             </View>
-            <View style={styles.mainMenuItem}>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/visitor")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Registrar Imagen de Visitante</Text>
@@ -158,48 +149,50 @@ export const Menu = () => {
             </View> 
           </>
         )}
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/usuarios")}>
+            <Ionicons name="person-add-sharp" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Administración de Usuarios</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/visitantes")}>
+            <Ionicons name="person-add-sharp" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/roles")}>
             <Text style={styles.textBtnMenu}>Administración de Roles</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/categorias")}>
             <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/empresas")}>
             <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/lugares")}>
             <Text style={styles.textBtnMenu}>Administracion de Lugares</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/institutos")}>
             <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
             <FontAwesome6 name="house-circle-exclamation" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Administracion de Excepciones</Text>
           </Pressable>
         </View>
-        <View style={styles.mainMenuItem}>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
             <Entypo name="bar-graph" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Reportes</Text>
@@ -215,7 +208,6 @@ export const Menu = () => {
           </Pressable>
         </Link>
       </View>
-      <StatusBar style='light' />
     </SafeAreaView>
   );
 };
@@ -288,12 +280,12 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 5,
-    justifyContent: 'center',
     flexDirection: 'row', 
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#E8E8E8',
+    paddingLeft: '3%'
   },
   textBtnMenu: {
     color: '#000',
