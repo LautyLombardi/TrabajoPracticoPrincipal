@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.instituteService import saveInstitute, updateInstitute, getInstituteById, saveInstitutePlace, getInstituteAll, setDesactive, getInstituteAllActive, getInstituteAllDesactive, setActive, getPlaceByInstituteId
-
+from services.logsService import  recordADM
 institute_bp = Blueprint('institute', __name__)
 
 @institute_bp.route('/', methods=['POST'])
@@ -11,6 +11,7 @@ def create_institute():
     try:
         response = saveInstitute(data)
 
+        recordADM(data.get('adm_dni'),'alta','instituto')
         return jsonify(response), 201
     except Exception as e:
         return jsonify({'message': 'Error al crear Institute', 'error': str(response)}), 400

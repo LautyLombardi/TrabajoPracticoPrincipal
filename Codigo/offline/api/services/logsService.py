@@ -61,27 +61,12 @@ def registrarCierreManual(adm_dni):
         db.session.rollback()
         return 400
 
-#Usuario registrado y carga del log
-def recordUserRegistrationManual(data):
-    try:
-        nuevo_log = Logs(
-            userId=data.get('dni'),
-            abm='ABM USUARIO',
-            abmType ='ALTA',
-            description='se da de alta un usuario',
-            createDate= createDate(),
-            isAutomatic=0
-        )
-        db.session.add(nuevo_log)
-        db.session.commit()
-        return True
-    except Exception as e:
-        return e
 
-def recordImageUser(user_dni):
+def recordImageUser(user_dni,abm_dni):
     try:
         nuevo_log = Logs(
             userId=user_dni,
+            admDni = abm_dni,
             abm='ABM Imagen',
             abmType ='ALTA',
             description='Se asocia una imagen a un usuario',
@@ -94,10 +79,11 @@ def recordImageUser(user_dni):
     except Exception as e:
         return e
 
-def recordImageVisitor(visitor_dni):
+def recordImageVisitor(visitor_dni,abm_dni):
     try:
         nuevo_log = Logs(
             visitorId=visitor_dni,
+            admDni= abm_dni,
             abm='ABM Imagen',
             abmType ='ALTA',
             description='Se asocia una imagen a un visitante',
@@ -110,23 +96,6 @@ def recordImageVisitor(visitor_dni):
     except Exception as e:
         return e
 
-
-#Registro del visitante y guardado del log
-def recordVisitorRegistrationManual(data):
-    try:
-        nuevo_log = Logs(
-            visitorId= data.get('visitor_dni'),
-            abm='ABM VISITANTE',
-            abmType = 'ALTA',
-            description='Alta de visitante por registro manual',
-            createDate= createDate(),
-            isAutomatic=0
-        )
-        db.session.add(nuevo_log)
-        db.session.commit()
-        return True
-    except Exception as e:
-        return e
     
 #Login del visitante por reconocimiento facial y guardado del log
 def recordVisitorLoginAutomatic(data):
@@ -188,3 +157,90 @@ def getLogAll():
     logs = Logs.query.all()
     sorted_logs = sorted(logs, key=lambda x: datetime.strptime(x.createDate, '%Y-%m-%d %H:%M'), reverse=True)
     return logsList(sorted_logs)
+
+
+
+
+def recordADM(adm_dni, type_adm, table_adm):
+    try:
+        if type_adm.lower() == 'desactivacion':
+            nuevo_log = Logs(
+                admDni= adm_dni,
+                abm= type_adm + ' de ' + table_adm ,
+                abmType=type_adm ,
+                description='Se desactiva ' + table_adm,
+                createDate= createDate(),
+                isAutomatic=0
+            )
+        else:
+            nuevo_log = Logs(
+                admDni= adm_dni,
+                abm= type_adm + ' de ' + table_adm ,
+                abmType=type_adm ,
+                description='Se da de ' + type_adm + ' a ' +table_adm,
+                createDate= createDate(),
+                isAutomatic=0
+            )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e 
+
+def recordAbmUsuario(adm_dni,type_adm,dni):         
+    try:
+        if type_adm.lower() == 'desactivacion':
+                nuevo_log = Logs(
+                admDni= adm_dni,
+                userId= dni,
+                abm= type_adm + ' de usuario' ,
+                abmType=type_adm ,
+                description='se desactiva a un usuario',
+                createDate= createDate(),
+                isAutomatic=0
+            )
+        else:    
+            nuevo_log = Logs(
+                admDni= adm_dni,
+                userId= dni,
+                abm= type_adm + ' de usuario',
+                abmType=type_adm ,
+                description='Se da de ' + type_adm + ' a un usuario',
+                createDate= createDate(),
+                isAutomatic=0
+            )
+
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e 
+
+def recordAbmVisitante(adm_dni,type_adm,dni):         
+    try:
+        if type_adm.lower() == 'desactivacion':
+                nuevo_log = Logs(
+                admDni= adm_dni,
+                visitorId= dni,
+                abm= type_adm + ' de visitante' ,
+                abmType=type_adm ,
+                description='se desactiva a un visitante',
+                createDate= createDate(),
+                isAutomatic=0
+            )
+        else:    
+            nuevo_log = Logs(
+                admDni= adm_dni,
+                visitorId= dni,
+                abm= type_adm + ' de visitante',
+                abmType=type_adm ,
+                description='Se da de ' + type_adm + ' a un visitante',
+                createDate= createDate(),
+                isAutomatic=0
+            )
+
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e         

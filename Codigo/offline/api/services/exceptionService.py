@@ -2,7 +2,7 @@ from db.db import db
 from models.Exception import Exception
 from models.PlaceException import PlaceException
 from models.CategoryException import CategoryException
-from models.Visitor import Visitor
+from models.User import User
 from models.Place import Place
 from models.Category import Category
 from models.Logs import Logs
@@ -11,7 +11,7 @@ from utils.date import createDate
 
 def saveException(data):
     try:        
-        user = Visitor.query.filter_by(dni=data.get('user_dni')).first()
+        user = User.query.filter_by(dni=data.get('user_dni')).first()
         if not user:
             return '404c'
 
@@ -59,6 +59,7 @@ def saveException(data):
         db.session.add(new_exception_category)
  
         nuevo_log = Logs(
+            admDni= int(data.get('adm_dni')),
             userId= data.get('user_dni'),
             exceptionId=id_exception,
             hasAccess = 1,
@@ -74,7 +75,7 @@ def saveException(data):
 
         return 201
     except Exception as e:
-        return e
+        return {"error": str(e), "message": "Error al guardar la excepción"}
 
 def getAllExceptions():
     try:

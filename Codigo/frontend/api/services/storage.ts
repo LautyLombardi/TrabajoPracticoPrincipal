@@ -10,7 +10,7 @@ const getStorage = async (): Promise<string | null> => {
         return null;
     }
 }
-export const getAbmDni = async (): Promise<string | null> => {
+/*export const getAbmDni = async (): Promise<string | null> => {
     try {
         const data = await AsyncStorage.getItem('adm_data');
         if (data) {
@@ -20,8 +20,10 @@ export const getAbmDni = async (): Promise<string | null> => {
             console.log('No data found in AsyncStorage');
             return null;
         }
+        return '1111';
     } catch (error) {
         console.error('Error retrieving data from AsyncStorage', error);
         return null;
     }
-}
+}*/
+export const getAbmDni = ()=>{ return 1111}

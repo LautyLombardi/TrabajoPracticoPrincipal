@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Excepcion } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/exception`;
+import { getAbmDni } from './storage';
 
 export async function getExcepciones(): Promise<Excepcion[]> {
     try {
@@ -27,7 +28,8 @@ export async function createExcepcion(user_dni: number, category_id: number, pla
             "place_id": place_id,
             "name": name,
             "description": description,
-            "duration": duration
+            "duration": duration,
+            "adm_dni":getAbmDni()
         },{
             headers: {
                 'Content-Type': 'application/json'

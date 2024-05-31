@@ -3,7 +3,7 @@ from services.userService import updateUser,saveUser, getUserById, getUserAll, g
 from services.roleService import exist_rol
 from utils.date import check_date_format
 from utils.passHash import hashPassword
-from services.logsService import recordUserRegistrationManual
+from services.logsService import recordAbmUsuario
 
 user_bp = Blueprint('user', __name__)
 
@@ -29,7 +29,7 @@ def create_user():
 
     response = saveUser(data)
     if response == True:
-        recordUserRegistrationManual(data)
+        recordAbmUsuario(data.get('adm_dni'),'alta',data.get('dni'))
         return jsonify({'message': 'User Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear usuario', 'error': str(response)}), 400
@@ -144,21 +144,26 @@ def set_login_user():
     
 
 def validate(data):
-    required_fields = ['name', 'lastname', 'role_id', 'password']
+    required_fields = ['dni','name', 'lastname', 'role_id', 'password','adm_dni']
     for field in required_fields:
         if data.get(field) is None:
-            return jsonify({'error': f'No se pasó el campo {field}'}), 422
+            return jsonify({'error': f'No se pasó el campo {field}'}), 417
 
     for field in ['name', 'lastname', 'password']:
         if not isinstance(data.get(field), str) or not data.get(field).strip():
-            return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 422     
+            return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 418    
 
     role_id = data.get('role_id')
     if not isinstance(role_id, int):
-        return jsonify({'error': 'role_id debe ser un entero'}), 422
+        return jsonify({'error': 'role_id debe ser un entero'}), 419
+
+    adm_dni= data.get('adm_dni')
+    if not isinstance(adm_dni, int):
+        return jsonify({'error': 'adm_dni debe ser un entero'}), 420
+
 
     if not exist_rol(role_id):
-        return jsonify({'error': 'el rol que se esta pasando no existe en la tabla Rol'}), 422
+        return jsonify({'error': 'el rol que se esta pasando no existe en la tabla Rol'}), 416
 
     return None
 
