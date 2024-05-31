@@ -74,7 +74,6 @@ export const Menu = () => {
           </View>
         )}
       </View>
-      
       {/* Menu */}
       <View style={styles.listBtns}>
         <View style={styles.row}>
@@ -232,8 +231,6 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 16,
     marginLeft: 10,
-  },
-  headerText: {
     fontWeight: "bold",
   },
   listBtns: {
