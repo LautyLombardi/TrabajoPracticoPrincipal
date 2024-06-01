@@ -51,7 +51,7 @@ const RegistrarLugar = () => {
 
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Registro Lugar' route='empresas' />
+      <HandleGoBackReg title='Registro Lugar' route='lugares' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
