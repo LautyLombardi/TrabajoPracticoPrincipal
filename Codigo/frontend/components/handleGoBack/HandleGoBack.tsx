@@ -15,7 +15,7 @@ const HandleGoBack: React.FC<PropsGoBack> = ({ title = "Menu", route="menu" }) =
 
   return (
     <View style={styles.container}>
-      <Ionicons name='arrow-back-outline' size={25} onPress={()=> router.navigate(`/${route}`)} />
+      <Ionicons name='arrow-back-outline' style={styles.backButton} size={25} onPress={()=> router.navigate(`/${route}`)} />
       <Text style={styles.title}>{title}</Text>
     </View>
   )
@@ -23,22 +23,22 @@ const HandleGoBack: React.FC<PropsGoBack> = ({ title = "Menu", route="menu" }) =
 
 const styles = StyleSheet.create({
   container: {
-    height: '9%',
+    height: '6%',
     backgroundColor: 'white',
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: '5%',
-    paddingVertical: '2%',
+    paddingHorizontal: '3%',
     flexDirection: 'row',
-    marginVertical: '2%',
-    paddingTop: '6%'
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 16, 
+    fontSize: 18, 
     marginLeft: '3%'
   },
+  backButton:{
+    margin: 5    
+  }
 })
 
 export default HandleGoBack
