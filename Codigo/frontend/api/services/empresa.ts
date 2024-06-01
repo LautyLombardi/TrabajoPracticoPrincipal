@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Empresa } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/enterprice`;
+import { getAbmDni } from './storage';
 
 export async function getEmpresas(): Promise<Empresa[]> {
     try {
@@ -17,7 +18,8 @@ export async function createEmpresa(nombre: string, cuit: number): Promise<numbe
     try {
         const response = await axios.post(BASE_URL,{
             "name": nombre,
-            "cuit": cuit
+            "cuit": cuit,
+            "adm_dni":getAbmDni()
         },{
             headers: {
                 'Content-Type': 'application/json'

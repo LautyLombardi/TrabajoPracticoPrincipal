@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from services.placeService import savePlace, updatePlace, getPlaceById, getPlaceAll, setDesactive, getPlaceAllActive, getPlaceAllDesactive, setActive, getInstituteByPlaceId
 from utils.date import check_schedule_format
+from services.logsService import  recordADM
+
 
 place_bp = Blueprint('place', __name__)
 
@@ -14,6 +16,7 @@ def create_place():
 
     response = savePlace(data)
     if response == True:
+        recordADM(data.get('adm_dni'),'alta','lugar')
         return jsonify({'message': 'Lugar Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear lugar', 'error': str(response)}), 400
@@ -131,7 +134,7 @@ def get_institute_for_place(id):
 
 
 def validate(data):
-    required_fields = ['name', 'description', 'abbreviation', 'openTime', 'closeTime']
+    required_fields = ['name', 'description', 'abbreviation', 'openTime', 'closeTime','adm_dni']
     for field in required_fields:
         if data.get(field) is None:
             return jsonify({'error': f'No se pasó el campo {field}'}), 422
@@ -144,5 +147,7 @@ def validate(data):
     for field in ['openTime', 'closeTime']:
         if not check_schedule_format(data.get(field)):
             return jsonify({'error': f'El campo {field} no tiene el formato de horario válido '}, 422)
+
+
 
     return None

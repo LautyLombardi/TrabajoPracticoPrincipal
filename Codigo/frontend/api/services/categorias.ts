@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Categoria } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/category`;
+import { getAbmDni } from './storage';
 
 // Función para obtener todas las categorías
 export async function obtenerCategorias(): Promise<Categoria[]> {
@@ -21,14 +22,10 @@ export const crearCategoria = async (nombre: string, descripcion: string, isExte
       name: nombre,
       description: descripcion,
       isExtern: isExtern,
+      adm_dni:getAbmDni()
     };
 
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+    const response = await axios.post(BASE_URL, data, {
     });
     if (response.status !== 201) {
       throw new Error('Error al registrar la categoría');

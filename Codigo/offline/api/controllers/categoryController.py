@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from services.categoryService import saveCategory, updateCategory, getCategoryById, getCategoryAll, setDesactive, getCategoryAllActive, getCategoryAllDesactive, setActive, setDesactive, saveInstituteCategory,getInstituteByCategoryId, saveCategoryVisitor, getVisitorByCategoryId
+from services.logsService import  recordADM
+
 
 category_bp = Blueprint('category', __name__)
 CORS(category_bp)
@@ -14,6 +16,7 @@ def create_category():
         return error 
 
     response = saveCategory(data)
+    recordADM(data.get('adm_dni'),'alta','categoria')
         
     if response == True:
         return jsonify({'message': 'Categoria Registrada'}), 201
@@ -189,7 +192,7 @@ def get_visitor_for_category(id):
     
 def validate(data):
   
-    if data.get('name') is None or data.get('description') is None or data.get('isExtern') is None:
+    if data.get('name') is None or data.get('description') is None or data.get('isExtern') is None or data.get('adm_dni') is None:
         return jsonify({'error': 'No se pasaron todos los campos requeridos'}), 422
 
 
@@ -202,8 +205,12 @@ def validate(data):
 
     is_extern = data.get('isExtern')
     if not isinstance(is_extern, int):
-        return jsonify({'error': 'isExtern debe ser un entero'}), 422
+        return jsonify({'error': 'isExtern debe ser un entero'}), 422    
 
     if is_extern != 0 and is_extern != 1:
         return jsonify({'error': 'isExtern debe ser 0 o 1'}), 422
+
+    adm_dni = data.get('adm_dni')
+    if not isinstance(adm_dni, int):
+        return jsonify({'error': 'adm_dni debe ser un entero'}), 422       
 

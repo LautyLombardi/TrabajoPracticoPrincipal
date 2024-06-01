@@ -60,7 +60,7 @@ def save_login_face_recognition_visitor_logs():
 def save_log_image_user():
     
     data= request.json
-    response=recordImageUser(data.get('user_dni'))
+    response=recordImageUser(data.get('user_dni'),data.get('abm_dni'))
 
     if response == True:
          return jsonify({'message': 'Log Registrado'}), 201
@@ -72,7 +72,7 @@ def save_log_image_user():
 def save_log_image_visitor():
     
     data= request.json
-    response=recordImageVisitor(data.get('visitor_dni'))
+    response=recordImageVisitor(data.get('visitor_dni'),data.get('abm_dni'))
 
     if response == True:
          return jsonify({'message': 'Log Registrado'}), 201
@@ -94,7 +94,5 @@ def get_logs():
     except Exception as e: 
         return jsonify({'message': 'Error al obtener logs', 'error': str(e)}), 400
 
-#/logs/facerecognicion/user
-#/logs/facerecognicion/visitor
 
 #/logs

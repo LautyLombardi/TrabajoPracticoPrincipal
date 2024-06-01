@@ -2,6 +2,8 @@ import axios from 'axios';
 import { Instituto, Visitante } from '@/api/model/interfaces';
 import { URL } from '@/api/constantes'
 import { createVisitorCategoria } from './categorias';
+import { getAbmDni } from './storage';
+
 const BASE_URL = `${URL}/visitor`; 
 
 export const getVisitantes = async (): Promise<Visitante[]> => {
@@ -42,7 +44,8 @@ export const createVisitante = async (
             email: email,
             password: password,
             startDate: formatDate(startDate),
-            finishDate: formatDate(finishDate)
+            finishDate: formatDate(finishDate),
+            adm_dni:getAbmDni()
         };
         console.log(data)
         const response = await axios.post(BASE_URL, data, {

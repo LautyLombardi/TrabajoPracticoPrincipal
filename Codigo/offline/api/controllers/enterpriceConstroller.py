@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from services.enterpriceService import *
+from services.logsService import  recordADM
 
 enterprice_bp = Blueprint('enterprice',__name__)
 CORS(enterprice_bp)
@@ -14,6 +15,7 @@ def create_enterprice():
         return error 
 
     response = saveEnterprice(data)
+    recordADM(data.get('adm_dni'),'alta','empresa')
 
     if response == True:
         return jsonify({'message': 'Enterprice Registrado'}), 201
@@ -120,7 +122,7 @@ def set_desactive_enterprice(id):
         return jsonify({'message': 'Error al modificar rol', 'error': str(response)}), 400 
 
 def validate(data):
-    required_fields = ['name', 'cuit']
+    required_fields = ['name', 'cuit','adm_dni']
     for field in required_fields:
         if data.get(field) is None:
             return jsonify({'error': f'No se pasó el campo {field}'}), 422
@@ -131,4 +133,8 @@ def validate(data):
     if not isinstance(data.get('cuit'), int) or data.get('cuit') <= 0:
             return jsonify({'error': 'El campo cuit debe ser un integer mayor a 0'}), 422
     
+    
+    if not isinstance(data.get('adm_dni'), int) or data.get('adm_dni') <= 0:
+            return jsonify({'error': 'El campo cuit debe ser un integer mayor a 0'}), 422
+
     return None

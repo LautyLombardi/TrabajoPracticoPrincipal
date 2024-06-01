@@ -2,6 +2,7 @@ import axios from 'axios';
 import { URL } from '@/api/constantes'
 import { Usuario } from '../model/interfaces';
 import { getRolesById } from './roles';
+import { getAbmDni } from './storage';
 
 const BASE_URL = `${URL}/user`;
 
@@ -28,7 +29,9 @@ export const createUsuario = async (
             role_id: role_id,
             name: name,
             lastname: lastname,
-            password: password
+            password: password,
+            adm_dni:getAbmDni()
+
         };
         console.log(data)
         const response = await axios.post(BASE_URL, data, {

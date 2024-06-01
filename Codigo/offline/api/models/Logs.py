@@ -3,6 +3,7 @@ from db.db import db
 # Modelo para la tabla intermedia 'logs'
 class Logs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    admDni= db.Column(db.Integer) 
     userId = db.Column(db.Integer, db.ForeignKey('user.dni'))
     exceptionId = db.Column(db.Integer, db.ForeignKey('exception.id'))
     visitorId = db.Column(db.Integer, db.ForeignKey('visitor.dni'))
