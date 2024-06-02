@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Categoria } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/category`;
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 // Función para obtener todas las categorías
 export async function obtenerCategorias(): Promise<Categoria[]> {
@@ -18,11 +18,12 @@ export async function obtenerCategorias(): Promise<Categoria[]> {
 // Funcion para crear una categoria
 export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<number> => {
   try {
+    const admDni = await getAdmDni();
     const data = {
       name: nombre,
       description: descripcion,
       isExtern: isExtern,
-      adm_dni:getAbmDni()
+      adm_dni:admDni
     };
 
     const response = await axios.post(BASE_URL, data, {

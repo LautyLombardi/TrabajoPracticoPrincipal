@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Lugar } from '@/api/model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/place`;
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 export const getLugares = async (): Promise<Lugar[]> => {
     try {
@@ -15,13 +15,14 @@ export const getLugares = async (): Promise<Lugar[]> => {
 
 export async function createLugar(name: string, abbreviation: string, description: string, openTime: string, closeTime: string): Promise<number> {
     try {
+        const admDni = await getAdmDni();
         const response = await axios.post(BASE_URL,{
             "name": name,
             "abbreviation": abbreviation,
             "description": description,
             "openTime": openTime,
             "closeTime": closeTime,
-            "adm_dni":getAbmDni()
+            "adm_dni":admDni
         },{
             headers: {
                 'Content-Type': 'application/json'

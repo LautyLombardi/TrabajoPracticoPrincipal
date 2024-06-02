@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Instituto, Visitante } from '@/api/model/interfaces';
 import { URL } from '@/api/constantes'
 import { createVisitorCategoria } from './categorias';
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 const BASE_URL = `${URL}/visitor`; 
 
@@ -36,6 +36,7 @@ export const createVisitante = async (
     startDate: Date,
     finishDate: Date): Promise<number> => {
     try {
+        const admDni = await getAdmDni();
         const data = {
             dni: dni,
             enterprice_id: empresaId,
@@ -45,7 +46,7 @@ export const createVisitante = async (
             password: password,
             startDate: formatDate(startDate),
             finishDate: formatDate(finishDate),
-            adm_dni:getAbmDni()
+            adm_dni:admDni
         };
         console.log(data)
         const response = await axios.post(BASE_URL, data, {

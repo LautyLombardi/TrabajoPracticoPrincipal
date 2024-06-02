@@ -2,7 +2,7 @@ import axios from 'axios';
 import { URL } from '@/api/constantes'
 import { Usuario } from '../model/interfaces';
 import { getRolesById } from './roles';
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 const BASE_URL = `${URL}/user`;
 
@@ -24,13 +24,14 @@ export const createUsuario = async (
     lastname: string,
     password: string): Promise<number> => {
     try {
+        const admDni = await getAdmDni();
         const data = {
             dni: dni,
             role_id: role_id,
             name: name,
             lastname: lastname,
             password: password,
-            adm_dni:getAbmDni()
+            adm_dni:admDni
 
         };
         console.log(data)

@@ -136,6 +136,7 @@ def logsList(logs):
     for log in logs:
         log_dict = {
             'id': log.id,
+            'admDni':log.admDni,
             'userId': log.userId,
             'exceptionId': log.exceptionId,
             'visitorId':log.visitorId,            

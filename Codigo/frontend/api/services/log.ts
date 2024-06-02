@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Logs } from '../model/interfaces';
 import { URL} from '@/api/constantes'
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 const BASE_URL = `${URL}/logs`;
 
 export async function getLogs(): Promise<Logs[]> {
@@ -17,7 +17,7 @@ export async function getLogs(): Promise<Logs[]> {
 export async function logimageUser(dniUser: string): Promise<number> {
     try {
         const response = await axios.post(`${BASE_URL}/image/user`,{
-            "abm_dni": getAbmDni(),
+            "abm_dni": getAdmDni(),
             "user_dni": dniUser
         },{
             headers: {
@@ -34,7 +34,7 @@ export async function logimageUser(dniUser: string): Promise<number> {
 export async function logimageVisitor(visitor_dni: string): Promise<number> {
     try {
         const response = await axios.post(`${BASE_URL}/image/visitor`,{
-            "abm_dni": getAbmDni(),
+            "abm_dni": getAdmDni(),
             "visitor_dni": visitor_dni,
         },{
             headers: {
@@ -51,7 +51,7 @@ export async function logimageVisitor(visitor_dni: string): Promise<number> {
 export async function logfacerecognitionUser(hasAccess: number): Promise<number> {
     try {
         const response = await axios.post(`${BASE_URL}/loginfacerecognition/user`,{
-            "user_dni": getAbmDni(),
+            "user_dni": getAdmDni(),
             "hasAccess": hasAccess
         },{
             headers: {
@@ -68,7 +68,7 @@ export async function logfacerecognitionUser(hasAccess: number): Promise<number>
 export async function logfacerecognitionAdmFail(): Promise<number> {
     try {
         const response = await axios.post(`${BASE_URL}/loginfacerecognition/user`,{
-            "user_dni": getAbmDni(), 
+            "user_dni": getAdmDni(), 
             "hasAccess": 0
         },{
             headers: {
@@ -85,7 +85,7 @@ export async function logfacerecognitionAdmFail(): Promise<number> {
 export async function logfacerecognitionVisitor(hasAccess: number, visitor_dni: number): Promise<number> {
     try {
         const response = await axios.post(`${BASE_URL}/loginfacerecognition/visitor`,{
-            "abm_dni": getAbmDni(),
+            "abm_dni": getAdmDni(),
             "visitor_dni": visitor_dni,
             "hasAccess": hasAccess
         },{

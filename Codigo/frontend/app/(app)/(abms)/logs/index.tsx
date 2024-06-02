@@ -9,7 +9,6 @@ const AdministracionLogs = () => {
 
   useEffect(() => {
     getLogs().then((logs) => setLogs(logs));
-    console.log(logs)
   }, []);
 
   const renderItem = ({ item }: { item: Logs }) => {

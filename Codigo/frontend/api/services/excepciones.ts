@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Excepcion } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/exception`;
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 export async function getExcepciones(): Promise<Excepcion[]> {
     try {
@@ -22,6 +22,7 @@ export async function createExcepcion(user_dni: number, category_id: number, pla
         "name": name,
         "description": description,
         "duration": duration})
+        const admDni = await getAdmDni();
         const response = await axios.post(BASE_URL,{
             "user_dni": user_dni,
             "category_id": category_id,
@@ -29,7 +30,7 @@ export async function createExcepcion(user_dni: number, category_id: number, pla
             "name": name,
             "description": description,
             "duration": duration,
-            "adm_dni":getAbmDni()
+            "adm_dni":admDni
         },{
             headers: {
                 'Content-Type': 'application/json'
