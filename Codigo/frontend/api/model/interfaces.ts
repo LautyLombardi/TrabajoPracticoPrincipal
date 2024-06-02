@@ -5,7 +5,7 @@ export interface Usuario{
     lastname: string,
     createDate:string,
     barcode: string,
-    rol?: string,
+    rol: string,
 }
 
 export interface Lugar{
