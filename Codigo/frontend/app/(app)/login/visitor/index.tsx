@@ -15,14 +15,14 @@ const LogueoVisitanteManual = () => {
     const response = await loginVisitor(dni, password);
     if (response === 200) {
       Alert.alert(
-        "Visitante logueado",
+        "Visitante autenticado",
         "",
         [
           { text: "OK", onPress: () => router.navigate("/menu") }
         ]
       );
     } else {
-      Alert.alert("Visitante no logueado",
+      Alert.alert("Autenticación no autenticado",
         "DNI o contraseña incorrectos"
       );
     }
@@ -31,7 +31,7 @@ const LogueoVisitanteManual = () => {
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      {<HandleGoBackReg title='Login Manual de Visitante' route='menu' />}
+      {<HandleGoBackReg title='Autenticación Manual de Visitante' route='menu' />}
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -64,7 +64,7 @@ const LogueoVisitanteManual = () => {
       </View>
 
       <Pressable onPress={handleTerminar} style={styles.button}>
-        <Text style={styles.buttonText}>Ingresar</Text>
+        <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
     </View>
   );
@@ -72,7 +72,7 @@ const LogueoVisitanteManual = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000051',
+    backgroundColor: '#00759c',
     flex: 1,
     paddingVertical: 30,
     alignItems: 'center',
