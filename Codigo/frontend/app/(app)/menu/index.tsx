@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
 import { statusDay } from '@/api/services/openCloseDay';
 // Icons
@@ -9,6 +9,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAdmDni } from '@/api/services/storage';
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
@@ -30,6 +32,24 @@ export const Menu = () => {
       setStatusDay(false); 
     }
   };
+
+  const handlerLogout = async () => {
+    try {
+      const data = await getAdmDni()
+      await AsyncStorage.removeItem('adm_data');
+      Alert.alert(
+        "Usuario deslogueado",
+        `Usuario con DNI: ${data} deslogueado`,
+        [
+          { text: "OK", onPress: () => router.navigate("/(app)") }
+        ]
+      );
+    } catch (error) {
+      console.error('Error al desloguear usuario: ', error);
+      Alert.alert("Error al desloguear usuario");
+    }
+  };
+
 
   const toggleMenu = (menu: string) => {
     setIsMenuOpen(menu === 'main' ? !isMenuOpen : false);
@@ -76,6 +96,10 @@ export const Menu = () => {
             <TouchableOpacity style={styles.menuItem} onPress={() => router.navigate("/logs")}>
               <Entypo name="code" size={24} color="black" />
               <Text style={styles.menuText}>Logs</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => handlerLogout()}>
+              <MaterialCommunityIcons name="logout" size={24} color="black" />
+              <Text style={styles.menuText}>Logout</Text>
             </TouchableOpacity>
           </View>
         )}
