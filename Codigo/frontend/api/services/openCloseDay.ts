@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { URL } from '@/api/constantes'
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 export async function openDay(): Promise<number> {
     try {
+        const admDni = await getAdmDni();
         const response = await axios.post(`${URL}/open_day`, {
-            "adm_dni": getAbmDni()
+            "adm_dni": admDni
         }, {
             headers: {
                 'Content-Type': 'application/json'
@@ -19,8 +20,9 @@ export async function openDay(): Promise<number> {
 
 export async function closeDay(): Promise<number> {
     try {
+        const admDni = await getAdmDni();
         const response = await axios.post(`${URL}/close_day`, {
-            "adm_dni": getAbmDni()
+            "adm_dni": admDni
         }, {
             headers: {
                 'Content-Type': 'application/json'

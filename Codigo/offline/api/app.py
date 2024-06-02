@@ -18,11 +18,11 @@ current_directory = os.path.dirname(os.path.realpath(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, "db", "dataBase.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
-""" with app.app_context():
+with app.app_context():
     populate_places()
     populate_institutes()
     populate_institute_places()
-    populate_roles() """
+    populate_roles() 
 
 apertura_de_dia = True
 

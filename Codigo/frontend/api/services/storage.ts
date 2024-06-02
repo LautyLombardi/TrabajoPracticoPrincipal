@@ -26,4 +26,18 @@ const getStorage = async (): Promise<string | null> => {
         return null;
     }
 }*/
-export const getAbmDni = ()=>{ return 1111}
+
+export const getAdmDni = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('adm_data');
+      if (jsonValue != null) {
+        const admData = JSON.parse(jsonValue);
+        const dataInt=parseInt(admData[0].adm_dni) // Suponiendo que siempre hay un objeto en el array
+        return dataInt; 
+      }
+      return null; // Retorna null si no hay datos
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  };
