@@ -1,12 +1,13 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Excepcion } from '@/api/model/interfaces';
 import { getExcepciones } from '@/api/services/excepciones';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
+import ExceptionModal from '@/components/Modal/ExceptionModal';
 
 type PropsCol = {
   text?: string,
@@ -19,7 +20,7 @@ const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
   const renderChildren = () => {
     if((text || text=='') && !icon){
       return (
-      <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+      <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
       )
     }else{
       if(icon){
@@ -56,32 +57,23 @@ type PropsTable = {
   editState: boolean,
   deleteState: boolean,
   
-  handleView: (id: number) => void;
+  handleView: (excepcion: Excepcion) => void;
   handleEdit: (id: number) => void;
-  handleDelete: (id: number) => void;
+  //handleDelete: (id: number) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, excepciones }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, excepciones, handleView }) => {
 
-  const handleDesactivarCategoria = async (id: number) => {
-    try {
-      //await desactivarCategoria(id);
-      // Realizar cualquier otra acción necesaria después de desactivar la categoría
-    } catch (error) {
-      console.error('Error al desactivar la categoría:', error);
-    }
-  };
-
-  const iconVerMas = (id: any) => {
+  const iconVerMas = (excepcion: Excepcion) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, backgroundColor: "black", padding: 7, borderRadius: 100}} color={"white"} />
+      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(excepcion)} />
     )
   }
 
   const deleteIcon = (id: any) => {
     return (
 
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
+      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"}/>
     )
   }
 
@@ -90,13 +82,13 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
       <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
     )
   }
-  const handleToggleIcon = (id: any): JSX.Element => {
+  const handleToggleIcon = (excepcion: Excepcion): JSX.Element => {
     if (editState) {
-      return modifyIcon(id);
+      return modifyIcon(excepcion.id);
     } else if (deleteState) {
-      return deleteIcon(id);
+      return deleteIcon(excepcion.id);
     } else {
-      return iconVerMas(id);
+      return iconVerMas(excepcion);
     }
   };
 
@@ -104,26 +96,20 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
         <Col text='ID'flexWidth={0.8}/>
-        <Col text='DNI'flexWidth={3}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Duracion' flexWidth={2}/>
+        <Col text='Duracion' flexWidth={3}/>
         <Col text='Lugar' flexWidth={3}/>
         <Col text='Categoria' flexWidth={3}/>
-        <Col text='' flexWidth={0.8}/>
+        <Col text='' flexWidth={1.5}/>
       </Row>
       {excepciones.map((excepcion) => (
         <Row key={excepcion.id}>
           <Col text={excepcion.id?.toString() || ''} flexWidth={0.8} />
-          <Col text={excepcion.user_id?.toString() || ''} flexWidth={3} />
           <Col text={excepcion.name} flexWidth={3} />
-          <Col text={excepcion.duration} flexWidth={2} />
+          <Col text={excepcion.duration} flexWidth={3} />
           <Col text={excepcion.place_name} flexWidth={3} />
           <Col text={excepcion.category_name} flexWidth={3} />
-          {/* <Col flexWidth={0.8} icon={handleToggleIcon()} /> */} 
-          {/** Icono de columna */}
-          <View style={{ flex: 0.8, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-              {handleToggleIcon(excepcion.id)}
-          </View>
+          <Col flexWidth={1.5} icon={handleToggleIcon(excepcion)} /> 
         </Row>
       ))}
     </View>
@@ -134,11 +120,18 @@ const AdministracionCategorias = () => {
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
+  const [showException, setShowException] = useState(false);
+  const [selectedException, setSelectedException] = useState<Excepcion | null>(null);
 
-  // HandleDeleteCategoria 
-  const handleDeleteCategoria = () => {
+  const handleOpenUserModal = (excepcion: Excepcion) => {
+    setSelectedException(excepcion);
+    setShowException(true);
+  };
 
-  }
+  const handleCloseUserModal = () => {
+    setSelectedException(null);
+    setShowException(false);
+  };
 
   // Cambio de iconos
   function handleToggleIco(icon : string){
@@ -167,30 +160,46 @@ const AdministracionCategorias = () => {
   
   return (
     <View style={styles.container}>
-        {/** Header Menu */}
-        <HandleGoBack title='Administración de Categorías' route='menu' />
+      {/** Header Menu */}
+      <HandleGoBack title='Administración de Excepciones' route='menu' />
 
-        {/** Buscador */}
-        <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
-          <TextInput placeholder='Buscar' style={{backgroundColor: "white", color:"black", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, flex: 2, borderWidth: 1, borderColor: "black"}}/>
-          <Ionicons name='search' color={"white"} style={{fontSize: 27, backgroundColor: "black", borderWidth: 1, borderColor: "white", borderRadius: 25, padding: 5}}/>
-        </View>
+      {/** Buscador */}
+      <View style={styles.searchContainer}>
+        <TextInput placeholder='Buscar' style={styles.searchText} />
+        <Pressable style={styles.searchButton}>
+          <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
+        </Pressable>
+      </View>
 
         {/** Botones CRUD */}
-        <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end", marginVertical: 15, alignItems: "center", paddingHorizontal: 20, gap: 5}}>
-          <Pressable style={{padding: 10, backgroundColor: trash ? 'red' : 'black', borderRadius: 20}} onPress={() => handleToggleIco("delete")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de baja</Text>
-          </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
-          </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/excepciones/registrar")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
-          </Pressable>
-        </View>
+      <View style={styles.crudBtn}>
+        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+          <Ionicons name='eye-outline' size={20} color="black" />
+        </Pressable>
+        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+          <FontAwesome6 name="trash" size={20} color="black" />
+        </Pressable>
+        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+          <FontAwesome6 name="pen-clip" size={20} color="black" />
+        </Pressable>
+        <Pressable style={styles.crudItem} onPress={() => router.navigate("/excepciones/registrar")}>
+          <FontAwesome6 name="plus" size={20} color="black" />
+        </Pressable>
+      </View>
 
-        {/** Tabla */}
-        <Tablacategorias viewState={view} editState={edit} deleteState={trash} excepciones={excepciones} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={handleDeleteCategoria}/>
+      {/** Tabla */}
+      <ScrollView style={styles.tableContainer}>
+        <Tablacategorias 
+          viewState={view} 
+          editState={edit} 
+          deleteState={trash} 
+          excepciones={excepciones} 
+          handleView={handleOpenUserModal}
+          handleEdit={() => console.log("editar")}
+        />
+      </ScrollView>
+
+      {showException && selectedException && <ExceptionModal excepcion={selectedException} handleCloseModal={handleCloseUserModal} />}
 
     </View>
   )
@@ -198,10 +207,62 @@ const AdministracionCategorias = () => {
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#000051',
-      alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#00759c',
+    alignItems: 'center',
   },
+  tableContainer: {
+    width: '100%',
+  },
+  crudBtn: {
+    flexDirection: "row", 
+    width: "100%", 
+    justifyContent: "flex-end", 
+    alignItems: "center", 
+    paddingHorizontal: 20, 
+    gap: 4
+  },
+  crudItem:{
+    padding: 10, 
+    backgroundColor: '#fff', 
+    borderRadius: 5,
+    width: '5.3%',
+    height: 'auto',
+    marginVertical:'2%',
+    justifyContent: "center", 
+  },
+  // Buscador
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginTop: '2%',
+    paddingHorizontal: 10,
+  },
+  searchText: {
+    backgroundColor: "#fff",
+    color: "black",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "black"
+  },
+  searchButton: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    aspectRatio: 1, 
+    maxHeight: '80%',
+    flexBasis: '8%', 
+  },
+  searchButtonIcon: {
+    fontSize: 20,
+  }
 });
 
 export default AdministracionCategorias

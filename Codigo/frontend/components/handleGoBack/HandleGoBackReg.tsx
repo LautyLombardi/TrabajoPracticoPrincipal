@@ -23,14 +23,13 @@ const HandleGoBackReg: React.FC<PropsGoBack> = ({ title = "Volver", route = "men
 
 const styles = StyleSheet.create({
   container: {
-    height: 60,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: '5%',
+    paddingHorizontal: '3%',
+    paddingVertical:'3%',
     flexDirection: 'row',
-    paddingTop: '2%', 
   },
   title: {
     fontWeight: 'bold',

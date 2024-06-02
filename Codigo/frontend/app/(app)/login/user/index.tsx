@@ -14,14 +14,14 @@ const LogueoUsuarioManual = () => {
     const response = await loginUser(dni, password);
     if (response === 200) {
       Alert.alert(
-        "Usuario logueado",
+        "Usuario autenticado",
         "",
         [
           { text: "OK", onPress: () => router.navigate("/menu") }
         ]
       );
     } else {
-      Alert.alert("Usuario no logueado",
+      Alert.alert("Usuario no autenticado",
         "DNI o contraseña incorrectos"
       );
     }
@@ -30,7 +30,7 @@ const LogueoUsuarioManual = () => {
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      {<HandleGoBackReg title='Login Manual de Usuario' route='menu' />}
+      {<HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />}
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -63,7 +63,7 @@ const LogueoUsuarioManual = () => {
       </View>  
 
       <Pressable onPress={handleTerminar} style={styles.button}>
-        <Text style={styles.buttonText}>Ingresar</Text>
+        <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
     </View>
   );
@@ -71,7 +71,7 @@ const LogueoUsuarioManual = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000051',
+    backgroundColor: '#00759c',
     flex: 1,
     paddingVertical: 30,
     alignItems: 'center',
