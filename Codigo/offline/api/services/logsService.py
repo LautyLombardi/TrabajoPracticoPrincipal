@@ -244,4 +244,55 @@ def recordAbmVisitante(adm_dni,type_adm,dni):
         db.session.commit()
         return True
     except Exception as e:
-        return e         
+        return e      
+
+
+
+def recordLoginManual(dniClient,table_login):
+    try:
+        if table_login.lower() == 'visitante':
+            nuevo_log = Logs(
+                visitorId=dniClient,
+                description='Se logueo manualmente un ' + table_login,
+                createDate= createDate(),
+                isAutomatic=0,
+                isEnter=1
+            )
+        else:
+            nuevo_log = Logs(
+                userId=dniClient,
+                description='Se logueo manualmente un ' + table_login,
+                createDate= createDate(),
+                isAutomatic=0,
+                isEnter=1
+            )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e 
+
+    
+def recordLoginManualFail(dniClient,table_login):
+    try:
+        if table_login.lower() == 'visitante':
+            nuevo_log = Logs(
+                visitorId=dniClient,
+                description='Fallo al ingresar manualmente a un  ' + table_login,
+                createDate= createDate(),
+                isAutomatic=1,
+                isEnter=0
+            )
+        else:
+            nuevo_log = Logs(
+                userId=dniClient,
+                description='Fallo al ingresar manualmente a un  ' + table_login,
+                createDate= createDate(),
+                isAutomatic=1,
+                isEnter=0
+            )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e

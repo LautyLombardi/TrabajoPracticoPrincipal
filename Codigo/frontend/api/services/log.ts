@@ -104,3 +104,39 @@ export async function logfacerecognitionVisitor(hasAccess: number, visitor_dni: 
         return 400;
     }
 }
+
+
+
+export async function logLoginManual(client_dni: String, table_client:String): Promise<number> {
+    try {
+        const response = await axios.post(`${BASE_URL}/manualregistration`,{
+            "client_dni": client_dni,
+            "table_client": table_client
+        },{
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error al cargar log: ', error);
+        return 400;
+    }
+}
+
+export async function logLoginManuaFail(client_dni: string, table_client:String): Promise<number> {
+    try {
+        const response = await axios.post(`${BASE_URL}/manualregistrationFail`,{
+            "client_dni": parseInt(client_dni),
+            "table_client": table_client
+        },{
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error al cargar log: ', error);
+        return 400;
+    }
+}
