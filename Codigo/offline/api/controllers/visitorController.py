@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import services.visitorService as SV
 from utils.passHash import hashPassword 
-from services.logsService import recordVisitorRegistrationManual
+from services.logsService import  recordAbmVisitante
 
 
 visitor_bp = Blueprint('visitor', __name__)
@@ -10,7 +10,7 @@ visitor_bp = Blueprint('visitor', __name__)
 def create_visitor():
     data = request.json
 
-    required_fields = ['dni', 'enterprice_id', 'name', 'lastname', 'email', 'startDate', 'finishDate','password']
+    required_fields = ['dni', 'enterprice_id', 'name', 'lastname', 'email', 'startDate', 'finishDate','password','abm_dni']
     missing_fields = [field for field in required_fields if not data.get(field)]
 
     if missing_fields:
@@ -19,7 +19,7 @@ def create_visitor():
     response =SV.saveVisitor(data)
 
     if response == True:
-        recordVisitorRegistrationManual(data)
+        recordAbmVisitante(data.get('adm_dni'),'alta',data.get('dni'))
         return jsonify({'message': 'Visitante Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear visitante', 'error': str(response)}), 400

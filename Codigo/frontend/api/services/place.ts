@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Lugar } from '@/api/model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/place`;
+import { getAbmDni } from './storage';
 
 export const getLugares = async (): Promise<Lugar[]> => {
     try {
@@ -19,7 +20,8 @@ export async function createLugar(name: string, abbreviation: string, descriptio
             "abbreviation": abbreviation,
             "description": description,
             "openTime": openTime,
-            "closeTime": closeTime
+            "closeTime": closeTime,
+            "adm_dni":getAbmDni()
         },{
             headers: {
                 'Content-Type': 'application/json'

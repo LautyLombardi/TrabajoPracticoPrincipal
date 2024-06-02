@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Instituto } from '@/api/model/interfaces';
 import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/institute`;
+import { getAbmDni } from './storage';
 
 export const getInstitutos = async (): Promise<Instituto[]> => {
     try {
@@ -26,7 +27,8 @@ export const getInstitutoById = async (id: number): Promise<Instituto> => {
 export const createInstituto = async (instituto: string, lugaresId: number[]): Promise<any> => {
     try {
         const response = await axios.post(BASE_URL, {
-            "name":instituto
+            "name":instituto,
+            "adm_dni":getAbmDni()
         }, {
             headers: {
                 'Content-Type': 'application/json'

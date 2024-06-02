@@ -3,6 +3,7 @@ import { Rol } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 import { Role } from 'react-native';
 const BASE_URL = `${URL}/role`;
+import { getAbmDni } from './storage';
 
 export async function obtenerRoles(): Promise<Rol[]> {
   try {
@@ -20,6 +21,7 @@ export const crearRol = async (nombre: string, descripcion: string) => {
       const data = {
         name: nombre,
         description: descripcion,
+        adm_dni:getAbmDni()
       };
   
       const response = await axios.post(BASE_URL, data, {
@@ -27,8 +29,8 @@ export const crearRol = async (nombre: string, descripcion: string) => {
 
       // Si se registró correctamente, no necesitamos devolver ningún dato adicional
     } catch (error) {
-      console.error('Error al registrar la categoría:', error);
-      throw new Error('Error al registrar la categoría');
+      console.error('Error al registrar la rol:', error);
+      throw new Error('Error al registrar la rol');
     }
 };
 

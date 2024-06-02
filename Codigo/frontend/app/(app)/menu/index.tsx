@@ -1,12 +1,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Link, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { statusDay } from '@/api/services/openCloseDay';
+// Icons
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Entypo from '@expo/vector-icons/Entypo';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Foundation } from '@expo/vector-icons';
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isAuthMenuOpen, setAuthMenuOpen] = useState<boolean>(false);
+  const [isLoginMenuOpen, setLoginMenuOpen] = useState<boolean>(false);
+  const [isImageMenuOpen, setImageMenuOpen] = useState<boolean>(false);
 
   const handlerDay = async () => {
     try {
@@ -18,11 +27,17 @@ export const Menu = () => {
       }
     } catch (error) {
       console.error('Error al obtener el estado del día: ', error);
-      setStatusDay(false); // Asumimos que el día está cerrado en caso de error
+      setStatusDay(false); 
     }
   };
 
-  // Utilizar useFocusEffect para ejecutar handlerDay cuando la pantalla del menú se enfoca
+  const toggleMenu = (menu: string) => {
+    setIsMenuOpen(menu === 'main' ? !isMenuOpen : false);
+    setAuthMenuOpen(menu === 'auth' ? !isAuthMenuOpen : false);
+    setLoginMenuOpen(menu === 'login' ? !isLoginMenuOpen : false);
+    setImageMenuOpen(menu === 'image' ? !isImageMenuOpen : false);
+  };
+  
   useFocusEffect(
     useCallback(() => {
       handlerDay();
@@ -35,106 +50,157 @@ export const Menu = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/** Menu */}
-      <View style={styles.listBtns}>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/user")}>
-              <Text style={styles.textBtnMenu}>Autorizar Usuario</Text>
-            </Pressable>
+      {/* Config button */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.gearButton} onPress={() =>toggleMenu('main')}>
+          <FontAwesome6 name="gear" size={24} color="black" />
+        </TouchableOpacity>
+        {isMenuOpen && (
+          <View style={styles.menu}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Ruteo')}>
+              <MaterialIcons name="router" size={24} color="black" />
+              <Text style={styles.menuText}>Ruteo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de mail')}>
+              <Foundation name="mail" size={24} color="black" />
+              <Text style={styles.menuText}>Cambio de mail</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Horatio de entrenamiento de la IA')}>
+              <MaterialCommunityIcons name="clock" size={24} color="black" />
+              <Text style={styles.menuText}>Horario de entrenamiento de la IA</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de imagen institucional')}>
+              <MaterialCommunityIcons name="city-variant" size={24} color="black" />
+              <Text style={styles.menuText}>Cambio de imagen institucional</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.navigate("/logs")}>
+              <Entypo name="code" size={24} color="black" />
+              <Text style={styles.menuText}>Logs</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/visitor")}>
-              <Text style={styles.textBtnMenu}>Autorizar Visitante</Text>
-            </Pressable>
-          </View>
+        )}
+      </View>
+
+      {/* Main Menu */}
+      <View style={styles.mainMenu}>
+        <View style={styles.mainMenuItem}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('auth')}>
+            <MaterialCommunityIcons name="face-recognition" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Autorizar</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/user")}>
-              <Text style={styles.textBtnMenu}>Login Manual de Usuario</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/visitor")}>
-              <Text style={styles.textBtnMenu}>Login Manual de Visitante</Text>
-            </Pressable>
-          </View>
-        </View>    
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/user")}>
-              <Text style={styles.textBtnMenu}>Registrar Imagen de Usuario</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/visitor")}>
-              <Text style={styles.textBtnMenu}>Registrar Imagen de Visitante</Text>
-            </Pressable>
-          </View>          
-        </View>          
-        <View style={styles.row}> 
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/usuarios")}>
-              <Text style={styles.textBtnMenu}>Administración de Usuarios</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/visitantes")}>
-              <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
-            </Pressable>
-          </View>       
+        {isAuthMenuOpen && (
+          <>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
+              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/user")}>
+                <AntDesign name="right" size={24} color="black" />
+                <Text style={styles.textBtnMenu}>Autorizar Usuario</Text>
+              </Pressable>
+            </View>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
+              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/visitor")}>
+                <AntDesign name="right" size={24} color="black" />
+                <Text style={styles.textBtnMenu}>Autorizar Visitante</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('login')}>
+            <MaterialCommunityIcons name="login" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Login Manual</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/roles")}>
-              <Text style={styles.textBtnMenu}>Administración de Roles</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/categorias")}>
-              <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
-            </Pressable>
-          </View>                  
+        {isLoginMenuOpen && (
+          <>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
+              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/user")}>
+                <AntDesign name="right" size={24} color="black" />
+                <Text style={styles.textBtnMenu}>Login Manual de Usuario</Text>
+              </Pressable>
+            </View>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
+              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/visitor")}>
+                <AntDesign name="right" size={24} color="black" />
+                <Text style={styles.textBtnMenu}>Login Manual de Visitante</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('image')}>
+            <Entypo name="camera" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Registrar Imagen</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/empresas")}>
-              <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
-            </Pressable>
-          </View>  
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/lugares")}>
-              <Text style={styles.textBtnMenu}>Administracion de Lugares</Text>
-            </Pressable>
-          </View>  
+        {isImageMenuOpen && (
+          <>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
+              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/user")}>
+                <AntDesign name="right" size={24} color="black" />
+                <Text style={styles.textBtnMenu}>Registrar Imagen de Usuario</Text>
+              </Pressable>
+            </View>
+            <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
+              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/image/visitor")}>
+                <AntDesign name="right" size={24} color="black" />
+                <Text style={styles.textBtnMenu}>Registrar Imagen de Visitante</Text>
+              </Pressable>
+            </View> 
+          </>
+        )}
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/usuarios")}>
+            <Ionicons name="person-add-sharp" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Administración de Usuarios</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
-              <Text style={styles.textBtnMenu}>Administracion de Excepciones</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/institutos")}>
-              <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
-            </Pressable>
-          </View>      
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/visitantes")}>
+            <Ionicons name="person-add-sharp" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/logs")}>
-              <Text style={styles.textBtnMenu}>Logs</Text>
-            </Pressable>
-          </View>  
-          <View style={styles.col}>
-            <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
-              <Text style={styles.textBtnMenu}>Reportes</Text>
-            </Pressable>
-          </View> 
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/roles")}>
+            <Text style={styles.textBtnMenu}>Administración de Roles</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/categorias")}>
+            <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/empresas")}>
+            <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/lugares")}>
+            <Text style={styles.textBtnMenu}>Administracion de Lugares</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/institutos")}>
+            <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
+            <FontAwesome6 name="house-circle-exclamation" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Administracion de Excepciones</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
+            <Entypo name="bar-graph" size={24} color="black" />
+            <Text style={styles.textBtnMenu}>Reportes</Text>
+          </Pressable>
         </View>
       </View>
 
+      {/* Open CLose Day */}
       <View style={styles.dayButton}>
         <Link href={"/openCloseDay"} asChild>
           <Pressable style={styles.button}>
@@ -142,7 +208,6 @@ export const Menu = () => {
           </Pressable>
         </Link>
       </View>
-      <StatusBar style='light' />
     </SafeAreaView>
   );
 };
@@ -150,50 +215,89 @@ export const Menu = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000051',
-    alignItems: 'center',
+    backgroundColor: '#00759c',
   },
   header: {
     width: "100%",
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-end",
+    padding: 20,
+    zIndex: 3,
   },
-  headerText: {
+  gearButton: {
+    backgroundColor: '#fff',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  menu: {
+    position: 'absolute',
+    marginTop:8,
+    top: 60,
+    right: 20,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 0,
+    paddingLeft: 15,
+    width: 350,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+  },
+  menuItem: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E8E8',
+  },
+  menuText: {
+    fontSize: 16,
+    marginLeft: 10,
     fontWeight: "bold",
   },
-  // Menu de Botones
-  listBtns: {
+  // Main Menu
+  mainMenu: {
     flexDirection: 'column',
-    width: 350,
-    marginTop: 40,
+    width: '70%',
+    height: '20%',
+    alignSelf: "center",
   },
-  row: {
+  mainMenuItem: {
     flexDirection: 'row',
-  },
-  col: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 5,
+    borderRadius: 5,
+    padding: 0,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
   },
   buttonMenu: {
-    height: 80,
+    height: 50,
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
-    elevation: 5,
-    justifyContent: 'center',
+    flexDirection: 'row', 
     alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E8E8',
+    paddingLeft: '3%'
   },
   textBtnMenu: {
     color: '#000',
     textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "bold",
   },
+  buttonMenuDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
+  // Open Close Day
   dayButton: {
     position: "absolute",
     bottom: 0,
@@ -202,9 +306,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 2,
     borderColor: "#000",
-  },
-  buttonMenuDisabled: {
-    backgroundColor: '#a3a3a3',
   },
   button: {
     backgroundColor: "#f1f1f1",

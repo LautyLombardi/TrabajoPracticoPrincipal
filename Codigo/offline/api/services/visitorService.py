@@ -8,6 +8,7 @@ from models.Institute import Institute
 from models.VisitorHistory import VisitorHistory
 from services.categoryService import getCategoryById
 from utils.passHash import hashPassword
+from services.logsService import recordADM
 
 def saveVisitor(data):
     try:

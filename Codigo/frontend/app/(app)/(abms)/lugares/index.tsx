@@ -1,12 +1,14 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
-import { TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Lugar } from '@/api/model/interfaces';
 import { getLugares } from '@/api/services/place';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { FontAwesome5 } from '@expo/vector-icons';
+import PlaceModal from '@/components/Modal/PlaceModal';
 
 type PropsCol = {
   text?: string,
@@ -19,7 +21,7 @@ const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
   const renderChildren = () => {
     if((text || text=='') && !icon){
       return (
-      <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+      <Text style={{ color: 'white', fontSize: 15, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
       )
     }else{
       if(icon){
@@ -55,12 +57,12 @@ type PropsTable = {
   editState: boolean,
   deleteState: boolean,
   
-  handleView: (id: number) => void;
+  handleView: (lugar: Lugar) => void;
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView }) => {
 
   const handleDesactivarCategoria = async (id: number) => {
     try {
@@ -72,38 +74,38 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
     }
   };
 
-  const iconVerMas = (id: any) => {
+  const iconVerMas = (lugar: Lugar) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, backgroundColor: "black", padding: 7, borderRadius: 100}} color={"white"} />
+      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(lugar)} />
     )
   }
 
   const deleteIcon = (id: any) => {
     return (
-
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
+      <Ionicons name='trash' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
     )
   }
 
   const modifyIcon = (id: any) => {
     return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
     )
   }
-  const handleToggleIcon = (id: any): JSX.Element => {
+
+  const handleToggleIcon = (lugar: Lugar): JSX.Element => {
     if (editState) {
-      return modifyIcon(id);
+      return modifyIcon(lugar.id);
     } else if (deleteState) {
-      return deleteIcon(id);
+      return deleteIcon(lugar.id);
     } else {
-      return iconVerMas(id);
+      return iconVerMas(lugar);
     }
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
+    <View style={{flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
+        <Col text='ID' flexWidth={0.8} />
         <Col text='Nombre' flexWidth={3}/>
         <Col text='Abreviación' flexWidth={3}/>
         <Col text='openTime' flexWidth={3}/>
@@ -117,11 +119,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
           <Col text={lugar.abbreviation} flexWidth={3} />
           <Col text={lugar.openTime} flexWidth={3} />
           <Col text={lugar.closeTime} flexWidth={3} />
-          {/* <Col flexWidth={0.8} icon={handleToggleIcon()} /> */} 
-          {/** Icono de columna */}
-          <View style={{ flex: 1.5, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-              {handleToggleIcon(lugar.id)}
-          </View>
+          <Col flexWidth={1.5} icon={handleToggleIcon(lugar)} /> 
         </Row>
       ))}
     </View>
@@ -132,20 +130,32 @@ const AdministracionLugares = () => {
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
+  const [showUser, setShowUser] = useState(false);
+  const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
 
   // HandleDeleteCategoria 
   const handleDeleteCategoria = () => {
 
   }
 
+  const handleOpenUserModal = (lugar: Lugar) => {
+    setSelectedLugar(lugar);
+    setShowUser(true);
+  };
+
+  const handleCloseUserModal = () => {
+    setSelectedLugar(null);
+    setShowUser(false);
+  };
+
   // Cambio de iconos
   function handleToggleIco(icon : string){
-    if(icon == "edit" && edit || icon == "delete" && trash){
-      setEdit(false)
-      setTrash(false)
-    }else {
-      setEdit(icon == "edit")
-      setTrash(icon == "delete")        
+    if(icon === "edit" && edit || icon === "delete" && trash){
+      setEdit(false);
+      setTrash(false);
+    } else {
+      setEdit(icon === "edit");
+      setTrash(icon === "delete");        
     }
   };
 
@@ -159,51 +169,97 @@ const AdministracionLugares = () => {
 
   useEffect(() => {
     getLugares().then((places) => setLugares(places))
-
   }, []);
-
 
   return (
     <View style={styles.container}>
-        {/** Header Menu */}
-        <HandleGoBack title='Administración de Lugares' route='menu' />
+      {/** Header Menu */}
+      <HandleGoBack title='Administración de Lugares' route='menu' />
 
-        {/** Buscador */}
-        <View style={{flexDirection: "row", alignItems: "center", width: "100%", marginTop: 20, paddingHorizontal: 10, gap: 8}}>
-          <TextInput placeholder='Buscar' style={{backgroundColor: "white", color:"black", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, flex: 2, borderWidth: 1, borderColor: "black"}}/>
-          <Ionicons name='search' color={"white"} style={{fontSize: 27, backgroundColor: "black", borderWidth: 1, borderColor: "white", borderRadius: 25, padding: 5}}/>
-        </View>
+      {/** Buscador */}
+      <View style={styles.searchContainer}>
+        <TextInput placeholder='Buscar' style={styles.searchText}/>
+        <FontAwesome5 name='search' color={"black"} style={styles.searchButton}/>
+      </View>
 
-        {/** Botones CRUD */}
-        <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end", marginVertical: 15, alignItems: "center", paddingHorizontal: 20, gap: 5}}>
-          <Pressable style={{padding: 10, backgroundColor: trash ? 'red' : 'black', borderRadius: 20}} onPress={() => handleToggleIco("delete")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de baja</Text>
-          </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: edit? "orange" : "black", borderRadius: 20}} onPress={() => handleToggleIco("edit")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Modificar</Text>
-          </Pressable>
-          <Pressable style={{padding: 10, backgroundColor: "black", borderRadius: 20}} onPress={() => router.navigate("/lugares/registrar")}>
-            <Text style={{color: "white", fontSize: 10, fontWeight: 300}}>Dar de alta</Text>
-          </Pressable>
-        </View>
+      {/** Botones CRUD */}
+      <View style={styles.crudBtn}>
+        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+          <Ionicons name='eye-outline' size={20} color="black" />
+        </Pressable>
+        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+          <FontAwesome6 name="trash" size={20} color="black" />
+        </Pressable>
+        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+          <FontAwesome6 name="pen-clip" size={20} color="black" />
+        </Pressable>
+        <Pressable style={styles.crudItem} onPress={() => router.navigate("/lugares/registrar")}>
+          <FontAwesome6 name="plus" size={20} color="black" />
+        </Pressable>
+      </View>
 
-        {/** Tabla */}
-        <ScrollView style={styles.tableContainer}>
-          <Tablacategorias viewState={view} editState={edit} deleteState={trash} lugares={lugares} handleView={()=> console.log("ver")} handleEdit={() => console.log("edutar")} handleDelete={handleDeleteCategoria}/>
-        </ScrollView>
+      {/** Tabla */}
+      <ScrollView style={styles.tableContainer}>
+        <Tablacategorias viewState={view} editState={edit} deleteState={trash} lugares={lugares} handleView={handleOpenUserModal} handleEdit={() => console.log("editar")} handleDelete={handleDeleteCategoria}/>
+      </ScrollView>
+      
+      {showUser && selectedLugar && <PlaceModal place={selectedLugar} handleCloseModal={handleCloseUserModal} />}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#000051',
-      alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#00759c',
+    alignItems: 'center',
   },
   tableContainer: {
     width: '100%',
   },
+  crudBtn: {
+    flexDirection: "row", 
+    width: "100%", 
+    justifyContent: "flex-end", 
+    marginVertical: 15, 
+    alignItems: "center", 
+    paddingHorizontal: 20, 
+    gap: 4
+  },
+  crudItem:{
+    padding: 10, 
+    backgroundColor: '#fff', 
+    borderRadius: 5,
+    width: '5%',
+    height: 35,
+    justifyContent: "center", 
+  },
+  // Buscador
+  searchContainer:{
+    flexDirection: "row", 
+    alignItems: "center", 
+    width: "100%", 
+    marginTop: 20, 
+    paddingHorizontal: 10,
+  },
+  searchText:{
+    backgroundColor: "#fff",
+    color:"black", 
+    paddingHorizontal: 20, 
+    paddingVertical: 10, 
+    borderRadius: 5, 
+    flex: 2, 
+    borderWidth: 1, 
+    borderColor: "black"
+  },
+  searchButton: {
+    fontSize: 27, 
+    backgroundColor: "#fff", 
+    borderWidth: 1, 
+    borderColor: "black", 
+    borderRadius: 5, 
+    padding: 5
+  }
 });
 
 export default AdministracionLugares

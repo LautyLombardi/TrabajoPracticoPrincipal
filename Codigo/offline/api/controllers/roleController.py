@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from services.roleService import saveRole,updateRole, getRole, getRoleAll, setDesactive, getRoleAllActive, getRoleAllDesactive, setDesactive, setActive
+from services.logsService import  recordADM
 
 role_bp = Blueprint('role', __name__)
 CORS(role_bp)
@@ -16,6 +17,7 @@ def create_role():
     response = saveRole(data)
 
     if response == True:
+        recordADM(data.get('adm_dni'),'alta','rol')
         return jsonify({'message': 'Role Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear Role', 'error': str(response)}), 400
@@ -120,7 +122,7 @@ def set_desactive_role(id):
         return jsonify({'message': 'Error al modificar rol', 'error': str(response)}), 400 
 
 def validate(data):
-    required_fields = ['name', 'description']
+    required_fields = ['name', 'description','adm_dni']
     for field in required_fields:
         if data.get(field) is None:
             return jsonify({'error': f'No se pasó el campo {field}'}), 422
@@ -128,5 +130,9 @@ def validate(data):
     for field in ['name', 'description']:
         if not isinstance(data.get(field), str) or not data.get(field).strip():
             return jsonify({'error': f'El campo {field} debe ser un string no vacío'}), 422
+
+    adm_dni= data.get('adm_dni')
+    if not isinstance(adm_dni, int):
+        return jsonify({'error': 'adm_dni debe ser un entero'}), 422        
 
     return None
