@@ -5,7 +5,7 @@ export interface Usuario{
     lastname: string,
     createDate:string,
     barcode: string,
-    rol?: string,
+    rol: string,
 }
 
 export interface Lugar{
@@ -48,14 +48,14 @@ export interface Empresa{
     id: number,
     name: string,
     cuit: number,
-    isActive?:number,
-    createDate?:string
+    isActive:number,
+    createDate:string
 }
 
-  
 export interface Instituto {
-    id?: number;
+    id: number;
     name: string;
+    isActive:number,
     createDate: string;
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
 import { statusDay } from '@/api/services/openCloseDay';
 // Icons
@@ -9,6 +9,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAdmDni } from '@/api/services/storage';
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
@@ -30,6 +32,24 @@ export const Menu = () => {
       setStatusDay(false); 
     }
   };
+
+  const handlerLogout = async () => {
+    try {
+      const data = await getAdmDni()
+      await AsyncStorage.removeItem('adm_data');
+      Alert.alert(
+        "Usuario deslogueado",
+        `Usuario con DNI: ${data} deslogueado`,
+        [
+          { text: "OK", onPress: () => router.navigate("/(app)") }
+        ]
+      );
+    } catch (error) {
+      console.error('Error al desloguear usuario: ', error);
+      Alert.alert("Error al desloguear usuario");
+    }
+  };
+
 
   const toggleMenu = (menu: string) => {
     setIsMenuOpen(menu === 'main' ? !isMenuOpen : false);
@@ -77,6 +97,10 @@ export const Menu = () => {
               <Entypo name="code" size={24} color="black" />
               <Text style={styles.menuText}>Logs</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => handlerLogout()}>
+              <MaterialCommunityIcons name="logout" size={24} color="black" />
+              <Text style={styles.menuText}>Logout</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -108,7 +132,7 @@ export const Menu = () => {
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('login')}>
             <MaterialCommunityIcons name="login" size={24} color="black" />
-            <Text style={styles.textBtnMenu}>Login Manual</Text>
+            <Text style={styles.textBtnMenu}>Autenticación Manual</Text>
           </Pressable>
         </View>
         {isLoginMenuOpen && (
@@ -116,13 +140,13 @@ export const Menu = () => {
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/user")}>
                 <AntDesign name="right" size={24} color="black" />
-                <Text style={styles.textBtnMenu}>Login Manual de Usuario</Text>
+                <Text style={styles.textBtnMenu}>Autenticación Manual de Usuario</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
               <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/login/visitor")}>
                 <AntDesign name="right" size={24} color="black" />
-                <Text style={styles.textBtnMenu}>Login Manual de Visitante</Text>
+                <Text style={styles.textBtnMenu}>Autenticación Manual de Visitante</Text>
               </Pressable>
             </View>
           </>
@@ -220,7 +244,8 @@ const styles = StyleSheet.create({
   header: {
     width: "100%",
     alignItems: "flex-end",
-    padding: 20,
+    padding: 25,
+    marginTop: '5%',
     zIndex: 3,
   },
   gearButton: {

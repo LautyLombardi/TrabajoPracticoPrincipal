@@ -23,12 +23,12 @@ const HandleGoBack: React.FC<PropsGoBack> = ({ title = "Menu", route="menu" }) =
 
 const styles = StyleSheet.create({
   container: {
-    height: '6%',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingHorizontal: '3%',
+    paddingVertical:'3%',
     flexDirection: 'row',
   },
   title: {
