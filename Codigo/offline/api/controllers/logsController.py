@@ -8,7 +8,7 @@ logs_bp = Blueprint('logs', __name__)
 def get_manual_registration_logs():
         
     data= request.json
-    response=recordLoginManual(data.get('client_dni'),data.get('table_client'))
+    response=recordLoginManual(data.get('adm_dni'),data.get('client_dni'),data.get('table_client'))
 
     if response == True:
         return jsonify({'message': 'Log Registrado'}), 201
@@ -19,12 +19,25 @@ def get_manual_registration_logs():
 def get_manual_registration_logs_fail():
         
     data= request.json
-    response=recordLoginManualFail(data.get('client_dni'),data.get('table_client'))
+    response=recordLoginManualFail(data.get('adm_dni'),data.get('client_dni'),data.get('table_client'))
 
     if response == True:
         return jsonify({'message': 'Log Registrado'}), 201
     else:
         return jsonify({'message': 'Error al crear log', 'error': str(response)}), 400
+
+
+@logs_bp.route('/loyoutUser', methods=['POST'])
+def save_loyout_logs():
+        
+    data= request.json
+    response=recordLoyout(data.get('adm_dni'))
+
+    if response == True:
+        return jsonify({'message': 'Log Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear log', 'error': str(response)}), 400
+
 
 @logs_bp.route('/loginfacerecognition/user', methods=['POST'])
 def save_login_face_recognition_user_logs():
