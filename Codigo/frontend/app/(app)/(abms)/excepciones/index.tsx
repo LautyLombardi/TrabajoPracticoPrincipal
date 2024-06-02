@@ -66,7 +66,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
   const iconVerMas = (excepcion: Excepcion) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, backgroundColor: "black", padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(excepcion)} />
+      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(excepcion)} />
     )
   }
 
