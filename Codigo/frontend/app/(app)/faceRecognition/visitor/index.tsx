@@ -4,10 +4,8 @@ import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo
 import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
-import axios from 'axios';
-import { faceRecognition } from '@/api/services/faceRecognition';
-import { ONLINE,URL } from "@/api/constantes";
-import { getAbmDni } from "@/api/services/openCloseDay";
+import { ONLINE } from "@/api/constantes";
+import { logfacerecognitionUser, logfacerecognitionVisitor } from "@/api/services/log";
 
 const VisitorFaceRecognition = () => {
   const navigator = useRouter();
@@ -29,42 +27,19 @@ const VisitorFaceRecognition = () => {
           body: formData
         }).then(async (respuesta) => {
           if (respuesta.status == 200) {
-            Alert.alert("AUTENTICACION EXITOSA: " + respuesta);
-            const data = await respuesta.json(); // Convertir la respuesta a JSON
-            console.log("Respuesta del servidor:", data);
+            const data = await respuesta.json();
             
-            const logResponse = await fetch(`${URL}/logs/loginfacerecognition/visitor`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ visitor_dni: data.dni, hasAcces : 1}),
-            });
-  
-            if (logResponse.status === 201) {
-              Alert.alert("se creo el log de face recognition")
-              navigator.navigate("/menu");
-            } else {
-              const logErrorData = await logResponse.json();
-              Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
-            }  
+            await logfacerecognitionVisitor(1, data.dni)
+            Alert.alert(
+              "Autenticación exitosa",
+              "",
+              [
+                { text: "OK", onPress: () => navigator.navigate("/menu") }
+              ]
+            );
           } else {
-            Alert.alert("FALLO LA AUTENTICACION DE IMAGEN DE USUARIO");
-            const logResponse = await fetch(`${URL}/logs/loginfacerecognition/visitor`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ visitor_dni: getAbmDni(), hasAccess : 0}),
-            });
-
-            if (logResponse.status === 201) {
-              Alert.alert("se creo el log de face recognition")
-            } else {
-              const logErrorData = await logResponse.json();
-              Alert.alert("Error", `Fallo al registrar el log: ${logErrorData.message}`);
-            }  
-            navigator.navigate("/menu");
+            await logfacerecognitionUser(0)
+            Alert.alert("Falló la autenticación de la imagen del visitante")
           }
         });
       });

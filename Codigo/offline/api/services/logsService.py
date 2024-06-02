@@ -79,7 +79,6 @@ def recordUserRegistrationManual(data):
         return e
 
 def recordImageUser(user_dni):
-    print(user_dni)
     try:
         nuevo_log = Logs(
             userId=user_dni,
@@ -136,7 +135,7 @@ def recordVisitorLoginAutomatic(data):
             visitorId= data.get('visitor_dni'),
             hasAccess = data.get('hasAccess'),
             isFaceRecognition =1,
-            description='Login del visitante por registro reconociminto facial',
+            description='Login del visitante por registro reconocimiento facial',
             createDate= createDate(),
             isAutomatic=1
         )
@@ -152,7 +151,7 @@ def recordUserLoginAutomatic(data):
             userId= data.get('user_dni'),
             hasAccess = data.get('hasAccess'),
             isFaceRecognition =1,
-            description='Login del usuario por registro reconociminto facial',
+            description='Login del usuario por registro reconocimiento facial',
             createDate= createDate(),
             isAutomatic=1
         )

@@ -2,7 +2,7 @@ from db.db import db
 from models.Exception import Exception
 from models.PlaceException import PlaceException
 from models.CategoryException import CategoryException
-from models.User import User
+from models.Visitor import Visitor
 from models.Place import Place
 from models.Category import Category
 from models.Logs import Logs
@@ -11,7 +11,7 @@ from utils.date import createDate
 
 def saveException(data):
     try:        
-        user = User.query.filter_by(dni=data.get('user_dni')).first()
+        user = Visitor.query.filter_by(dni=data.get('user_dni')).first()
         if not user:
             return '404c'
 
