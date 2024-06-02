@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
+import { logLoyout} from "@/api/services/log";
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
@@ -36,6 +37,7 @@ export const Menu = () => {
   const handlerLogout = async () => {
     try {
       const data = await getAdmDni()
+      await logLoyout();
       await AsyncStorage.removeItem('adm_data');
       Alert.alert(
         "Usuario deslogueado",

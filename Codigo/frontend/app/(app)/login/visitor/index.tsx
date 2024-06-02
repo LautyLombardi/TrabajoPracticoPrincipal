@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { loginVisitor } from "@/api/services/visitantes";
 import { Ionicons } from '@expo/vector-icons';
-
+import { logLoginManual,logLoginManuaFail } from "@/api/services/log";
 
 const LogueoVisitanteManual = () => {
   const [dni, setDni] = useState<string>("");
@@ -21,10 +21,13 @@ const LogueoVisitanteManual = () => {
           { text: "OK", onPress: () => router.navigate("/menu") }
         ]
       );
+
+      await logLoginManual(dni,"visitante")
     } else {
       Alert.alert("Autenticación no autenticado",
         "DNI o contraseña incorrectos"
       );
+      await logLoginManuaFail(dni,"visitante")
     }
   };
 
