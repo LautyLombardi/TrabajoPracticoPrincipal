@@ -5,7 +5,7 @@ from utils.date import check_date_format
 logs_bp = Blueprint('logs', __name__)
     
 @logs_bp.route('/manualregistration', methods=['POST'])
-def get_manual_registration_logs():
+def save_manual_registration_logs():
         
     data= request.json
     response=recordLoginManual(data.get('adm_dni'),data.get('client_dni'),data.get('table_client'))
@@ -16,7 +16,7 @@ def get_manual_registration_logs():
         return jsonify({'message': 'Error al crear log', 'error': str(response)}), 400
 
 @logs_bp.route('/manualregistrationFail', methods=['POST'])
-def get_manual_registration_logs_fail():
+def save_manual_registration_logs_fail():
         
     data= request.json
     response=recordLoginManualFail(data.get('adm_dni'),data.get('client_dni'),data.get('table_client'))
