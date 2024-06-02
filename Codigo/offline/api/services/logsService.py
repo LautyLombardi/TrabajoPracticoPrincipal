@@ -19,7 +19,7 @@ def registrarApertura():
 
 def registrarAperturaManual(adm_dni):
     nuevo_log = Logs(
-        userId=adm_dni,
+        admDni=adm_dni,
         aperturaCierre='Apertura',
         createDate=createDate(),
         description='Registro de apertura del día'
@@ -49,7 +49,7 @@ def registrarCierre():
 def registrarCierreManual(adm_dni):
     # Crear un nuevo registro de log para el cierre del día
     nuevo_log = Logs(
-        userId=adm_dni,
+        admDni=adm_dni,
         aperturaCierre='Cierre',  # Indica que es una Cierre
         createDate=createDate(),
         description='Registro del cierre del día'
@@ -136,6 +136,7 @@ def logsList(logs):
     for log in logs:
         log_dict = {
             'id': log.id,
+            'admDni':log.admDni,
             'userId': log.userId,
             'exceptionId': log.exceptionId,
             'visitorId':log.visitorId,            

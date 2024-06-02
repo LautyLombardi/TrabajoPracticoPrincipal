@@ -3,7 +3,7 @@ import { Rol } from '../model/interfaces';
 import { URL } from '@/api/constantes'
 import { Role } from 'react-native';
 const BASE_URL = `${URL}/role`;
-import { getAbmDni } from './storage';
+import { getAdmDni } from './storage';
 
 export async function obtenerRoles(): Promise<Rol[]> {
   try {
@@ -18,10 +18,11 @@ export async function obtenerRoles(): Promise<Rol[]> {
 
 export const crearRol = async (nombre: string, descripcion: string) => {
     try {
+      const admDni = await getAdmDni();
       const data = {
         name: nombre,
         description: descripcion,
-        adm_dni:getAbmDni()
+        adm_dni:admDni
       };
   
       const response = await axios.post(BASE_URL, data, {

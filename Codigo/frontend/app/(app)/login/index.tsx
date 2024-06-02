@@ -8,7 +8,6 @@ import { Alert} from "react-native";
 import { ONLINE,URL} from "@/api/constantes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserById } from "@/api/services/user";
-import { getAbmDni } from "@/api/services/storage";
 import { logfacerecognitionAdmFail, logfacerecognitionUser } from "@/api/services/log";
 
 

@@ -18,19 +18,19 @@ current_directory = os.path.dirname(os.path.realpath(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, "db", "dataBase.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
-""" with app.app_context():
+with app.app_context():
     populate_places()
     populate_institutes()
     populate_institute_places()
-    populate_roles() """
+    populate_roles() 
 
 apertura_de_dia = True
 
 def apertura():
-        with app.app_context():
-            global apertura_de_dia
-            registrarApertura()
-            apertura_de_dia = True
+    with app.app_context():
+        global apertura_de_dia
+        registrarApertura()
+        apertura_de_dia = True
 
 def cierre():
     with app.app_context():
@@ -39,8 +39,8 @@ def cierre():
         apertura_de_dia = False
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(apertura, 'cron', hour=10)  # Configura la hora y minuto deseado
-scheduler.add_job(cierre, 'cron', hour=7)  # Configura la hora y minuto deseado
+scheduler.add_job(apertura, 'cron', hour=7)  # Configura la hora y minuto deseado
+scheduler.add_job(cierre, 'cron', hour=23)  # Configura la hora y minuto deseado
 scheduler.start()
 
 
@@ -87,7 +87,7 @@ def check_time():
         return
 
     if not (start_time <= current_time <= end_time) or not apertura_de_dia:
-        return jsonify({"error": "el dia esta cerrado"}), 403
+        return jsonify({"error": "el dia esta cerrado"}), 403  
 
 @app.route('/', methods=['GET'])
 def index():

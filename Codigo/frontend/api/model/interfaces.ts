@@ -68,6 +68,7 @@ export interface Rol {
 
 export interface Logs {
     id: string;
+    admDni:number;
     userId: number;
     exceptionId: number;
     visitorId: number;

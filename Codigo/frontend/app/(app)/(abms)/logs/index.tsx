@@ -21,6 +21,7 @@ const AdministracionLogs = () => {
 
     return (
       <View style={styles.itemContainer}>
+        {item.admDni !== null && <Text style={styles.itemText}>{renderText('Usuario que realizo la accion', item.admDni)}</Text>}
         {item.userId !== null && <Text style={styles.itemText}>{renderText('Usuario DNI', item.userId)}</Text>}
         {item.abm && <Text style={styles.itemText}>{item.abm}</Text>}
         {item.description && <Text style={styles.itemText}>{item.description}</Text>}
