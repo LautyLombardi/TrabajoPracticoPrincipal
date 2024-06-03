@@ -4,7 +4,6 @@ export interface Usuario{
     name: string,
     lastname: string,
     createDate:string,
-    barcode: string,
     rol: string,
 }
 
@@ -15,8 +14,8 @@ export interface Lugar{
     description:string,
     openTime:string,
     closeTime:string,
-    isActive?:number,
-    createDate?:string
+    isActive:number,
+    createDate:string
 }
 
 export interface Visitante{
@@ -41,7 +40,7 @@ export interface Categoria {
     name: string;
     description: string;
     isExtern: number;
-    createDate?: string;
+    createDate: string;
 }
 
 export interface Empresa{
