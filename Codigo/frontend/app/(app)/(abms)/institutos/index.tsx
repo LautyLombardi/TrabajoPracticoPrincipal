@@ -5,9 +5,11 @@ import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { Empresa } from '@/api/model/interfaces';
+import { Empresa, Instituto } from '@/api/model/interfaces';
 import { getEmpresas } from '@/api/services/empresa';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
+import { getInstitutos } from '@/api/services/institutos';
+import InstituteModal from '@/components/Modal/InstituteModal';
 
 
 type PropsCol = {
@@ -52,21 +54,21 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 };
 
 type PropsTable = {
-  empresas: Empresa[];
+  institutos: Instituto[];
   viewState: boolean,
   editState: boolean,
   deleteState: boolean
 
-  handleView: (empresa: Empresa) => void;
+  handleView: (instituto: Instituto) => void;
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
 };
 
-const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState, empresas, handleView }) => {
+const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteState, institutos, handleView }) => {
 
-  const iconVerMas = (empresa: Empresa) => {
+  const iconVerMas = (instituto: Instituto) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(empresa)} />
+      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(instituto)} />
     )
   }
 
@@ -81,13 +83,13 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
       <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
     )
   }
-  const handleToggleIcon = (empresa: Empresa): JSX.Element => {
+  const handleToggleIcon = (instituto: Instituto): JSX.Element => {
     if (editState) {
       return modifyIcon();
     } else if (deleteState) {
       return deleteIcon();
     } else {
-      return iconVerMas(empresa);
+      return iconVerMas(instituto);
     }
   };
 
@@ -96,16 +98,14 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
       <Row>
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
-        <Col text='Cuit' flexWidth={3}/>
         <Col text='' flexWidth={1.5}/>
       </Row>
       {
-        empresas.map(empresa =>(
-          <Row key={empresa.id}>
-            <Col text={empresa.id?.toString() || ''} flexWidth={0.8}/>
-            <Col text={empresa.name} flexWidth={3} />
-            <Col text={empresa.cuit.toString()} flexWidth={3} />
-            <Col flexWidth={1.5} icon={handleToggleIcon(empresa)} /> 
+        institutos.map(instituto =>(
+          <Row key={instituto.id}>
+            <Col text={instituto.id?.toString() || ''} flexWidth={0.8}/>
+            <Col text={instituto.name} flexWidth={3} />
+            <Col flexWidth={1.5} icon={handleToggleIcon(instituto)} /> 
           </Row>
         ))
       }
@@ -113,21 +113,21 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
   );
 };
 
-const AdministracionEmpresas = () => {
+const AdministracionInstitutos = () => {
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
-  const [showEnterprice, setShowEnterprice] = useState(false);
-  const [selectedEnterprice, setSelectedEnterprice] = useState<Empresa | null>(null);
+  const [showInstitute, setShowInstitute] = useState(false);
+  const [selectedInstitute, setSelectedInstitute] = useState<Instituto | null>(null);
 
-  const handleOpenUserModal = (empresa: Empresa) => {
-    setSelectedEnterprice(empresa);
-    setShowEnterprice(true);
+  const handleOpenUserModal = (instituto: Instituto) => {
+    setSelectedInstitute(instituto);
+    setShowInstitute(true);
   };
 
   const handleCloseUserModal = () => {
-    setSelectedEnterprice(null);
-    setShowEnterprice(false);
+    setSelectedInstitute(null);
+    setShowInstitute(false);
   };
 
   // Cambio de iconos
@@ -141,23 +141,23 @@ const AdministracionEmpresas = () => {
     }
   };
 
-  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  const [institutos, setInstitutos] = useState<Instituto[]>([])
   
   useFocusEffect(
     useCallback(() => {
-      getEmpresas().then((enterprices) => setEmpresas(enterprices))
+      getInstitutos().then((institute) => setInstitutos(institute))
     }, [])
   );
 
   useEffect(() => {
-    getEmpresas().then((enterprices) => setEmpresas(enterprices))
+    getInstitutos().then((institute) => setInstitutos(institute))
 
   }, [])
 
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      <HandleGoBack title='Administración de Empresa' route='menu' />
+      <HandleGoBack title='Administración de Institutos' route='menu' />
 
       {/** Buscador */}
       <View style={styles.searchContainer}>
@@ -178,25 +178,25 @@ const AdministracionEmpresas = () => {
         <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/empresas/registrar")}>
+        <Pressable style={styles.crudItem} onPress={() => router.navigate("/institutos/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
 
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
-        <TablaEmpresa 
+        <TablaInstituto 
           viewState={view} 
           editState={edit} 
           deleteState={trash} 
-          empresas={empresas} 
+          institutos={institutos} 
           handleView={handleOpenUserModal}
           handleEdit={() => console.log("editar")} 
           handleDelete={() => console.log("borrar")}
         />
       </ScrollView>
 
-      {showEnterprice && selectedEnterprice && <EnterpriceModal empresa={selectedEnterprice} handleCloseModal={handleCloseUserModal} />}
+      {showInstitute && selectedInstitute && <InstituteModal instituto={selectedInstitute} handleCloseModal={handleCloseUserModal} />}
 
     </View>
   )
@@ -262,4 +262,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AdministracionEmpresas;
+export default AdministracionInstitutos;
