@@ -91,7 +91,7 @@ const Excepciones = () => {
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      {<HandleGoBackReg title='Registro Categoria' route='categorias' />}
+      {<HandleGoBackReg title='Registro Excepciones' route='excepciones' />}
 
       <View style={styles.formContainer}>
         <ScrollView>
@@ -175,7 +175,7 @@ const Excepciones = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
