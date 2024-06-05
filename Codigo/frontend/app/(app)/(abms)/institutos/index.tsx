@@ -5,12 +5,9 @@ import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { Empresa, Instituto } from '@/api/model/interfaces';
-import { getEmpresas } from '@/api/services/empresa';
-import EnterpriceModal from '@/components/Modal/EnterpriceModal';
-import { getInstitutos } from '@/api/services/institutos';
+import { Instituto } from '@/api/model/interfaces';
 import InstituteModal from '@/components/Modal/InstituteModal';
-
+import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 
 type PropsCol = {
   text?: string,
@@ -140,19 +137,24 @@ const AdministracionInstitutos = () => {
       setTrash(icon == "delete")        
     }
   };
-
+  
+  // Conexion con DB
+  const instituteDB = useGetInstitutes();
   const [institutos, setInstitutos] = useState<Instituto[]>([])
   
   useFocusEffect(
     useCallback(() => {
-      getInstitutos().then((institute) => setInstitutos(institute))
-    }, [])
+      if (instituteDB.data) {
+        setInstitutos(instituteDB.data);
+      }      
+    }, [[instituteDB.data]])
   );
 
   useEffect(() => {
-    getInstitutos().then((institute) => setInstitutos(institute))
-
-  }, [])
+    if (instituteDB.data) {
+      setInstitutos(instituteDB.data);
+    }
+  }, [instituteDB.data]);
 
   return (
     <View style={styles.container}>
