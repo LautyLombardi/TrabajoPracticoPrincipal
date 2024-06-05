@@ -5,8 +5,8 @@ import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Usuario } from '@/api/model/interfaces';
 import { useFocusEffect } from '@react-navigation/native';
-import { getUsuarios } from '@/api/services/user';
 import UserModal from '@/components/Modal/UserModal';
+import useGetUsers from "@/hooks/user/useGetUsers";
 
 
 type PropsCol = {
@@ -107,7 +107,7 @@ const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState
           <Col text={usuario.dni.toString()} flexWidth={3} />
           <Col text={usuario.name} flexWidth={3} />
           <Col text={usuario.lastname} flexWidth={3} />
-          <Col text={usuario.rol} flexWidth={3} />
+          <Col text={usuario.rolName} flexWidth={3} />
           <Col flexWidth={1.5} icon={handleToggleIcon(usuario)} /> 
         </Row>
       )}
@@ -143,18 +143,25 @@ const AdministracionUsuarios = () => {
     }
   };
 
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
+  const usersDB = useGetUsers();
+  const [Users, setUsers] = useState<Usuario[]>([])
+  
   useFocusEffect(
     useCallback(() => {
-      getUsuarios().then((users) => setUsuarios(users))
-    }, [])
+      if (usersDB.data) {
+        setUsers(usersDB.data);
+      }      
+    }, [[usersDB.data]])
   );
 
   useEffect(() => {
-    getUsuarios().then((users) => setUsuarios(users))
+    if (usersDB.data) {
+      setUsers(usersDB.data);
+    }
+  }, [usersDB.data]);
 
-  }, []);
+
   
   return (
     <View style={styles.container}>
@@ -191,7 +198,7 @@ const AdministracionUsuarios = () => {
           viewState={view} 
           editState={edit} 
           deleteState={trash} 
-          usuarios={usuarios}
+          usuarios={Users}
           handleView={handleOpenUserModal}
           handleEdit={() => console.log("editar")} 
           handleDelete={() => console.log("borrar")}

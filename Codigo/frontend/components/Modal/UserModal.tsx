@@ -13,10 +13,12 @@ const UserModal: React.FC<ModalProps> = ({ user, handleCloseModal }) => {
         const fields = [
         { label: 'Dni', value: user.dni },
         { label: 'ID rol', value: user.role_id },
-        { label: 'Apellido', value: user.lastname },
+        { label: 'Nombre Rol', value: user.rolName },
         { label: 'Nombre', value: user.name},
+        { label: 'Apellido', value: user.lastname },
+        { label: 'Activado', value: user.isActive },
+        { label: 'Motivo', value: user.lastname },
         { label: 'Fecha de Creación', value: user.createDate },
-        { label: 'Nombre Rol', value: user.rol },
         ];
 
         return fields.map((field, index) => (

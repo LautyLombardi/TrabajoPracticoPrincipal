@@ -1,10 +1,14 @@
 export interface Usuario{  
     dni: number,
-    role_id: number,
+    role_id: string,
     name: string,
     lastname: string,
+    username: string,
+    isActive:number,
+    motive: string,
+    activeData: string,
     createDate:string,
-    rol: string,
+    rolName: string,
 }
 
 export interface Lugar{
