@@ -171,22 +171,6 @@ const AdministracionCategorias = () => {
         </Pressable>
       </View>
 
-        {/** Botones CRUD */}
-      <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
-          <Ionicons name='eye-outline' size={20} color="black" />
-        </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
-          <FontAwesome6 name="trash" size={20} color="black" />
-        </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
-          <FontAwesome6 name="pen-clip" size={20} color="black" />
-        </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/excepciones/registrar")}>
-          <FontAwesome6 name="plus" size={20} color="black" />
-        </Pressable>
-      </View>
-
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
         <Tablacategorias 
@@ -212,24 +196,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tableContainer: {
+    marginTop:'3%',
     width: '100%',
-  },
-  crudBtn: {
-    flexDirection: "row", 
-    width: "100%", 
-    justifyContent: "flex-end", 
-    alignItems: "center", 
-    paddingHorizontal: 20, 
-    gap: 4
-  },
-  crudItem:{
-    padding: 10, 
-    backgroundColor: '#fff', 
-    borderRadius: 5,
-    width: '5.3%',
-    height: 'auto',
-    marginVertical:'2%',
-    justifyContent: "center", 
   },
   // Buscador
   searchContainer: {
