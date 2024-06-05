@@ -28,7 +28,6 @@ export interface Visitante{
     finishDate: string,
     isActive:number,
     createDate:string,
-    isEnter:number,
     places?: string[],
     institutes?: string,
     empresa?: string,
@@ -84,12 +83,10 @@ export interface Logs {
 
 export interface Excepcion {
     id: number;
-    user_id: number;
     name: string;
     description: string;
     duration: string;
     createDate: string;
     place_name: string;
     category_name: string;
-
 }

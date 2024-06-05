@@ -10,7 +10,6 @@ import SelectItem from '@/components/seleccionar/SelectItem';
 import { createExcepcion } from '@/api/services/excepciones';
 
 const Excepciones = () => {
-  const [dni, setDni] = useState<string>("");
   const [nombre, setNombre] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
@@ -43,7 +42,7 @@ const Excepciones = () => {
     if (category) {
       await Promise.all(
         lugaresSeleccionados.map(async (lugar) => {
-          await createExcepcion(parseInt(dni, 10), category.id, lugar, nombre, descripcion, duration);
+          await createExcepcion(category.id, lugar, nombre, descripcion, duration);
         })
       );
       Alert.alert(
@@ -96,17 +95,6 @@ const Excepciones = () => {
       <View style={styles.formContainer}>
         <ScrollView>
           <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Dni:</Text>
-            <TextInput 
-              placeholder='12345678' 
-              placeholderTextColor={"gray"} 
-              onChangeText={setDni} 
-              keyboardType="numeric"
-              value={dni} 
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.inputContainer}>
             <Text style={styles.labelText}>Nombre</Text>
             <TextInput 
               placeholder='Example' 
@@ -127,7 +115,7 @@ const Excepciones = () => {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Hora de Apertura:</Text>
+            <Text style={styles.labelText}>Duracion de la excepción:</Text>
             <TextInput 
               placeholder='00:00' 
               placeholderTextColor={"gray"} 
