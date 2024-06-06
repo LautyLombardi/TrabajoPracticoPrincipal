@@ -5,17 +5,6 @@ import { Role } from 'react-native';
 const BASE_URL = `${URL}/role`;
 import { getAdmDni } from './storage';
 
-export async function obtenerRoles(): Promise<Rol[]> {
-  try {
-    const response = await axios.get(BASE_URL);
-    
-    return response.data;
-  } catch (error) {
-    console.error('Error al obtener los roles:', error);
-    return [];
-  }
-}
-
 export const crearRol = async (nombre: string, descripcion: string) => {
     try {
       const admDni = await getAdmDni();
