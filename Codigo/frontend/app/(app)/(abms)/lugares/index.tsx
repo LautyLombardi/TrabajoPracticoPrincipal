@@ -4,11 +4,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Lugar } from '@/api/model/interfaces';
-import { getLugares } from '@/api/services/place';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { FontAwesome5 } from '@expo/vector-icons';
 import PlaceModal from '@/components/Modal/PlaceModal';
+import useGetPlaces from '@/hooks/place/useGetPlaces';
 
 type PropsCol = {
   text?: string,
@@ -159,17 +159,26 @@ const AdministracionLugares = () => {
     }
   };
 
+  //conexion con db
+
+  const placesDB =useGetPlaces();
   const [lugares, setLugares] = useState<Lugar[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      getLugares().then((places) => setLugares(places))
-    }, [])
+      const {places}=placesDB
+      if (places) {
+        setLugares(places);
+      }      
+    }, [[placesDB]])
   );
 
   useEffect(() => {
-    getLugares().then((places) => setLugares(places))
-  }, []);
+    const {places}=placesDB
+    if (places) {
+      setLugares(places);
+    }
+  }, [placesDB]);
 
   return (
     <View style={styles.container}>

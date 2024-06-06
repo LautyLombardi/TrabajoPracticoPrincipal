@@ -137,7 +137,7 @@ const Excepciones = () => {
           
           {/** Seleccionar la lugares */}
           <View style={styles.campo}>
-            <Text style={[styles.campoText]}>Lugares a los que se le aplica la excepción</Text>
+            <Text style={[styles.campoText]}>Lugares a los que se le aplica la excepción:</Text>
             <View style={styles.lugaresContainer}>
               {lugares.map((lugar, index) => (
                 <View key={lugar.id} style={styles.checkboxContainer}>
@@ -194,21 +194,21 @@ const styles = StyleSheet.create({
   },
   campo: {
     flexDirection: 'column',
-    alignItems: "center",
     marginTop: 20,
   },
   campoText: {
     color: "white",
     fontSize: 15,
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
+    marginBottom: '3%',
+    marginLeft:'1%'
   },
   lugaresContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '100%',
+    marginLeft:'10%'
   },
   checkboxContainer: {
     flexDirection: "row",
