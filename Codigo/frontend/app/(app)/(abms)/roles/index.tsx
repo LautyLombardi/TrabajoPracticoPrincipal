@@ -5,9 +5,9 @@ import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Rol } from '@/api/model/interfaces';
-import { obtenerRoles } from '@/api/services/roles'
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import RoleModal from '@/components/Modal/RoleModal';
+import useGetRoles from '@/hooks/roles/useGetRoles';
 
 type PropsCol = {
   text?: string,
@@ -138,17 +138,22 @@ const AdministracionRoles = () => {
     }
   };
 
+  const rolDB=useGetRoles();
   const [roles, setRoles] = useState<Rol[]>([])
 
   useFocusEffect(
     useCallback(() => {
-      obtenerRoles().then((rols) => setRoles(rols))
-    }, [])
+      if (rolDB.data) {
+        setRoles(rolDB.data);
+      }      
+    }, [[rolDB.data]])
   );
 
   useEffect(() => {
-    obtenerRoles().then((rols) => setRoles(rols))
-  }, []);
+    if (rolDB.data) {
+      setRoles(rolDB.data);
+    }
+  }, [rolDB.data]);
 
   return (
     <View style={styles.container}>

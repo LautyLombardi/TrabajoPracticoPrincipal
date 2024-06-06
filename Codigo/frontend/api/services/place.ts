@@ -4,15 +4,6 @@ import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/place`;
 import { getAdmDni } from './storage';
 
-export const getLugares = async (): Promise<Lugar[]> => {
-    try {
-        const response = await axios.get(BASE_URL);
-        return response.data;
-    } catch (error) {
-        throw new Error('Error al obtener los lugares');
-    }
-};
-
 export async function createLugar(name: string, abbreviation: string, description: string, openTime: string, closeTime: string): Promise<number> {
     try {
         const admDni = await getAdmDni();
