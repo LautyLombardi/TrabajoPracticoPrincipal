@@ -27,11 +27,12 @@ export interface Visitante{
     startDate: string,
     finishDate: string,
     isActive:number,
+    isExtern: number;
     createDate:string,
     places?: string[],
-    institutes?: string,
+    institutes?: string[],
     empresa?: string,
-    category?: string,
+    category: string,
 }
 
 export interface Categoria {
