@@ -5,13 +5,17 @@ import { Rol } from '@/api/model/interfaces';
 const useGetRoles = () => {
     const db = useSQLiteContext();
 
-    const query = useQuery<Rol[]>({
+    const rolesQuery = useQuery<Rol[]>({
         queryKey: ['roles'],
         queryFn: (): Promise<Rol[]> =>
           db.getAllAsync('SELECT * FROM role ORDER BY createDate'),
     });
 
-    return query;
+    return {
+        roles: rolesQuery.data,
+        isLoading: rolesQuery.isLoading,
+        isError: rolesQuery.isError,
+    };
 }
 
 export default useGetRoles

@@ -166,17 +166,19 @@ const AdministracionLugares = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (placesDB.data) {
-        setLugares(placesDB.data);
+      const {places}=placesDB
+      if (places) {
+        setLugares(places);
       }      
-    }, [[placesDB.data]])
+    }, [[placesDB]])
   );
 
   useEffect(() => {
-    if (placesDB.data) {
-      setLugares(placesDB.data);
+    const {places}=placesDB
+    if (places) {
+      setLugares(places);
     }
-  }, [placesDB.data]);
+  }, [placesDB]);
 
   return (
     <View style={styles.container}>
