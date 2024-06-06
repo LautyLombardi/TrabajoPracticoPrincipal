@@ -18,11 +18,7 @@ current_directory = os.path.dirname(os.path.realpath(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_directory, "db", "dataBase.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
-with app.app_context():
-    populate_places()
-    populate_institutes()
-    populate_institute_places()
-    populate_roles() 
+
 
 apertura_de_dia = True
 
@@ -86,8 +82,7 @@ def check_time():
     if request.path in ['/open_day', '/close_day', '/check_status_dia']:
         return
 
-    if not (start_time <= current_time <= end_time) or not apertura_de_dia:
-        return jsonify({"error": "el dia esta cerrado"}), 403  
+     
 
 @app.route('/', methods=['GET'])
 def index():

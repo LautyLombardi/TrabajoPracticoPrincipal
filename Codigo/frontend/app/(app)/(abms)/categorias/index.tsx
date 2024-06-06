@@ -9,6 +9,7 @@ import { obtenerCategorias } from '@/api/services/categorias';
 import { desactivarCategoria } from '@/api/services/categorias';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import CategoryModal from '@/components/Modal/CategoryModal';
+import useGetCategories from '@/hooks/category/useGetCategory';
 
 type PropsCol = {
   text?: string,
@@ -157,19 +158,23 @@ const AdministracionCategorias = () => {
     }
   };
 
-  // Listado de categorias
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-
+  const categoriaDB = useGetCategories();
+  const [categorias, setCategoria] = useState<Categoria[]>([])
+  
   useFocusEffect(
     useCallback(() => {
-      obtenerCategorias().then((categories) => setCategorias(categories))
-    }, [])
+      if (categoriaDB.data) {
+        setCategoria(categoriaDB.data);
+      }      
+    }, [[categoriaDB.data]])
   );
 
   useEffect(() => {
-    obtenerCategorias().then((categories) => setCategorias(categories))
+    if (categoriaDB.data) {
+      setCategoria(categoriaDB.data);
+    }
+  }, [categoriaDB.data]);
 
-  }, []);
 
   return (
     <View style={styles.container}>
