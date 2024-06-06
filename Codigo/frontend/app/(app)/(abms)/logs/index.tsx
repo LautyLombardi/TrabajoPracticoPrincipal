@@ -9,6 +9,7 @@ const AdministracionLogs = () => {
 
   useEffect(() => {
     getLogs().then((logs) => setLogs(logs));
+    console.log(logs)
   }, []);
 
   const renderItem = ({ item }: { item: Logs }) => {
@@ -57,7 +58,7 @@ const AdministracionLogs = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000051',
+    backgroundColor: '#00759c',
     alignItems: 'center',
   },
   listContainer: {
@@ -75,6 +76,7 @@ const styles = StyleSheet.create({
   },
   itemText: {
     color: 'black',
+    fontSize:16,
   },
 });
 

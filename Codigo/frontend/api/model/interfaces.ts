@@ -4,8 +4,7 @@ export interface Usuario{
     name: string,
     lastname: string,
     createDate:string,
-    barcode: string,
-    rol?: string,
+    rol: string,
 }
 
 export interface Lugar{
@@ -15,8 +14,8 @@ export interface Lugar{
     description:string,
     openTime:string,
     closeTime:string,
-    isActive?:number,
-    createDate?:string
+    isActive:number,
+    createDate:string
 }
 
 export interface Visitante{
@@ -28,12 +27,12 @@ export interface Visitante{
     startDate: string,
     finishDate: string,
     isActive:number,
+    isExtern: number;
     createDate:string,
-    isEnter:number,
     places?: string[],
-    institutes?: string,
+    institutes?: string[],
     empresa?: string,
-    category?: string,
+    category: string,
 }
 
 export interface Categoria {
@@ -41,21 +40,21 @@ export interface Categoria {
     name: string;
     description: string;
     isExtern: number;
-    createDate?: string;
+    createDate: string;
 }
 
 export interface Empresa{
     id: number,
     name: string,
     cuit: number,
-    isActive?:number,
-    createDate?:string
+    isActive:number,
+    createDate:string
 }
 
-  
 export interface Instituto {
-    id?: number;
+    id: number;
     name: string;
+    isActive:number,
     createDate: string;
 }
 
@@ -85,12 +84,10 @@ export interface Logs {
 
 export interface Excepcion {
     id: number;
-    user_id: number;
     name: string;
     description: string;
     duration: string;
     createDate: string;
     place_name: string;
     category_name: string;
-
 }

@@ -4,31 +4,40 @@ from utils.date import check_date_format
 
 logs_bp = Blueprint('logs', __name__)
     
-@logs_bp.route('/manualregistration/user', methods=['GET'])
-def get_manual_registration_user_logs():
-    try:
-        response=getLogRegistrationUsuario()
-   
-        if response is None:
-            return jsonify({'error': 'No hay usuarios guardados, en la base de datos'}), 404     
-        else:
-            return jsonify(response), 200
+@logs_bp.route('/manualregistration', methods=['POST'])
+def save_manual_registration_logs():
+        
+    data= request.json
+    response=recordLoginManual(data.get('adm_dni'),data.get('client_dni'),data.get('table_client'))
 
-    except Exception as e: 
-        return jsonify({'message': 'Lista de logs de reconocimiento facial de usuarios'}), 200
+    if response == True:
+        return jsonify({'message': 'Log Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear log', 'error': str(response)}), 400
 
-@logs_bp.route('/manualregistration/visitor', methods=['GET'])
-def get_manual_registration_visitor_logs():
-    try:
-        response=getlogsRegistrationVisitante()
+@logs_bp.route('/manualregistrationFail', methods=['POST'])
+def save_manual_registration_logs_fail():
+        
+    data= request.json
+    response=recordLoginManualFail(data.get('adm_dni'),data.get('client_dni'),data.get('table_client'))
 
-        if response is None:
-            return jsonify({'error': 'No hay visitantes guardados, en la base de datos'}), 404     
-        else:
-            return jsonify(response), 200
+    if response == True:
+        return jsonify({'message': 'Log Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear log', 'error': str(response)}), 400
 
-    except Exception as e: 
-        return jsonify({'message': 'Lista de logs de reconocimiento manual de visitantes'}), 400
+
+@logs_bp.route('/loyoutUser', methods=['POST'])
+def save_loyout_logs():
+        
+    data= request.json
+    response=recordLoyout(data.get('adm_dni'))
+
+    if response == True:
+        return jsonify({'message': 'Log Registrado'}), 201
+    else:
+        return jsonify({'message': 'Error al crear log', 'error': str(response)}), 400
+
 
 @logs_bp.route('/loginfacerecognition/user', methods=['POST'])
 def save_login_face_recognition_user_logs():

@@ -5,6 +5,7 @@ import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from '@expo/vector-icons';
 import LectorQr from "@/components/QRCodeScan"; // Asegúrate de que la ruta es correcta
 import { router } from "expo-router";
+import { logLoginManual,logLoginManuaFail } from "@/api/services/log";
 
 const LogueoUsuarioManual = () => {
   const [dni, setDni] = useState<string>("");
@@ -18,16 +19,23 @@ const LogueoUsuarioManual = () => {
     const response = await loginUser(dni, password);
     if (response === 200) {
       Alert.alert(
-        "Usuario logueado",
+        "Usuario autenticado",
         "",
         [
           { text: "OK", onPress: () => router.navigate('/menu') }
         ]
       );
+      const responseManual =await logLoginManual(dni,"usuario")
+
+      if(responseManual!=200){
+        console.log(responseManual)
+      }
+
     } else {
-      Alert.alert("Usuario no logueado",
+      Alert.alert("Usuario no autenticado",
         "DNI o contraseña incorrectos"
       );
+      await logLoginManuaFail(dni,"usuario")
     }
   };
 
@@ -44,7 +52,7 @@ const LogueoUsuarioManual = () => {
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      <HandleGoBackReg title='Login Manual de Usuario' route='menu' />
+      {<HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />}
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -80,7 +88,7 @@ const LogueoUsuarioManual = () => {
       </View>
 
       <Pressable disabled={!status} style={[styles.button, !status && styles.buttonMenuDisabled]} onPress={handleTerminar}>
-        <Text style={styles.buttonText}>Ingresar</Text>
+        <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
 
       <Modal
@@ -96,7 +104,7 @@ const LogueoUsuarioManual = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000051',
+    backgroundColor: '#00759c',
     flex: 1,
     paddingVertical: 30,
     alignItems: 'center',

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, Alert } from 'react-native';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { closeDay, openDay } from '@/api/services/openCloseDay';
-import { router } from 'expo-router'
+import { router } from 'expo-router';
 
 const OpenCloseDay = () => {
 
@@ -67,14 +67,12 @@ const OpenCloseDay = () => {
       <HandleGoBack title='Apertura y Cierre del dia' route='menu' />
 
       <View style={styles.listBtns}>
-        <View style={styles.row}>
-          <Pressable style={styles.buttonMenu} onPress={handleOpenDay}>
-            <Text style={styles.textBtnMenu}>Apertura del dia</Text>
-          </Pressable>
-          <Pressable style={styles.buttonMenu} onPress={handleCloseDay}>
-            <Text style={styles.textBtnMenu}>Cierre del dia</Text>
-          </Pressable>
-        </View>          
+        <Pressable style={styles.buttonMenu} onPress={handleOpenDay}>
+          <Text style={styles.textBtnMenu}>Apertura del dia</Text>
+        </Pressable>
+        <Pressable style={styles.buttonMenu} onPress={handleCloseDay}>
+          <Text style={styles.textBtnMenu}>Cierre del dia</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -83,34 +81,30 @@ const OpenCloseDay = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000051',
+    backgroundColor: '#00759c',
     alignItems: 'center',
   },
   // Menu de Botones
   listBtns: {
-    width: 350,
-    marginTop: 40,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: '40%',
+    alignItems: 'center',
   },
   buttonMenu: {
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 5,
-    margin: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
+    margin: 10,
     elevation: 5,
-    flex: 1,
+    width: '100%',
     alignItems: 'center',
   },
   textBtnMenu: {
     color: '#000',
     textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "bold",
   },
 });
 

@@ -10,22 +10,16 @@ from utils.date import createDate
 
 
 def saveException(data):
-    try:        
-        user = User.query.filter_by(dni=data.get('user_dni')).first()
-        if not user:
-            return '404c'
-
+    try: 
         place = Place.query.filter_by(id=data.get('place_id')).first()
         if not place:
             return '404a'
-
 
         category = Category.query.filter_by(id=data.get('category_id')).first()
         if not category:
             return '404b'
 
         existing_exception = Exception.query.filter_by(
-            user_id=user.dni,
             name=data.get('name'),
             description=data.get('description'),
             duration=data.get('duration')
@@ -35,7 +29,6 @@ def saveException(data):
             return '409'    
         
         new_exception = Exception(
-            user_id=data.get('user_dni'),
             name = data.get('name'),
             description = data.get('description'),
             duration = data.get('duration'),
@@ -57,10 +50,9 @@ def saveException(data):
             exception_id=id_exception
         )
         db.session.add(new_exception_category)
- 
+
         nuevo_log = Logs(
             admDni= int(data.get('adm_dni')),
-            userId= data.get('user_dni'),
             exceptionId=id_exception,
             hasAccess = 1,
             abm = 'ALTA',
@@ -70,7 +62,7 @@ def saveException(data):
             isAutomatic=1
         )
         db.session.add(nuevo_log)
- 
+
         db.session.commit()
 
         return 201
@@ -91,7 +83,6 @@ def getAllExceptions():
 
             result.append({
                 'id': exception.id,
-                'user_id': exception.user_id,
                 'name': exception.name,
                 'description': exception.description,
                 'duration': exception.duration,

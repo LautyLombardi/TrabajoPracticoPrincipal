@@ -6,17 +6,6 @@ import { getAdmDni } from './storage';
 
 const BASE_URL = `${URL}/visitor`; 
 
-export const getVisitantes = async (): Promise<Visitante[]> => {
-    try {
-        const response = await axios.get(BASE_URL);
-        
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener visitantes:', error);
-        throw new Error('Error al obtener los visitantes');
-    }
-};
-
 export const getVisitorById = async (id: number): Promise<Visitante> => {
     const response = await axios.post(`${BASE_URL}/${id}`);
     if (response.status !== 200) {

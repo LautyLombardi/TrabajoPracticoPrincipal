@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Pressable } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import { createInstituto } from "@/api/services/institutos";
@@ -53,7 +53,7 @@ const RegistroInstituto = () => {
       <HandleGoBackReg title="Registro de Instituto" route="institutos" />
 
       {/** Institutos a registrar --> nombre, descripcion, lugares */}
-      <View style={{ flex: 1, marginTop: 20, width: "100%" }}>
+      <View style={styles.formContainer}>
         <View
           style={{
             height: 70,
@@ -83,42 +83,79 @@ const RegistroInstituto = () => {
           </View>
         </View>
 
-        <View style={{ padding: 10 }}>
-          <Text style={{ color: "white", fontSize: 15 }}>Lugares</Text>
-          {lugares.map((lugar) => (
-            <View key={lugar.id} style={{ flexDirection: "row", alignItems: "center" }}>
-              <Checkbox
-                value={lugaresSeleccionados.includes(lugar.id)}
-                onValueChange={() => handleLugarSeleccionado(lugar.id)}
-              />
-              <Text style={{marginLeft:'2%', marginBottom:'2%', color: "white" }}>{lugar.name}</Text>
-            </View>
-          ))}
+        <View style={styles.campo}>
+          <Text style={[styles.campoText]}>Lugares a los que se asigna el Instituto:</Text>
+          <View style={styles.lugaresContainer}>
+            {lugares.map((lugar, index) => (
+              <View key={lugar.id} style={styles.checkboxContainer}>
+                <Checkbox
+                  value={lugaresSeleccionados.includes(lugar.id)}
+                  onValueChange={() => handleLugarSeleccionado(lugar.id)}
+                />
+                <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
 
-      <View style={{ width: 300 }}>
-        <Boton
-          backgroundColor="black"
-          padding={20}
-          text="Continuar"
-          color="white"
-          textAlign="center"
-          fontSze={20}
-          borderRadius={10}
-          onPress={handleTerminar}
-        />
-      </View>
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
+  },
+  formContainer: {
+    flex: 1,
+    marginTop: 20,
+    width: '90%',
+  },
+  campo: {
+    flexDirection: 'column',
+    marginTop: 20,
+  },
+  campoText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+    marginBottom: '3%',
+    marginLeft:'1%'
+  },
+  lugaresContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginLeft:'10%'
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: '48%',
+    marginBottom: 10,
+  },
+  checkboxLabel: {
+    marginLeft: '2%',
+    color: "white",
+  },
+  button: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
+  },
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
 });
 

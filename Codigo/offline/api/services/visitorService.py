@@ -8,7 +8,6 @@ from models.Institute import Institute
 from models.VisitorHistory import VisitorHistory
 from services.categoryService import getCategoryById
 from utils.passHash import hashPassword
-from services.logsService import recordADM
 
 def saveVisitor(data):
     try:
@@ -52,7 +51,6 @@ def updateVisitor(id, data):
             finishDate=visitor.finishDate,
             isActive=0,
             createDate=visitor.createDate,
-            isEnter=visitor.isEnter,
             password=visitor.password
         )
 
@@ -106,21 +104,12 @@ def getVisitorAll():
             'finishDate': visitor.finishDate,
             'isActive': visitor.isActive,
             'createDate': visitor.createDate,
-            'isEnter': visitor.isEnter,
             'password':visitor.password,
             'category': getCategoryForVisitor(visitor.dni)["name"]
             #'institutes':getInstituteByNames(visitor.dni)
         }
         visitor_list.append(visitor_dict)
-    return visitor_list 
-   
-def getVisitorAllActive():
-    visitors = Visitor.query.filter_by(isActive=1).all()
-    return visitorList(visitors)
-
-def getVisitorAllDesactive():
-    visitors = Visitor.query.filter_by(isActive=0).all()
-    return visitorList(visitors)     
+    return visitor_list     
 
 def setDesactive(id):
     visitor = Visitor.query.get(id)
@@ -153,27 +142,6 @@ def setActive(id):
         return 200
     except Exception as e:
         return e
-    
-def visitorList(visitors):
-    visitor_list = []
-    for visitor in visitors:
-        visitor_dict = {
-            'dni': visitor.dni,
-            'enterprice_id': visitor.enterprice_id,
-            'name': visitor.name,
-            'lastname': visitor.lastname,
-            'email': visitor.email,
-            'startDate': visitor.startDate,
-            'finishDate': visitor.finishDate,
-            'isActive': visitor.isActive,
-            'createDate': visitor.createDate,
-            'isEnter': visitor.isEnter,
-            'password':visitor.password
-            #'category': getCategoryForVisitor(visitor.dni)["name"],
-            #'institutes':getInstituteByNames(visitor.dni)
-        }
-        visitor_list.append(visitor_dict)
-    return visitor_list 
 
 def getInstituteByNames (id):
     institutos = getInstituteByVisitorId(id)

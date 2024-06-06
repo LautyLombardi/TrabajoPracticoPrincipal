@@ -10,7 +10,6 @@ import SelectItem from '@/components/seleccionar/SelectItem';
 import { createExcepcion } from '@/api/services/excepciones';
 
 const Excepciones = () => {
-  const [dni, setDni] = useState<string>("");
   const [nombre, setNombre] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
@@ -43,7 +42,7 @@ const Excepciones = () => {
     if (category) {
       await Promise.all(
         lugaresSeleccionados.map(async (lugar) => {
-          await createExcepcion(parseInt(dni, 10), category.id, lugar, nombre, descripcion, duration);
+          await createExcepcion(category.id, lugar, nombre, descripcion, duration);
         })
       );
       Alert.alert(
@@ -91,21 +90,10 @@ const Excepciones = () => {
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      {<HandleGoBackReg title='Registro Categoria' route='categorias' />}
+      {<HandleGoBackReg title='Registro Excepciones' route='excepciones' />}
 
       <View style={styles.formContainer}>
         <ScrollView>
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Dni:</Text>
-            <TextInput 
-              placeholder='12345678' 
-              placeholderTextColor={"gray"} 
-              onChangeText={setDni} 
-              keyboardType="numeric"
-              value={dni} 
-              style={styles.input}
-            />
-          </View>
           <View style={styles.inputContainer}>
             <Text style={styles.labelText}>Nombre</Text>
             <TextInput 
@@ -127,7 +115,7 @@ const Excepciones = () => {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Hora de Apertura:</Text>
+            <Text style={styles.labelText}>Duracion de la excepción:</Text>
             <TextInput 
               placeholder='00:00' 
               placeholderTextColor={"gray"} 
@@ -149,7 +137,7 @@ const Excepciones = () => {
           
           {/** Seleccionar la lugares */}
           <View style={styles.campo}>
-            <Text style={[styles.campoText]}>Lugares a los que se le aplica la excepción</Text>
+            <Text style={[styles.campoText]}>Lugares a los que se le aplica la excepción:</Text>
             <View style={styles.lugaresContainer}>
               {lugares.map((lugar, index) => (
                 <View key={lugar.id} style={styles.checkboxContainer}>
@@ -175,7 +163,7 @@ const Excepciones = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
@@ -206,21 +194,21 @@ const styles = StyleSheet.create({
   },
   campo: {
     flexDirection: 'column',
-    alignItems: "center",
     marginTop: 20,
   },
   campoText: {
     color: "white",
     fontSize: 15,
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
+    marginBottom: '3%',
+    marginLeft:'1%'
   },
   lugaresContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '100%',
+    marginLeft:'10%'
   },
   checkboxContainer: {
     flexDirection: "row",

@@ -21,4 +21,4 @@ def check_schedule_format(data_str):
             return False
 
 def createDate():
-    return datetime.now().strftime('%Y-%m-%d %H:%M')
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S')

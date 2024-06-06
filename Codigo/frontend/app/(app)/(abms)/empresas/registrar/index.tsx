@@ -67,7 +67,7 @@ const RegistrarEmpresa = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000051',
+    backgroundColor: '#00759c',
     flex: 1,
     paddingVertical: 30,
     alignItems: 'center',

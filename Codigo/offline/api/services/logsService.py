@@ -156,7 +156,7 @@ def logsList(logs):
 #Devuelve todos los logs
 def getLogAll():
     logs = Logs.query.all()
-    sorted_logs = sorted(logs, key=lambda x: datetime.strptime(x.createDate, '%Y-%m-%d %H:%M'), reverse=True)
+    sorted_logs = sorted(logs, key=lambda x: datetime.strptime(x.createDate, '%Y-%m-%d %H:%M:%S'), reverse=True)
     return logsList(sorted_logs)
 
 
@@ -244,4 +244,73 @@ def recordAbmVisitante(adm_dni,type_adm,dni):
         db.session.commit()
         return True
     except Exception as e:
-        return e         
+        return e      
+
+
+
+def recordLoginManual(adm_dni,dniClient,table_login):
+    try:
+        if table_login.lower() == 'visitante':
+            nuevo_log = Logs(
+                admDni=adm_dni,
+                visitorId=dniClient,
+                description='Se logueo manualmente un ' + table_login,
+                createDate= createDate(),
+                isAutomatic=0,
+                isEnter=1
+            )
+        else:
+            nuevo_log = Logs(
+                admDni=adm_dni,
+                userId=dniClient,
+                description='Se logueo manualmente un ' + table_login,
+                createDate= createDate(),
+                isAutomatic=0,
+                isEnter=1
+            )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e 
+
+    
+def recordLoginManualFail(adm_dni,dniClient,table_login):
+    try:
+        if table_login.lower() == 'visitante':
+            nuevo_log = Logs(
+                admDni=adm_dni,
+                visitorId=dniClient,
+                description='Fallo al ingresar manualmente a un  ' + table_login,
+                createDate= createDate(),
+                isAutomatic=1,
+                isEnter=0
+            )
+        else:
+            nuevo_log = Logs(
+                admDni=adm_dni,
+                userId=dniClient,
+                description='Fallo al ingresar manualmente a un  ' + table_login,
+                createDate= createDate(),
+                isAutomatic=1,
+                isEnter=0
+            )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e
+
+def recordLoyout(adm_dni):
+    try:
+        nuevo_log = Logs(
+            admDni=adm_dni,
+            description='El usuario administrador cierra sesion',
+            createDate= createDate(),
+            isAutomatic=1
+        )
+        db.session.add(nuevo_log)
+        db.session.commit()
+        return True
+    except Exception as e:
+        return e     
