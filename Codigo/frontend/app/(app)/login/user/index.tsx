@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity } from 'react-native';
-import { router } from "expo-router";
+import React, { useState, useEffect } from "react";
+import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity, Modal } from 'react-native';
 import { loginUser } from "@/api/services/user";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { Ionicons } from '@expo/vector-icons';  
+import { Ionicons } from '@expo/vector-icons';
+import LectorQr from "@/components/QRCodeScan"; // Asegúrate de que la ruta es correcta
+import { router } from "expo-router";
 
 const LogueoUsuarioManual = () => {
   const [dni, setDni] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); 
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [isQrScannerVisible, setIsQrScannerVisible] = useState<boolean>(false);
+  const [status, setStatusBoton] = useState<boolean>(false);
+
 
   const handleTerminar = async () => {
     const response = await loginUser(dni, password);
@@ -17,7 +21,7 @@ const LogueoUsuarioManual = () => {
         "Usuario logueado",
         "",
         [
-          { text: "OK", onPress: () => router.navigate("/menu") }
+          { text: "OK", onPress: () => router.navigate('/menu') }
         ]
       );
     } else {
@@ -27,31 +31,44 @@ const LogueoUsuarioManual = () => {
     }
   };
 
+  const handleQRCodeScanned = (data: string) => {
+    //setDni(data); // Usa los datos del QR para llenar el DNI
+    if (dni==data){
+      setStatusBoton(true);
+    }else{
+      setStatusBoton(false);
+    }
+    setIsQrScannerVisible(false); // Oculta el escáner QR
+  };
+
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      {<HandleGoBackReg title='Login Manual de Usuario' route='menu' />}
+      <HandleGoBackReg title='Login Manual de Usuario' route='menu' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <Text style={styles.labelText}>Dni:</Text>
-          <TextInput 
-            placeholder='12345678' 
-            placeholderTextColor={"gray"} 
-            onChangeText={setDni} 
+          <TextInput
+            placeholder='12345678'
+            placeholderTextColor={"gray"}
+            onChangeText={setDni}
             keyboardType="numeric"
-            value={dni} 
+            value={dni}
             style={styles.input}
           />
+          <TouchableOpacity onPress={() => setIsQrScannerVisible(true)}>
+            <Ionicons name="qr-code" size={30} color="white" style={{ alignSelf: "center" }} />
+          </TouchableOpacity>
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.labelText}>Contraseña:</Text>
           <View style={styles.passwordContainer}>
-            <TextInput 
-              placeholder='Password' 
-              placeholderTextColor={"gray"} 
-              onChangeText={setPassword} 
-              value={password} 
+            <TextInput
+              placeholder='Password'
+              placeholderTextColor={"gray"}
+              onChangeText={setPassword}
+              value={password}
               secureTextEntry={!isPasswordVisible}
               style={styles.inputPassword}
             />
@@ -60,11 +77,19 @@ const LogueoUsuarioManual = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>  
+      </View>
 
-      <Pressable onPress={handleTerminar} style={styles.button}>
+      <Pressable disabled={!status} style={[styles.button, !status && styles.buttonMenuDisabled]} onPress={handleTerminar}>
         <Text style={styles.buttonText}>Ingresar</Text>
       </Pressable>
+
+      <Modal
+        visible={isQrScannerVisible}
+        animationType="slide"
+        onRequestClose={() => setIsQrScannerVisible(false)}
+      >
+        <LectorQr onQRCodeScanned={handleQRCodeScanned} />
+      </Modal>
     </View>
   );
 };
@@ -85,7 +110,7 @@ const styles = StyleSheet.create({
     height: 70,
     alignItems: "center",
     flexDirection: "row",
-    marginBottom: 20, 
+    marginBottom: 20,
   },
   labelText: {
     color: "white",
@@ -117,15 +142,18 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
-    width: '90%', 
+    width: '90%',
   },
   buttonText: {
     color: '#000051',
     fontSize: 16,
   },
-  icon:{
+  icon: {
     marginRight: 5
-  }
+  },
+  buttonMenuDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
 });
 
 export default LogueoUsuarioManual;
