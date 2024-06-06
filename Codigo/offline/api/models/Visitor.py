@@ -11,7 +11,6 @@ class Visitor(db.Model):
     finishDate = db.Column(db.Text)
     isActive = db.Column(db.Integer)
     createDate = db.Column(db.Text)
-    isEnter = db.Column(db.Integer)
     password = db.Column(db.Text)
     
     # Relación con tabla Enterprice

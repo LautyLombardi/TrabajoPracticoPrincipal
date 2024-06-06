@@ -14,17 +14,17 @@ export async function getExcepciones(): Promise<Excepcion[]> {
     }
 }
 
-export async function createExcepcion(user_dni: number, category_id: number, place_id: number, name: string, description: string, duration: string): Promise<number> {
+export async function createExcepcion(category_id: number, place_id: number, name: string, description: string, duration: string): Promise<number> {
     try {
-        console.log({"user_dni": user_dni,
-        "category_id": category_id,
-        "place_id": place_id,
-        "name": name,
-        "description": description,
-        "duration": duration})
+        console.log({
+            "category_id": category_id,
+            "place_id": place_id,
+            "name": name,
+            "description": description,
+            "duration": duration
+        })
         const admDni = await getAdmDni();
         const response = await axios.post(BASE_URL,{
-            "user_dni": user_dni,
             "category_id": category_id,
             "place_id": place_id,
             "name": name,

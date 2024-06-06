@@ -3,7 +3,6 @@ import services.visitorService as SV
 from utils.passHash import hashPassword 
 from services.logsService import  recordAbmVisitante
 
-
 visitor_bp = Blueprint('visitor', __name__)
 
 @visitor_bp.route('/', methods=['POST'])
@@ -80,33 +79,7 @@ def get_visitors():
             return jsonify(response), 200
 
     except Exception as e: 
-        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    
-
-@visitor_bp.route('/active', methods=['GET'])
-def get_active_visitors():
-    try:
-        response=SV.getVisitorAllActive()
-   
-        if response is None:
-            return jsonify({'error': 'No hay visitantes activos en la base de datos'}), 404     
-        else:
-            return jsonify(response), 200
-
-    except Exception as e: 
-        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    
-
-@visitor_bp.route('/desactive', methods=['GET'])
-def get_desactive_visitors():
-    try:
-        response=SV.getVisitorAllDesactive()
-   
-        if response is None:
-            return jsonify({'error': 'No hay visitantes desactivados en la base de datos'}), 404     
-        else:
-            return jsonify(response), 200
-
-    except Exception as e: 
-        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400    
+        return jsonify({'message': 'Error al obtener visitantes', 'error': str(e)}), 400       
 
 @visitor_bp.route('/active/<int:id>', methods=['PUT'])
 def set_active_visitor(id):

@@ -52,45 +52,16 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 
 type PropsTable = {
   excepciones: Excepcion[];
-
-  viewState: boolean,
-  editState: boolean,
-  deleteState: boolean,
-  
   handleView: (excepcion: Excepcion) => void;
-  handleEdit: (id: number) => void;
-  //handleDelete: (id: number) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, excepciones, handleView }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
 
   const iconVerMas = (excepcion: Excepcion) => {
     return (
       <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(excepcion)} />
     )
   }
-
-  const deleteIcon = (id: any) => {
-    return (
-
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"}/>
-    )
-  }
-
-  const modifyIcon = (id: any) => {
-    return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
-    )
-  }
-  const handleToggleIcon = (excepcion: Excepcion): JSX.Element => {
-    if (editState) {
-      return modifyIcon(excepcion.id);
-    } else if (deleteState) {
-      return deleteIcon(excepcion.id);
-    } else {
-      return iconVerMas(excepcion);
-    }
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
@@ -109,7 +80,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
           <Col text={excepcion.duration} flexWidth={3} />
           <Col text={excepcion.place_name} flexWidth={3} />
           <Col text={excepcion.category_name} flexWidth={3} />
-          <Col flexWidth={1.5} icon={handleToggleIcon(excepcion)} /> 
+          <Col flexWidth={1.5} icon={iconVerMas(excepcion)} /> 
         </Row>
       ))}
     </View>
@@ -117,9 +88,6 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 };
 
 const AdministracionCategorias = () => {
-  const [view, setView] = useState(true);
-  const [edit, setEdit] = useState(false);
-  const [trash, setTrash] = useState(false);
   const [showException, setShowException] = useState(false);
   const [selectedException, setSelectedException] = useState<Excepcion | null>(null);
 
@@ -131,17 +99,6 @@ const AdministracionCategorias = () => {
   const handleCloseUserModal = () => {
     setSelectedException(null);
     setShowException(false);
-  };
-
-  // Cambio de iconos
-  function handleToggleIco(icon : string){
-    if(icon == "edit" && edit || icon == "delete" && trash){
-      setEdit(false)
-      setTrash(false)
-    }else {
-      setEdit(icon == "edit")
-      setTrash(icon == "delete")        
-    }
   };
 
   // Listado de Excepciones
@@ -173,15 +130,6 @@ const AdministracionCategorias = () => {
 
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
-          <Ionicons name='eye-outline' size={20} color="black" />
-        </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
-          <FontAwesome6 name="trash" size={20} color="black" />
-        </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
-          <FontAwesome6 name="pen-clip" size={20} color="black" />
-        </Pressable>
         <Pressable style={styles.crudItem} onPress={() => router.navigate("/excepciones/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
@@ -189,13 +137,9 @@ const AdministracionCategorias = () => {
 
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
-        <Tablacategorias 
-          viewState={view} 
-          editState={edit} 
-          deleteState={trash} 
+        <Tablacategorias  
           excepciones={excepciones} 
           handleView={handleOpenUserModal}
-          handleEdit={() => console.log("editar")}
         />
       </ScrollView>
 
