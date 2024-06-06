@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, Pressable,TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, Pressable,TextInput, ScrollView } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
+import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Visitante } from '@/api/model/interfaces';
-import { getVisitantes } from '@/api/services/visitantes';
-import { useFocusEffect } from '@react-navigation/native';
 import VisitorModal from '@/components/Modal/VisitorModal';
+import useGetVisitors from '@/hooks/visitor/useGetVisitors';
 
 type PropsCol = {
   text?: string,
@@ -95,7 +95,7 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
         <Col text='DNI'flexWidth={3}/>
         <Col text='Nombre' flexWidth={3}/>
         <Col text='Apellido' flexWidth={3}/>
-        <Col text='Fecha Incio en la UNGS' flexWidth={3.5}/>
+        <Col text='Fecha Incio en la UNGS' flexWidth={5}/>
         <Col text='Categoria' flexWidth={3}/>
         <Col text='' flexWidth={1.5}/>
       </Row>
@@ -104,7 +104,7 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
           <Col text={visitante.dni.toString()} flexWidth={3} />
           <Col text={visitante.name} flexWidth={3} />
           <Col text={visitante.lastname} flexWidth={3} />
-          <Col text={visitante.startDate} flexWidth={3.5} />
+          <Col text={visitante.startDate} flexWidth={5} />
           <Col text={visitante.category} flexWidth={3} />
           <Col flexWidth={1.5} icon={handleToggleIcon(visitante)} /> 
         </Row>
@@ -141,18 +141,24 @@ const AdministracionVisitantes = () => {
     }
   };
 
+  const visitorsDB = useGetVisitors()
   const [visitantes, setVisitantes] = useState<Visitante[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      getVisitantes().then((visitors) => setVisitantes(visitors))
-    }, [])
+      const {visitors} = visitorsDB
+      if (visitors) {      
+        setVisitantes(visitors);
+      }      
+    }, [[visitorsDB]])
   );
 
   useEffect(() => {
-    getVisitantes().then((visitors) => setVisitantes(visitors))
-
-  }, []);
+    const {visitors} = visitorsDB
+    if (visitors) {      
+      setVisitantes(visitors);
+    }
+  }, [visitorsDB]);
   
   return (
     <View style={styles.container}>
