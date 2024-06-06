@@ -16,6 +16,8 @@ const ExceptionModal: React.FC<ModalProps> = ({ excepcion, handleCloseModal }) =
         { label: 'Descripcion', value: excepcion.description },
         { label: 'Duracion', value: excepcion.duration },
         { label: 'Fecha de Creación', value: excepcion.createDate },
+        { label: 'Categoria', value: excepcion.category_name },
+        { label: 'Lugares', value: excepcion.place_names?.join(', ') || '' },
         ];
 
         return fields.map((field, index) => (

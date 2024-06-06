@@ -92,6 +92,6 @@ export interface Excepcion {
     description: string;
     duration: string;
     createDate: string;
-    place_name: string;
+    place_names: string[];
     category_name: string;
 }

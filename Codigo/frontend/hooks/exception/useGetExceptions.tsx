@@ -1,58 +1,73 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from 'expo-sqlite/next';
-import { Excepcion } from '@/api/model/interfaces';
+import { Excepcion, Lugar, Categoria } from '@/api/model/interfaces';
+import { useEffect } from 'react';
 
 const useGetExceptions = () => {
     const db = useSQLiteContext();
+    const queryClient = useQueryClient();
 
-    const query = useQuery<Excepcion[]>({
-        queryKey: ['Excepciones'],
-        queryFn: async (): Promise<Excepcion[]> => {
-            console.log("Fetching exceptions...");
-            const results = await db.getAllAsync(`
-                    SELECT 
-                        Exception.*, 
-                        GROUP_CONCAT(DISTINCT Place.name) AS place_names,
-                        GROUP_CONCAT(DISTINCT Category.name) AS category_names
-                    FROM 
-                        Exception
-                    LEFT JOIN 
-                        place_exception ON Exception.id = place_exception.exception_id
-                    LEFT JOIN 
-                        Place ON place_exception.place_id = Place.id
-                    LEFT JOIN 
-                        category_exception ON Exception.id = category_exception.exception_id
-                    LEFT JOIN 
-                        Category ON category_exception.category_id = Category.id
-                    GROUP BY 
-                        Exception.id
-                    ORDER BY 
-                        Exception.createDate
-
-            `);
-
-            console.log("Results:", results);
-
-            const exceptions: Excepcion[] = results.map((row: any) => {
-                console.log("Processing row:", row);
-                return {
-                    id: row.id,
-                    name: row.name,
-                    description: row.description,
-                    duration: row.duration,
-                    createDate: row.createDate,
-                    place_name: row.place_names ? row.place_names.split(',') : [],
-                    category_name: row.category_names ? row.category_names.split(',') : [],
-                };
-            });
-
-            console.log("Exceptions:", exceptions);
-
-            return exceptions;
-        },
+    const exceptionsQuery = useQuery<Excepcion[]>({
+        queryKey: ['exceptions'],
+        queryFn: async (): Promise<Excepcion[]> =>
+            db.getAllAsync('SELECT * FROM exception ORDER BY createDate'),
     });
 
-    return query;
-}
+    const getExceptionDetails = async (excepcion: Excepcion, exceptionId: number): Promise<Excepcion> => {
+        const places = await db.getAllAsync<Lugar>(
+            `SELECT name 
+            FROM place 
+            WHERE id IN (
+                SELECT place_id 
+                FROM place_exception 
+                WHERE exception_id = ?
+            )`,
+            [exceptionId]
+        ) as Lugar[];
+
+        const placeNames = places.map(place => place.name);
+
+        // Fetch associated categories
+        const getCategory = await db.getAllAsync<Categoria>(
+            `SELECT name 
+            FROM Category 
+            WHERE id IN (
+                SELECT category_id 
+                FROM category_exception 
+                WHERE exception_id = ?
+            )`,
+            [exceptionId]
+        ) as Categoria[];
+
+    
+        const categoryName = getCategory.map(category => category.name);
+        return {
+            ...excepcion,
+            place_names: placeNames,
+            category_name: categoryName[0],
+        };
+    };
+
+    useEffect(() => {
+        if (exceptionsQuery.isSuccess && exceptionsQuery.data) {
+            const fetchExceptions = async () => {
+                const updatedExceptions = await Promise.all(exceptionsQuery.data.map(async (exception) => {
+                    const updatedException = await getExceptionDetails(exception, exception.id);
+                    return updatedException;
+                }));
+
+                queryClient.setQueryData<Excepcion[]>(['exceptions'], updatedExceptions);
+
+            };
+            fetchExceptions();
+        }
+    }, [exceptionsQuery.isSuccess, exceptionsQuery.data, queryClient]);
+
+    return {
+        exceptions: exceptionsQuery.data,
+        isLoading: exceptionsQuery.isLoading,
+        isError: exceptionsQuery.isError,
+    };
+};
 
 export default useGetExceptions;
