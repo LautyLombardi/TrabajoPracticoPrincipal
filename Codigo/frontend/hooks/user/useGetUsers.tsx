@@ -16,7 +16,7 @@ const useGetUsers = () => {
             `);
 
             // Parsear los resultados y mapearlos a objetos de usuario
-            const users: Usuario[] = results.map((row: any) => ({ // Especificar 'any' aquí si TypeScript no puede inferir los tipos correctamente
+            const users: Usuario[] = results.map((row: any) => ({
                 dni: row.dni,
                 name: row.name,
                 role_id: row.role_id,
@@ -26,7 +26,7 @@ const useGetUsers = () => {
                 motive: row.motive,
                 activeData: row.activeData,
                 createDate: row.createDate,
-                rolName: row.roleName, // Aquí asignamos el nombre del rol
+                rolName: row.roleName, 
             }));
 
             return users;
