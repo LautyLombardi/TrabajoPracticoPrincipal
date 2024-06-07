@@ -1,10 +1,14 @@
 export interface Usuario{  
     dni: number,
-    role_id: number,
+    role_id: string,
     name: string,
     lastname: string,
+    username: string,
+    isActive:number,
+    motive: string,
+    activeData: string,
     createDate:string,
-    rol: string,
+    rolName: string,
 }
 
 export interface Lugar{
@@ -40,6 +44,8 @@ export interface Categoria {
     name: string;
     description: string;
     isExtern: number;
+    places: string[],
+    institutes: string[],
     createDate: string;
 }
 
@@ -54,15 +60,27 @@ export interface Empresa{
 export interface Instituto {
     id: number;
     name: string;
+    places: string[],
     isActive:number,
     createDate: string;
 }
 
 export interface Rol {
-    id: number,
-    name: string,
-    description: string,
-    createDate: string,
+    id: number;
+    name: string;
+    description: string;
+    createDate: string;
+    routingConnection:number;
+    onlineLogin:number;
+    offlineLogin:number;
+    dayStartEnd:number;
+    visitorAuthentication:number;
+    visitorAuthorization:number;
+    instituteConfiguration:number;
+    entityABMs:number;
+    systemReports:number;
+    systemLog:number;
+    exceptionLoading:number;
 }
 
 export interface Logs {
@@ -88,6 +106,6 @@ export interface Excepcion {
     description: string;
     duration: string;
     createDate: string;
-    place_name: string;
+    place_names: string[];
     category_name: string;
 }

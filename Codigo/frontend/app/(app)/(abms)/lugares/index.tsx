@@ -9,6 +9,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { FontAwesome5 } from '@expo/vector-icons';
 import PlaceModal from '@/components/Modal/PlaceModal';
 import useGetPlaces from '@/hooks/place/useGetPlaces';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
   text?: string,
@@ -127,6 +128,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 };
 
 const AdministracionLugares = () => {
+  const [status, setStatusDay] = useState<boolean>(true);
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -159,8 +161,13 @@ const AdministracionLugares = () => {
     }
   };
 
-  //conexion con db
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
 
+  //conexion con db
   const placesDB =useGetPlaces();
   const [lugares, setLugares] = useState<Lugar[]>([]);
 
@@ -169,7 +176,8 @@ const AdministracionLugares = () => {
       const {places}=placesDB
       if (places) {
         setLugares(places);
-      }      
+      }
+      handlerDay();
     }, [[placesDB]])
   );
 
@@ -178,6 +186,7 @@ const AdministracionLugares = () => {
     if (places) {
       setLugares(places);
     }
+    handlerDay();
   }, [placesDB]);
 
   return (
@@ -195,16 +204,16 @@ const AdministracionLugares = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/lugares/registrar")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/lugares/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
@@ -231,59 +240,62 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#00759c',
     alignItems: 'center',
-},
-tableContainer: {
-  width: '100%',
-},
-crudBtn: {
-  flexDirection: "row", 
-  width: "100%", 
-  justifyContent: "flex-end", 
-  alignItems: "center", 
-  paddingHorizontal: 20, 
-  gap: 4
-},
-crudItem:{
-  padding: 10, 
-  backgroundColor: '#fff', 
-  borderRadius: 5,
-  width: '5.3%',
-  height: 'auto',
-  marginVertical:'2%',
-  justifyContent: "center", 
-},
-// Buscador
-searchContainer: {
-  flexDirection: "row",
-  alignItems: "center",
-  width: "100%",
-  marginTop: '2%',
-  paddingHorizontal: 10,
-},
-searchText: {
-  backgroundColor: "#fff",
-  color: "black",
-  paddingHorizontal: 20,
-  paddingVertical: 10,
-  borderRadius: 5,
-  flex: 1,
-  borderWidth: 1,
-  borderColor: "black"
-},
-searchButton: {
-  backgroundColor: "#fff",
-  borderWidth: 1,
-  borderColor: "black",
-  borderRadius: 5,
-  justifyContent: 'center',
-  alignItems: 'center',
-  aspectRatio: 1, 
-  maxHeight: '80%',
-  flexBasis: '8%', 
-},
-searchButtonIcon: {
-  fontSize: 20,
-}
+  },
+  tableContainer: {
+    width: '100%',
+  },
+  crudBtn: {
+    flexDirection: "row", 
+    width: "100%", 
+    justifyContent: "flex-end", 
+    alignItems: "center", 
+    paddingHorizontal: 20, 
+    gap: 4
+  },
+  crudItem:{
+    padding: 10, 
+    backgroundColor: '#fff', 
+    borderRadius: 5,
+    width: '5.3%',
+    height: 'auto',
+    marginVertical:'2%',
+    justifyContent: "center", 
+  },
+  crudItemDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
+  // Buscador
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginTop: '2%',
+    paddingHorizontal: 10,
+  },
+  searchText: {
+    backgroundColor: "#fff",
+    color: "black",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "black"
+  },
+  searchButton: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    aspectRatio: 1, 
+    maxHeight: '80%',
+    flexBasis: '8%', 
+  },
+  searchButtonIcon: {
+    fontSize: 20,
+  }
 });
 
 export default AdministracionLugares

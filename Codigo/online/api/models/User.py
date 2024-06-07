@@ -11,7 +11,7 @@ class User(db.Model):
     motive = db.Column(db.Text)
     activeDate = db.Column(db.Text)
     createDate = db.Column(db.Text)
-    barcode = db.Column(db.Text)
+
     
     # Relación con tabla Role
     role = db.relationship('Role', backref=db.backref('users', lazy=True))

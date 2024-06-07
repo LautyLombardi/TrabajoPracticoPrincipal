@@ -11,12 +11,14 @@ interface ModalProps {
 const UserModal: React.FC<ModalProps> = ({ user, handleCloseModal }) => {
     const renderFields = () => {
         const fields = [
-        { label: 'Dni', value: user.dni },
-        { label: 'ID rol', value: user.role_id },
-        { label: 'Apellido', value: user.lastname },
-        { label: 'Nombre', value: user.name},
-        { label: 'Fecha de Creación', value: user.createDate },
-        { label: 'Nombre Rol', value: user.rol },
+            { label: 'Dni', value: user.dni },
+            { label: 'Nombre', value: user.name},
+            { label: 'Apellido', value: user.lastname },
+            { label: 'ID rol', value: user.role_id },
+            { label: 'Nombre Rol', value: user.rolName },
+            { label: 'Activo', value: user.isActive === 1 ? 'SI' : 'NO' },
+            { label: 'Motivo', value: user.lastname },
+            { label: 'Fecha de Creación', value: user.createDate },
         ];
 
         return fields.map((field, index) => (

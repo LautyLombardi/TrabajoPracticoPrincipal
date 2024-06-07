@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //----------------------------local storage--------------------------
-const getStorage = async (): Promise<string | null> => {
+export const getStorage = async (): Promise<string | null> => {
     try {
         const data = await AsyncStorage.getItem('adm_data');
         return data;

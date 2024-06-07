@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable } from 'react-native';
 import { router } from "expo-router";
-import Boton from "@/ui/Boton";
-import { createInstituto } from "@/api/services/institutos";
-import { getLugares } from "@/api/services/place";
 import { Lugar } from "@/api/model/interfaces";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import Checkbox from "expo-checkbox";
+import useGetPlaces from "@/hooks/place/useGetPlaces";
+import useInsertInstitute from "@/hooks/institute/useInsertInstitute";
 
 const RegistroInstituto = () => {
+  const placesDB =useGetPlaces();
+  const insertInstitute = useInsertInstitute();
+
   const [nombre, setNombre] = useState<string>("");
   const [lugares, setLugares] = useState<Lugar[]>([])
-  const [lugaresName, setLugaresName] = useState<string[]>([])
-  const [lugaresSeleccionadoName, setLugaresSeleccionadoName] = useState<string>('')
   const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
 
   const handleTerminar = async () => {
     if (lugaresSeleccionados.length > 0) {
-      const respuesta = await createInstituto(nombre, lugaresSeleccionados);
+      console.log('lugaresSeleccionados', lugaresSeleccionados);
+      await insertInstitute(nombre, lugaresSeleccionados);
       router.navigate("/institutos");
     } else {
       console.error("Debe seleccionar al menos un lugar");
@@ -34,13 +35,9 @@ const RegistroInstituto = () => {
 
   useEffect(() => {
     const fetchLugares = async () => {
-      try {
-      const lugaresData = await getLugares();
-      const nombresLugares = lugaresData.map(lugar => lugar.name);
-      setLugaresName(nombresLugares)
-      setLugares(lugaresData)
-      } catch (error) {
-        console.error("Error al obtener las categorías:", error);
+      const {places}=placesDB
+      if (places) {
+        setLugares(places);
       }
     };
 

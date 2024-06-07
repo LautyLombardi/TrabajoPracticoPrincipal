@@ -23,13 +23,3 @@ export const crearRol = async (nombre: string, descripcion: string) => {
       throw new Error('Error al registrar la rol');
     }
 };
-
-export const getRolesById = async (id: number): Promise<Rol> => {
-  try {
-      console.log(id)
-      const response: AxiosResponse<any> = await axios.get(`${BASE_URL}/${id}`);
-      return response.data;
-  } catch (error) {
-      throw new Error(`Error al obtener el rol con id ${id}`);
-  }
-};

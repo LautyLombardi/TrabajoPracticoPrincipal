@@ -6,17 +6,6 @@ import { getAdmDni } from './storage';
 
 const BASE_URL = `${URL}/user`;
 
-export const getUsuarios = async (): Promise<Usuario[]> => {
-    try {
-        const response = await axios.get(BASE_URL);
-        
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error);
-        throw new Error('Error al obtener los usuarios');
-    }
-};
-
 export const createUsuario = async (
     dni: number,
     role_id: number,

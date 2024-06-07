@@ -5,9 +5,10 @@ import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Excepcion } from '@/api/model/interfaces';
-import { getExcepciones } from '@/api/services/excepciones';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import ExceptionModal from '@/components/Modal/ExceptionModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import useGetExceptions from '@/hooks/exception/useGetExceptions';
 
 type PropsCol = {
   text?: string,
@@ -69,7 +70,6 @@ const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
         <Col text='ID'flexWidth={0.8}/>
         <Col text='Nombre' flexWidth={3}/>
         <Col text='Duracion' flexWidth={3}/>
-        <Col text='Lugar' flexWidth={3}/>
         <Col text='Categoria' flexWidth={3}/>
         <Col text='' flexWidth={1.5}/>
       </Row>
@@ -78,7 +78,6 @@ const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
           <Col text={excepcion.id?.toString() || ''} flexWidth={0.8} />
           <Col text={excepcion.name} flexWidth={3} />
           <Col text={excepcion.duration} flexWidth={3} />
-          <Col text={excepcion.place_name} flexWidth={3} />
           <Col text={excepcion.category_name} flexWidth={3} />
           <Col flexWidth={1.5} icon={iconVerMas(excepcion)} /> 
         </Row>
@@ -87,7 +86,8 @@ const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
   );
 };
 
-const AdministracionCategorias = () => {
+const AdministracionExcepciones = () => {
+  const [status, setStatusDay] = useState<boolean>(true);
   const [showException, setShowException] = useState(false);
   const [selectedException, setSelectedException] = useState<Excepcion | null>(null);
 
@@ -101,19 +101,30 @@ const AdministracionCategorias = () => {
     setShowException(false);
   };
 
-  // Listado de Excepciones
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
+
+  const exceptionsDB = useGetExceptions();
   const [excepciones, setExcepciones] = useState<Excepcion[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      getExcepciones().then((exceptions) => setExcepciones(exceptions))
-    }, [])
+      const { exceptions } = exceptionsDB;
+      if (exceptions) {
+        setExcepciones(exceptions);
+      }
+    }, [exceptionsDB])
   );
 
   useEffect(() => {
-    getExcepciones().then((exceptions) => setExcepciones(exceptions))
-
-  }, []);
+    const { exceptions } = exceptionsDB;
+    if (exceptions) {
+      setExcepciones(exceptions);
+    }
+  }, [exceptionsDB]);
   
   return (
     <View style={styles.container}>
@@ -130,7 +141,7 @@ const AdministracionCategorias = () => {
 
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/excepciones/registrar")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/excepciones/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
@@ -175,6 +186,9 @@ const styles = StyleSheet.create({
     marginVertical:'2%',
     justifyContent: "center", 
   },
+  crudItemDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
   // Buscador
   searchContainer: {
     flexDirection: "row",
@@ -209,4 +223,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AdministracionCategorias
+export default AdministracionExcepciones

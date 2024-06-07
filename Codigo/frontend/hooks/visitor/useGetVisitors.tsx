@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSQLiteContext } from 'expo-sqlite/next';
+import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Categoria, Empresa, Lugar, Visitante } from '@/api/model/interfaces';
 import { useEffect } from 'react';
 

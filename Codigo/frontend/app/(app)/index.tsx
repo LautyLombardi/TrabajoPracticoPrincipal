@@ -1,11 +1,49 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { LogBox } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 LogBox.ignoreAllLogs(true);
 
 const Welcome = () => {
+    const setDayStatus = async () => {
+        try {
+            const openHour = await AsyncStorage.getItem('openHour');
+            const closeHour = await AsyncStorage.getItem('closeHour');
+            
+            if (openHour && closeHour) {
+                const [openHourHours, openHourMinutes] = openHour.split(':').map(Number);
+                const [closeHourHours, closeHourMinutes] = closeHour.split(':').map(Number);
+                
+                const now = new Date();
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+
+                const isOpen = (currentHours > openHourHours || (currentHours === openHourHours && currentMinutes >= openHourMinutes)) &&
+                                (currentHours < closeHourHours || (currentHours === closeHourHours && currentMinutes < closeHourMinutes));
+                
+                await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
+            } else {
+                // Si no hay horas establecidas, setea el estado del día en abierto (true)
+                await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+            }
+        } catch (error) {
+            console.error('Error al establecer el estado del día:', error);
+        }
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            setDayStatus();
+        }, [])
+    );
+
+    useEffect(() => {
+        setDayStatus()
+    }, [])
+    
     return (
         <>
             <View style={styles.container}>

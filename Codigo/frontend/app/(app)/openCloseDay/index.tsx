@@ -1,16 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, Alert } from 'react-native';
-import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { closeDay, openDay } from '@/api/services/openCloseDay';
 import { router } from 'expo-router';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OpenCloseDay = () => {
+const OpenCloseDay = () => { 
 
   const handleOpenDay = async () => {
     try {
-      console.log('open day');
-      const response = await openDay();
-      if(response === 200){
+      const dayStatus = await AsyncStorage.getItem('dayStatus');
+      const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+
+      if(!isDayOpen){
+        await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+        console.log('status del dia seteado en open day', await AsyncStorage.getItem('dayStatus'));
+        // TODO: logica de disparar LOG
         Alert.alert(
           "Día Abierto",
           "",
@@ -18,8 +22,7 @@ const OpenCloseDay = () => {
             { text: "OK", onPress: () => router.navigate("/menu") }
           ]
         );
-      } 
-      if(response === 204){
+      } else {
         Alert.alert(
           "El día ya se encuentra abierto",
           "",
@@ -28,17 +31,20 @@ const OpenCloseDay = () => {
           ]
         );
       }
-      
     } catch (error) {
-      console.error('Error al abrir el dia: ', error);
+      console.error('Error al abrir el día:', error);
     }
   };
 
   const handleCloseDay = async () => {
     try {
-      console.log('close day');
-      const response = await closeDay();
-      if(response === 200){
+      const dayStatus = await AsyncStorage.getItem('dayStatus');
+      const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+
+      if(isDayOpen){
+        await AsyncStorage.setItem('dayStatus', JSON.stringify(false));
+        console.log('status del dia seteado en close day', await AsyncStorage.getItem('dayStatus'));
+        // TODO: logica de disparar LOG
         Alert.alert(
           "Día Cerrado",
           "",
@@ -46,8 +52,7 @@ const OpenCloseDay = () => {
             { text: "OK", onPress: () => router.navigate("/menu") }
           ]
         );
-      } 
-      if(response === 204){
+      } else {
         Alert.alert(
           "El día ya se encuentra cerrado",
           "",
@@ -57,7 +62,7 @@ const OpenCloseDay = () => {
         );
       }
     } catch (error) {
-      console.error('Error al cerrar el dia: ', error);
+      console.error('Error al cerrar el día:', error);
     }
   };
 

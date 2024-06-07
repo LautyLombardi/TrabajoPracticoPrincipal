@@ -13,6 +13,7 @@ const InstituteModal: React.FC<ModalProps> = ({ instituto, handleCloseModal }) =
         const fields = [
         { label: 'ID', value: instituto.id },
         { label: 'Nombre', value: instituto.name },
+        { label: 'Lugares', value: instituto.places.join(', ') || '' },
         { label: 'Activo', value: instituto.isActive === 1 ? 'SI' : 'NO' },
         { label: 'Fecha de Creación', value: instituto.createDate },
         ];

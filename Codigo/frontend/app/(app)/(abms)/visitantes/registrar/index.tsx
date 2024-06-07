@@ -1,50 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { Text, View, TextInput, StyleSheet, ScrollView, Alert, Pressable } from "react-native";
 import { router } from "expo-router";
 import CampoFecha from "@/components/CampoFecha/CampoFecha";
-import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
-import { createVisitante } from "@/api/services/visitantes";
-import { obtenerCategorias } from "@/api/services/categorias";
-import { Categoria, Empresa } from "@/api/model/interfaces";
+import { Categoria, Empresa, Instituto } from "@/api/model/interfaces";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { getEmpresas } from "@/api/services/empresa";
-import { Ionicons } from "@expo/vector-icons";
+import useGetVisitorRigisterData from "@/hooks/visitor/useGetVisitorRigisterData";
+import useInsertVisitor from "@/hooks/visitor/useInsertVisitor";
+
 
 const RegistroVisitante = () => {
+  const insertVisitor = useInsertVisitor()
+  const visitorRigisterDataDB = useGetVisitorRigisterData()
+
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); 
   const [dateIngreso, setDateIngreso] = useState(new Date());
-  const [dateEgreso, setDateEgreso] = useState(new Date());
   const [categoriasName, setCategoriasName] = useState<string[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [categoriaSeleccionadaName, setCategoriaSeleccionadaName] = useState<string>('');
   const [empresasName, setEmpresasName] = useState<string[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [empresaSeleccionadaName, setEmpresaSeleccionadaName] = useState<string>('');
+  const [institutosName, setInstitutosName] = useState<string[]>([]);
+  const [institutos, setInstitutos] = useState<Instituto[]>([]);
+  const [institutoSeleccionadoName, setInstitutoSeleccionadoName] = useState<string>('');
+  const [isExtern, setIsExtern] = useState<number | null>(null);
 
   const handleTerminar = async () => {
     try {
       const empresa = empresas.find(empresa => empresa.name.trim().toLowerCase() === empresaSeleccionadaName.trim().toLowerCase());
       const categoria = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase());
+      const instituto = institutos.find(instituto => instituto.name.trim().toLowerCase() === institutoSeleccionadoName.trim().toLowerCase());
 
-      if (empresa && categoria) {
-        const response = await createVisitante(
-          parseInt(dni),
-          empresa.id,
-          categoria.id,
-          nombre,
-          apellido,
-          email,
-          password,
-          dateIngreso,
-          dateEgreso
-        );
-        if(response === 201){
+      if(categoria){
+        const insert = await insertVisitor(nombre, apellido, parseInt(dni), email, dateIngreso.toISOString(), categoria, empresa?.id || 0, instituto?.id || 0)
+        if (insert === 0) {
+          // TODO: log de error
+          Alert.alert("Error al guardar visitante");
+        } else {
+          // TODO: log de registro
           Alert.alert(
             "Visitante guardado",
             "",
@@ -52,15 +49,6 @@ const RegistroVisitante = () => {
               { text: "OK", onPress: () => router.navigate("/visitantes") }
             ]
           );
-        } else {
-          Alert.alert("Error al guardar visitante");
-        }
-      } else {
-        if (!empresa) {
-          Alert.alert("Empresa no encontrada.");
-        }
-        if (!categoria) {
-          Alert.alert("Categoría no encontrada.");
         }
       }
     } catch (error) {
@@ -68,33 +56,34 @@ const RegistroVisitante = () => {
     }
   };
 
+  useEffect(() => {
+    const { categories, institutes, enterprices } = visitorRigisterDataDB;
+
+    if (categories && categories !== categorias) {
+      setCategorias(categories);
+      const nombresCategorias = categories.map(categoria => categoria.name);
+      setCategoriasName(nombresCategorias);
+    }
+
+    if (institutes && institutes !== institutos) {
+      setInstitutos(institutes);
+      const nombresInstitutos = institutes.map(instituto => instituto.name);
+      setInstitutosName(nombresInstitutos);
+    }
+
+    if (enterprices && enterprices !== empresas) {
+      setEmpresas(enterprices);
+      const nombresEmpresas = enterprices.map(empresa => empresa.name);
+      setEmpresasName(nombresEmpresas);
+    }
+  }, [visitorRigisterDataDB, categorias, institutos, empresas]);
 
   useEffect(() => {
-    const fetchCategorias = async () => {
-      try {
-        const categoriasData = await obtenerCategorias();
-        setCategorias(categoriasData);
-        const nombresCategorias = categoriasData.map(categoria => categoria.name);
-        setCategoriasName(nombresCategorias);
-      } catch (error) {
-        console.error("Error al obtener las categorías:", error);
-      }
-    };
-
-    const fetchEmpresas = async () => {
-      try {
-        const empresasData = await getEmpresas();
-        setEmpresas(empresasData);
-        const nombresEmpresas = empresasData.map(empresa => empresa.name);
-        setEmpresasName(nombresEmpresas);
-      } catch (error) {
-        console.error("Error al obtener las empresas:", error);
-      }
-    };
-
-    fetchEmpresas();
-    fetchCategorias();
-  }, []);
+    const selectedCategory = categorias.find(categoria => categoria.name === categoriaSeleccionadaName);
+    if (selectedCategory) {
+      setIsExtern(selectedCategory.isExtern);
+    }
+  }, [categoriaSeleccionadaName, categorias]);
 
   return (
     <View style={styles.container}>
@@ -144,22 +133,6 @@ const RegistroVisitante = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Contraseña:</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              placeholder='Password'
-              placeholderTextColor="gray"
-              onChangeText={setPassword}
-              value={password}
-              secureTextEntry={!isPasswordVisible}
-              style={styles.inputPassword}
-            />
-            <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-              <Ionicons name={isPasswordVisible ? 'eye-off' : 'eye'} size={22} style={styles.icon} color="gray" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.inputContainer}>
           <SelectItem
             fieldName="Categoria"
             value={categoriaSeleccionadaName}
@@ -167,46 +140,44 @@ const RegistroVisitante = () => {
             values={categoriasName}
           />
         </View>
+        {isExtern === 1 ? (
+          <View style={styles.inputContainer}>
+            <SelectItem
+              fieldName="Empresa"
+              value={empresaSeleccionadaName}
+              onValueChange={setEmpresaSeleccionadaName}
+              values={empresasName}
+            />
+          </View>          
+        ) : (
+          <View style={styles.inputContainer}>
+            <SelectItem
+              fieldName="Institutos"
+              value={institutoSeleccionadoName}
+              onValueChange={setInstitutoSeleccionadoName}
+              values={institutosName}
+            />
+          </View>
+        )}
+
         <View style={styles.inputContainer}>
-          <SelectItem
-            fieldName="Empresa"
-            value={empresaSeleccionadaName}
-            onValueChange={setEmpresaSeleccionadaName}
-            values={empresasName}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Fecha de Ingreso:</Text>
+          <Text style={styles.labelText}>Fecha Incio en la UNGS:</Text>
           <View style={{ flex: 1 }}>
             <CampoFecha date={dateIngreso} setDate={setDateIngreso} />
           </View>
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Fecha de Egreso:</Text>
-          <View style={{ flex: 1 }}>
-            <CampoFecha date={dateEgreso} setDate={setDateEgreso} />
-          </View>
-        </View>
-        <View style={{ width: 300 }}>
-          <Boton
-            backgroundColor="black"
-            padding={20}
-            text="Continuar"
-            color="white"
-            textAlign="center"
-            fontSze={20}
-            borderRadius={10}
-            onPress={handleTerminar}
-          />
-        </View>
       </ScrollView>
+      
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
@@ -224,9 +195,10 @@ const styles = StyleSheet.create({
   },
   labelText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 15,
     textAlign: "left",
     width: "30%",
+    marginRight: 20,
   },
   input: {
     backgroundColor: "white",
@@ -234,6 +206,18 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 5,
     color: 'black',
+    justifyContent: 'center',
+  },
+  button: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
+  },
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
   passwordContainer: {
     flex: 1,
@@ -246,17 +230,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     color: 'black',
-  },
-  button: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    width: '90%',
-  },
-  buttonText: {
-    color: '#000051',
-    fontSize: 16,
   },
   icon: {
     marginRight: 5,

@@ -4,17 +4,6 @@ import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/category`;
 import { getAdmDni } from './storage';
 
-// Función para obtener todas las categorías
-export async function obtenerCategorias(): Promise<Categoria[]> {
-  try {
-    const response: AxiosResponse<any> = await axios.get(BASE_URL);
-    return response.data;
-  } catch (error) {
-    console.error('Error al obtener las categorías:', error);
-    return [];
-  }
-}
-
 // Funcion para crear una categoria
 export const crearCategoria = async (nombre: string, descripcion: string, isExtern: number): Promise<number> => {
   try {

@@ -62,7 +62,7 @@ def close_day():
         data = request.json
         adm_dni = data.get('adm_dni')
         registrarCierreManual(adm_dni)
-        apertura_de_dia = False
+        apertura_de_dia = True
         return jsonify({'message': 'Día cerrado'}), 200
     return jsonify({'message': 'El día ya se encuentra cerrado'}), 204
 
@@ -83,8 +83,8 @@ def check_time():
     end_time = datetime.strptime("23:00", "%H:%M").time()
 
 
-    if request.path in ['/open_day', '/close_day', '/check_status_dia']:
-        return
+    #if request.path in ['/open_day', '/close_day', '/check_status_dia']:
+       # return
 
 """     if not (start_time <= current_time <= end_time) or not apertura_de_dia:
         return jsonify({"error": "el dia esta cerrado"}), 403   """

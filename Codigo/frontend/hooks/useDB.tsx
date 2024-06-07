@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system';
-import {Asset} from 'expo-asset';
-import {openDatabaseAsync} from 'expo-sqlite/next';
-import {useState} from 'react';
+import { Asset } from 'expo-asset';
+import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite/next';
+import { useState } from 'react';
 
 const localDatabase = require('@/assets/db/dataBase.db');
 
@@ -9,33 +9,42 @@ const DB_NAME = 'dataBase.db';
 
 function useDb() {
     const [loading, setLoading] = useState(false);
-    const createDB = async () => {
+
+    const createDB = async (): Promise<SQLiteDatabase | undefined> => {
         setLoading(true);
         try {
-        if (!(await FileSystem.getInfoAsync(`${FileSystem.documentDirectory}SQLite`)).exists) {
-            await FileSystem.makeDirectoryAsync(
-            `${FileSystem.documentDirectory}SQLite`
-            );
-        }
-        const [{localUri, uri}] = await Asset.loadAsync(localDatabase);
-        const result = await FileSystem.downloadAsync(
-            uri,
-            `${FileSystem.documentDirectory}SQLite/${DB_NAME}`
-        );
+            const dbDirectory = `${FileSystem.documentDirectory}SQLite`;
 
-        console.log('Local uri in create db ',localUri,'---uri in create db--- ', uri);
+            // Verifica si el directorio SQLite existe, de lo contrario créalo
+            const dirInfo = await FileSystem.getInfoAsync(dbDirectory);
+            if (!dirInfo.exists) {
+                await FileSystem.makeDirectoryAsync(dbDirectory);
+            }
 
-        console.log(result, 'result');
+            // Copia el archivo de la base de datos al directorio SQLite
+            const dbFileUri = `${dbDirectory}/${DB_NAME}`;
+            const fileInfo = await FileSystem.getInfoAsync(dbFileUri);
+            if (!fileInfo.exists) {
+                const [{ localUri, uri }] = await Asset.loadAsync(localDatabase);
+                await FileSystem.copyAsync({
+                    from: uri,
+                    to: dbFileUri
+                });
+            }
 
-        return await openDatabaseAsync(`${DB_NAME}`);
+            console.log(`Database copied to: ${dbFileUri}`);
+
+            // Abre la base de datos
+            const db = await openDatabaseAsync(DB_NAME);
+            return db;
         } catch (error) {
-        console.error('Error creating database', error);
+            console.error('Error creating database', error);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
-    return {createDB, loading};
+    return { createDB, loading };
 }
 
 export default useDb;
