@@ -8,7 +8,7 @@ const useGetRoles = () => {
     const rolesQuery = useQuery<Rol[]>({
         queryKey: ['roles'],
         queryFn: (): Promise<Rol[]> =>
-          db.getAllAsync('SELECT * FROM role ORDER BY createDate'),
+            db.getAllAsync('SELECT * FROM role ORDER BY createDate'),
     });
 
     return {
@@ -19,3 +19,4 @@ const useGetRoles = () => {
 }
 
 export default useGetRoles
+

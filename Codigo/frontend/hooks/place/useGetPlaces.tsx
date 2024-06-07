@@ -5,17 +5,13 @@ import { Lugar } from '@/api/model/interfaces';
 const useGetPlaces = () => {
     const db = useSQLiteContext();
 
-    const placesQuery = useQuery<Lugar[]>({
+    const query = useQuery<Lugar[]>({
         queryKey: ['places'],
         queryFn: (): Promise<Lugar[]> =>
           db.getAllAsync('SELECT * FROM place ORDER BY createDate'),
     });
 
-    return {
-        places: placesQuery.data,
-        isLoading: placesQuery.isLoading,
-        isError: placesQuery.isError,
-    };
+    return query;
 }
 
 export default useGetPlaces

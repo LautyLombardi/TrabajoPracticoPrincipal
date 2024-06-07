@@ -1,16 +1,21 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Logs } from '@/api/model/interfaces';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { getLogs } from '@/api/services/log';
+import useGetLogs from '@/hooks/logs/useGetLogs';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AdministracionLogs = () => {
-  const [logs, setLogs] = useState<Logs[]>([]);
+  const [logsRender, setLogsRender] = useState<Logs[]>([]);
+  const logDB=useGetLogs()
 
   useEffect(() => {
-    getLogs().then((logs) => setLogs(logs));
-    console.log(logs)
-  }, []);
+    const {logs}=logDB
+    if (logs) {
+      setLogsRender(logs);
+    }
+  }, [logDB]);
 
   const renderItem = ({ item }: { item: Logs }) => {
     const renderText = (label: string, value: any) => {
@@ -46,7 +51,7 @@ const AdministracionLogs = () => {
 
       <View style={styles.listContainer}>
         <FlatList
-          data={logs}
+          data={logsRender}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
         />
