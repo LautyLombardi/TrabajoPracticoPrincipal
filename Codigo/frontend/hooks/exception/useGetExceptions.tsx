@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSQLiteContext } from 'expo-sqlite/next';
+import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Excepcion, Lugar, Categoria } from '@/api/model/interfaces';
 import { useEffect } from 'react';
 
@@ -39,7 +39,7 @@ const useGetExceptions = () => {
             [exceptionId]
         ) as Categoria[];
 
-    
+
         const categoryName = getCategory.map(category => category.name);
         return {
             ...excepcion,

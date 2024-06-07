@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { useSQLiteContext } from 'expo-sqlite/next';
+import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Usuario } from '@/api/model/interfaces';
 
 const useGetUsers = () => {
     const db = useSQLiteContext();
 
-    const query = useQuery<Usuario[]>({
+    const usersQuery = useQuery<Usuario[]>({
         queryKey: ['Usuarios'],
         queryFn: async (): Promise<Usuario[]> => {
             const results = await db.getAllAsync(`
@@ -33,7 +33,13 @@ const useGetUsers = () => {
         },
     });
 
-    return query;
+    console.log('enterprices data: ', usersQuery.data);
+    
+    return {
+        users: usersQuery.data,
+        isLoading: usersQuery.isLoading,
+        isError: usersQuery.isError,
+    };
 }
 
 export default useGetUsers;

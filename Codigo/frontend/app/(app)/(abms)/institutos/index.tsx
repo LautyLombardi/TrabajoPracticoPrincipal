@@ -8,6 +8,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Instituto } from '@/api/model/interfaces';
 import InstituteModal from '@/components/Modal/InstituteModal';
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
   text?: string,
@@ -111,6 +112,7 @@ const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteStat
 };
 
 const AdministracionInstitutos = () => {
+  const [status, setStatusDay] = useState<boolean>(true);
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -138,23 +140,33 @@ const AdministracionInstitutos = () => {
     }
   };
   
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
+
   // Conexion con DB
-  const instituteDB = useGetInstitutes();
+  const institutesDB = useGetInstitutes();
   const [institutos, setInstitutos] = useState<Instituto[]>([])
   
   useFocusEffect(
     useCallback(() => {
-      if (instituteDB.data) {
-        setInstitutos(instituteDB.data);
-      }      
-    }, [[instituteDB.data]])
+      const {institutes} = institutesDB
+      if (institutes) {
+        setInstitutos(institutes);
+      }
+      handlerDay();
+    }, [[institutesDB]])
   );
 
   useEffect(() => {
-    if (instituteDB.data) {
-      setInstitutos(instituteDB.data);
+    const {institutes} = institutesDB
+    if (institutes) {
+      setInstitutos(institutes);
     }
-  }, [instituteDB.data]);
+    handlerDay();
+  }, [institutesDB]);
 
   return (
     <View style={styles.container}>
@@ -171,16 +183,16 @@ const AdministracionInstitutos = () => {
 
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/institutos/registrar")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/institutos/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
@@ -229,6 +241,9 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginVertical:'2%',
     justifyContent: "center", 
+  },
+  crudItemDisabled: {
+    backgroundColor: '#a3a3a3',
   },
   // Buscador
   searchContainer: {

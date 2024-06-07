@@ -9,6 +9,7 @@ import { obtenerCategorias } from '@/api/services/categorias';
 import { desactivarCategoria } from '@/api/services/categorias';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import CategoryModal from '@/components/Modal/CategoryModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
   text?: string,
@@ -125,6 +126,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 };
 
 const AdministracionCategorias = () => {
+  const [status, setStatusDay] = useState<boolean>(true);
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -157,18 +159,25 @@ const AdministracionCategorias = () => {
     }
   };
 
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
+
   // Listado de categorias
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       obtenerCategorias().then((categories) => setCategorias(categories))
+      handlerDay();
     }, [])
   );
 
   useEffect(() => {
     obtenerCategorias().then((categories) => setCategorias(categories))
-
+    handlerDay();
   }, []);
 
   return (
@@ -186,16 +195,16 @@ const AdministracionCategorias = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-      <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
         <Ionicons name='eye-outline' size={20} color="black" />
       </Pressable>
-      <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
         <FontAwesome6 name="trash" size={20} color="black" />
       </Pressable>
-      <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
         <FontAwesome6 name="pen-clip" size={20} color="black" />
       </Pressable>
-      <Pressable style={styles.crudItem} onPress={() => router.navigate("/categorias/registrar")}>
+      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/categorias/registrar")}>
         <FontAwesome6 name="plus" size={20} color="black" />
       </Pressable>
     </View>
@@ -244,6 +253,9 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginVertical:'2%',
     justifyContent: "center", 
+  },
+  crudItemDisabled: {
+    backgroundColor: '#a3a3a3',
   },
   // Buscador
   searchContainer: {

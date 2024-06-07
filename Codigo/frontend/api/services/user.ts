@@ -6,7 +6,6 @@ import { getAdmDni } from './storage';
 
 const BASE_URL = `${URL}/user`;
 
-
 export const createUsuario = async (
     dni: number,
     role_id: number,

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import { router } from 'expo-router';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
-import { router } from 'expo-router';
-import { createLugar } from '@/api/services/place';
+import useInsertPlace from '@/hooks/place/useInsertPlace';
 
 const RegistrarLugar = () => {
+  const insertPlace = useInsertPlace()
+
   const [nombre, setNombre] = useState<string>("");
   const [abbreviation, setAbbreviation] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -30,8 +32,12 @@ const RegistrarLugar = () => {
       return;
     }
 
-    const response = await createLugar(nombre, abbreviation, description, openTime, closeTime);
-    if (response === 201) {
+    const insert = await insertPlace(nombre, abbreviation, description, openTime, closeTime);
+    if (insert === 0) {
+      // TODO: log de error
+      Alert.alert("Error al guardar lugar");
+    }else {
+      // TODO: log de registro
       Alert.alert(
         "Lugar guardado",
         "",
@@ -39,8 +45,7 @@ const RegistrarLugar = () => {
           { text: "OK", onPress: () => router.navigate("/lugares") }
         ]
       );
-    } else {
-      Alert.alert("Error al guardar lugar");
+      
     }
   };
 

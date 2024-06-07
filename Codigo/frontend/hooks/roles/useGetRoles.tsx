@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useSQLiteContext } from 'expo-sqlite/next';
+import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Rol } from '@/api/model/interfaces';
 
 const useGetRoles = () => {

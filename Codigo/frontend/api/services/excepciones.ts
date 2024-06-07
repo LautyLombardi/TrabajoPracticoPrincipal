@@ -4,16 +4,6 @@ import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/exception`;
 import { getAdmDni } from './storage';
 
-export async function getExcepciones(): Promise<Excepcion[]> {
-    try {
-        const response = await axios.get(BASE_URL);
-        return response.data;
-    } catch (error) {
-        console.error('Error al obtener excepciones: ', error);
-        return [];
-    }
-}
-
 export async function createExcepcion(category_id: number, place_id: number, name: string, description: string, duration: string): Promise<number> {
     try {
         console.log({

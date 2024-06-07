@@ -30,7 +30,7 @@ const Login = () => {
   
   const handleAuterizar = async () => {
       try{
-        takePicture().then((foto) => {
+        /* takePicture().then((foto) => {
           const formData= new FormData()
           formData.append("image", { // Ignora el error de append esta alpedo jodiendo
             uri: foto,
@@ -47,32 +47,31 @@ const Login = () => {
              //----------------------storage--------------
               const data = await respuesta.json(); // Convertir la respuesta a JSON
               
-              const rol=await getUserById(data.dni)
-
-              const adm_data = [
-                {
-                  adm_dni: data.dni,
-                  role: rol
-                },
-              ];
-              
-              await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
               //------------------------------------
-
+              
               await logfacerecognitionUser(1)
               Alert.alert(
                 "Autenticación exitosa",
                 "",
                 [
                   { text: "OK", onPress: () => navigator.navigate("/menu") }
-                ]
-              )
-            }else{
-              Alert.alert( "Falló la autenticación de la imagen del usuario")
-              await logfacerecognitionAdmFail()
-            }
-          })
-        })
+                  ]
+                  )
+                  }else{
+                    Alert.alert( "Falló la autenticación de la imagen del usuario")
+                  await logfacerecognitionAdmFail()
+                  }
+                  })
+                  }) */
+
+        const adm_data = [
+          {
+            adm_dni: 42433430
+          },
+        ];
+        
+        await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+        navigator.navigate("/menu")
       }catch(error){
         Alert.alert("No se pudo sacar la foto")
       }

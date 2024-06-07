@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
-import { statusDay } from '@/api/services/openCloseDay';
 // Icons
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -20,20 +19,6 @@ export const Menu = () => {
   const [isLoginMenuOpen, setLoginMenuOpen] = useState<boolean>(false);
   const [isImageMenuOpen, setImageMenuOpen] = useState<boolean>(false);
   const [isEntitiesMenuOpen, setEntitiesMenuOpen] = useState<boolean>(false);
-
-  const handlerDay = async () => {
-    try {
-      const response = await statusDay();
-      if (response === 403) {
-        setStatusDay(false);
-      } else {
-        setStatusDay(true);
-      }
-    } catch (error) {
-      console.error('Error al obtener el estado del día: ', error);
-      setStatusDay(false); 
-    }
-  };
 
   const handlerLogout = async () => {
     try {
@@ -53,7 +38,6 @@ export const Menu = () => {
     }
   };
 
-
   const toggleMenu = (menu: string) => {
     setIsMenuOpen(menu === 'main' ? !isMenuOpen : false);
     setAuthMenuOpen(menu === 'auth' ? !isAuthMenuOpen : false);
@@ -61,7 +45,14 @@ export const Menu = () => {
     setImageMenuOpen(menu === 'image' ? !isImageMenuOpen : false);
     setEntitiesMenuOpen(menu === 'entities' ? !isEntitiesMenuOpen : false)
   };
-  
+
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    console.log("day status on menu", dayStatus)
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
+
   useFocusEffect(
     useCallback(() => {
       handlerDay();
@@ -178,7 +169,7 @@ export const Menu = () => {
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('entities')}>
+          <Pressable style={styles.buttonMenu} onPress={() =>toggleMenu('entities')}>
             <Ionicons name="person-add-sharp" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Administración de Entidades</Text>
           </Pressable>
@@ -186,49 +177,49 @@ export const Menu = () => {
         {isEntitiesMenuOpen && (
           <>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/usuarios")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/usuarios")}>
                 <Text style={styles.textBtnMenu}>Administración de Usuarios</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/visitantes")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/visitantes")}>
                 <Text style={styles.textBtnMenu}>Administración de Visitantes</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/roles")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/roles")}>
                 <Text style={styles.textBtnMenu}>Administración de Roles</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/categorias")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/categorias")}>
                 <Text style={styles.textBtnMenu}>Administración de Categorias</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/empresas")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/empresas")}>
                 <Text style={styles.textBtnMenu}>Administracion de Empresas</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/lugares")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/lugares")}>
                 <Text style={styles.textBtnMenu}>Administracion de Lugares</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/institutos")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/institutos")}>
                 <Text style={styles.textBtnMenu}>Administración de Instituciones</Text>
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/excepciones")}>
+              <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/excepciones")}>
                 <Text style={styles.textBtnMenu}>Administracion de Excepciones</Text>
               </Pressable>
             </View>
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/reportes")}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes")}>
             <Entypo name="bar-graph" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Reportes</Text>
           </Pressable>

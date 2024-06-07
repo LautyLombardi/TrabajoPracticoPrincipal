@@ -6,8 +6,8 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Usuario } from '@/api/model/interfaces';
 import { useFocusEffect } from '@react-navigation/native';
 import UserModal from '@/components/Modal/UserModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetUsers from "@/hooks/user/useGetUsers";
-
 
 type PropsCol = {
   text?: string,
@@ -116,6 +116,7 @@ const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState
 };
 
 const AdministracionUsuarios = () => {
+  const [status, setStatusDay] = useState<boolean>(true);
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -143,25 +144,30 @@ const AdministracionUsuarios = () => {
     }
   };
 
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
 
   const usersDB = useGetUsers();
-  const [Users, setUsers] = useState<Usuario[]>([])
-  
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+
   useFocusEffect(
     useCallback(() => {
-      if (usersDB.data) {
-        setUsers(usersDB.data);
+      const {users} = usersDB
+      if (users) {
+        setUsuarios(users);
       }      
-    }, [[usersDB.data]])
+    }, [[usersDB]])
   );
 
   useEffect(() => {
-    if (usersDB.data) {
-      setUsers(usersDB.data);
-    }
-  }, [usersDB.data]);
-
-
+    const {users} = usersDB
+    if (users) {
+      setUsuarios(users);
+    }  
+  }, [usersDB]);
   
   return (
     <View style={styles.container}>
@@ -178,16 +184,16 @@ const AdministracionUsuarios = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/usuarios/registrar")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/usuarios/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
@@ -198,7 +204,7 @@ const AdministracionUsuarios = () => {
           viewState={view} 
           editState={edit} 
           deleteState={trash} 
-          usuarios={Users}
+          usuarios={usuarios}
           handleView={handleOpenUserModal}
           handleEdit={() => console.log("editar")} 
           handleDelete={() => console.log("borrar")}
@@ -236,6 +242,9 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginVertical:'2%',
     justifyContent: "center", 
+  },
+  crudItemDisabled: {
+    backgroundColor: '#a3a3a3',
   },
   // Buscador
   searchContainer: {

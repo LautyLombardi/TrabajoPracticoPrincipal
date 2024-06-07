@@ -7,6 +7,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Visitante } from '@/api/model/interfaces';
 import VisitorModal from '@/components/Modal/VisitorModal';
 import useGetVisitors from '@/hooks/visitor/useGetVisitors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
   text?: string,
@@ -114,6 +115,7 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 };
 
 const AdministracionVisitantes = () => {
+  const [status, setStatusDay] = useState<boolean>(true);
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -141,6 +143,12 @@ const AdministracionVisitantes = () => {
     }
   };
 
+  const handlerDay = async () =>{
+    const dayStatus = await AsyncStorage.getItem('dayStatus');
+    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+    setStatusDay(isDayOpen)
+  }
+
   const visitorsDB = useGetVisitors()
   const [visitantes, setVisitantes] = useState<Visitante[]>([]);
 
@@ -149,7 +157,8 @@ const AdministracionVisitantes = () => {
       const {visitors} = visitorsDB
       if (visitors) {      
         setVisitantes(visitors);
-      }      
+      }
+      handlerDay();      
     }, [[visitorsDB]])
   );
 
@@ -158,6 +167,7 @@ const AdministracionVisitantes = () => {
     if (visitors) {      
       setVisitantes(visitors);
     }
+    handlerDay();
   }, [visitorsDB]);
   
   return (
@@ -175,16 +185,16 @@ const AdministracionVisitantes = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("ver")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("delete")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => handleToggleIco("edit")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable style={styles.crudItem} onPress={() => router.navigate("/visitantes/registrar")}>
+        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/visitantes/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
@@ -233,6 +243,9 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginVertical:'2%',
     justifyContent: "center", 
+  },
+  crudItemDisabled: {
+    backgroundColor: '#a3a3a3',
   },
   // Buscador
   searchContainer: {

@@ -5,36 +5,6 @@ import { URL } from '@/api/constantes'
 const BASE_URL = `${URL}/institute`;
 import { getAdmDni } from './storage';
 
-export const getInstitutoById = async (id: number): Promise<Instituto> => {
-    try {
-        const response = await axios.get(`${BASE_URL}/${id}`);
-        return response.data;
-    } catch (error) {
-        throw new Error(`Error al obtener el instituto con id ${id}`);
-    }
-};
-
-export const createInstituto = async (instituto: string, lugaresId: number[]): Promise<any> => {
-    try {
-        const admDni = await getAdmDni();
-        const response = await axios.post(BASE_URL, {
-            "name":instituto,
-            "adm_dni":admDni
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if(response.data){
-            lugaresId.forEach(async(id)=>await createInstitutePlace(response.data.id,id))
-        }
-
-    } catch (error) {
-        throw new Error('Error al crear el instituto: ' + error);
-    }
-};
-
 export const updateInstituto = async (id: number, instituto: Instituto): Promise<Instituto> => {
     try {
         const response = await axios.put(`${BASE_URL}/${id}`, instituto, {
