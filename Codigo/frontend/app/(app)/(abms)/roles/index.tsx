@@ -1,7 +1,6 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Rol } from '@/api/model/interfaces';
@@ -113,6 +112,7 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, r
 
 const AdministracionRoles = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -141,6 +141,10 @@ const AdministracionRoles = () => {
   };
 
   const handlerDay = async () =>{
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if(permisos){
+      setPermition(JSON.parse(permisos));
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
@@ -155,7 +159,6 @@ const AdministracionRoles = () => {
       if (roles) {
         setRoles(roles);
       }
-      handlerDay();
     }, [[rolesDB]])
   );
 
@@ -164,8 +167,11 @@ const AdministracionRoles = () => {
     if (roles) {
       setRoles(roles);
     }
-    handlerDay();
   }, [rolesDB]);
+
+  useEffect(() => {
+    handlerDay();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -182,16 +188,28 @@ const AdministracionRoles = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/roles/registrar")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => router.navigate("/categorias/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
