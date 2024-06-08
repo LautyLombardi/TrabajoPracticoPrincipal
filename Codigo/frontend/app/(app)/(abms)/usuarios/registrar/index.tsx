@@ -3,36 +3,50 @@ import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert } from "reac
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
-import { Rol } from "@/api/model/interfaces";
-import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from "@expo/vector-icons";
-import { obtenerRoles } from "@/api/services/roles";
-import { createUsuario } from "@/api/services/user";
+import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
+import useGetRolesData from "@/hooks/user/useGetRolData";  // Importar el nuevo hook
+import useInsertUser from "@/hooks/user/useInsertUser";  // Asegúrate de que esta ruta sea correcta
+import { Rol } from "@/api/model/interfaces";
 
-const RegistroVisitante = () => {
+const RegistroUsuario = () => {
+  const insertUser = useInsertUser();
+  const { rolies, isLoading, isError } = useGetRolesData();  // Usar el hook para recuperar roles
+  
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
   const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); 
-  // future role
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [role, setRol] = useState<Rol[]>([]);
   const [rolesName, setRolesName] = useState<string[]>([]);
-  const [roles, setRoles] = useState<Rol[]>([]);
   const [rolSeleccionadoName, setRolSeleccionadoName] = useState<string>('');
+
+  useEffect(() => {
+    if (rolies) {
+      setRol(rolies)
+      const nombresRoles = rolies.map((rol: { name: any; }) => rol.name);
+      setRolesName(nombresRoles);
+    }
+  }, [rolies]);
 
   const handleTerminar = async () => {
     try {
-      const rol = roles.find(rol => rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase());
-
+      // Normalizar nombres de roles para comparación
+      const rol = role.find((rol: { name: string; }) =>
+        rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase()
+      );
+  
       if (rol) {
-        const response = await createUsuario(
+        const response = await insertUser(
           parseInt(dni),
           rol.id,
           nombre,
           apellido,
-          password
+          password,
+          new Date().toISOString()  // Fecha actual como fecha de activación
         );
-        if(response === 201){
+        if (response !== 0) {
           Alert.alert(
             "Usuario guardado",
             "",
@@ -44,35 +58,17 @@ const RegistroVisitante = () => {
           Alert.alert("Error al guardar usuario");
         }
       } else {
-
-        if (!rol) {
-          Alert.alert("Rol no encontrada.");
-        }
+        Alert.alert("Rol no encontrado.");
       }
     } catch (error) {
       console.error("Error en createUsuario:", error);
     }
   };
-
-
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const rolesData = await obtenerRoles();
-        setRoles(rolesData);
-        const nombresRoles = rolesData.map(role => role.name);
-        setRolesName(nombresRoles);
-      } catch (error) {
-        console.error("Error al obtener los roles:", error);
-      }
-    };
-
-    fetchRoles();
-  }, []);
+  
 
   return (
     <View style={styles.container}>
-      {<HandleGoBackReg title='Registro Usuarios' route='usuarios' />}
+      <HandleGoBackReg title='Registro Usuarios' route='usuarios' />
         
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -192,20 +188,9 @@ const styles = StyleSheet.create({
     padding: 10,
     color: 'black',
   },
-  button: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    width: '90%',
-  },
-  buttonText: {
-    color: '#000051',
-    fontSize: 16,
-  },
   icon: {
     marginRight: 5,
   },
 });
 
-export default RegistroVisitante;
+export default RegistroUsuario;
