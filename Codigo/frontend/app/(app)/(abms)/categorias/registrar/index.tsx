@@ -1,15 +1,25 @@
-import React, { useState } from "react";
-import { Text, TextInput, View, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { Text, TextInput, View, StyleSheet, Alert, Pressable } from 'react-native';
 import { router } from "expo-router";
 import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
-import { crearCategoria } from "@/api/services/categorias";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
+import useInsertCategory from "@/hooks/category/useInsertCategory";
+import { Instituto, Lugar } from "@/api/model/interfaces";
+import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
+import useGetPlaces from "@/hooks/place/useGetPlaces";
+import Checkbox from "expo-checkbox";
 
 const RegistroCategoria = () => {
+  const institutesDB = useGetInstitutes();
+  const placesDB = useGetPlaces();
+
+  const insertCategory = useInsertCategory()
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [lugares, setLugares] = useState<Lugar[]>([])
+  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
   const [isExtern,setIsExtern] = useState(0)
 
   const handleSetCategoria = (cate: string) => {
@@ -23,44 +33,66 @@ const RegistroCategoria = () => {
 
   // Comportamiento Terminar
   const handleTerminar = async () => {
-    try {
-      const response = await crearCategoria(nombre, descripcion, isExtern);
-      if(response === 201){
-        Alert.alert(
-          "Categoria guardada",
-          "",
-          [
-            { text: "OK", onPress: () => router.navigate("/categorias") }
-          ]
-        );
-      } else {
-        Alert.alert("Error al guardar categoria");
-      }
-    } catch (error) {
-      console.error('Error al registrar la categoría:', error);
+    
+    const insert = await insertCategory(nombre, descripcion, isExtern, lugaresSeleccionados);
+    if (insert === 0) {
+      // TODO: log de error
+      Alert.alert("Error al guardar categoria");
+    }else {
+      // TODO: log de registro
+      Alert.alert(
+        "Categoria guardada",
+        "",
+        [
+          { text: "OK", onPress: () => router.navigate("/categorias") }
+        ]
+      );      
     }
   };
+
+  const handleLugarSeleccionado = (id: number) => {
+    setLugaresSeleccionados((prevSeleccionados) =>
+      prevSeleccionados.includes(id)
+        ? prevSeleccionados.filter((lugarId) => lugarId !== id)
+        : [...prevSeleccionados, id]
+    );
+  };
+
+  useEffect(() => {
+    const fetchLugares = async () => {
+      const {places}=placesDB
+      if (places) {
+        setLugares(places);
+      }
+    };
+    fetchLugares();    
+  }, [placesDB])
+  
   return (
     <View style={styles.container}>
       {/** Header Menu */}
       {<HandleGoBackReg title='Registro Categoria' route='categorias' />}
 
-      <View style={{ flex: 1, marginTop: 20 }}>
-        <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
-          <View style={{ width: "23%" }}>
-            <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>Nombre</Text>
-          </View>
-          <View style={{ backgroundColor: "white",padding: 12,flex: 1,borderRadius: 5,marginRight: 10}}>
-            <TextInput placeholder='Example' placeholderTextColor={"gray"} onChangeText={setNombre} value={nombre}/>
-          </View>
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Nombre:</Text>
+          <TextInput
+            placeholder='Categoria'
+            placeholderTextColor={"gray"}
+            onChangeText={setNombre}
+            value={nombre}
+            style={styles.input}
+          />
         </View>
-        <View style={{height: 70, alignItems: "center",flexDirection: "row", gap: 10,}}>
-          <View style={{ width: "23%" }}>
-            <Text style={{ color: "white", fontSize: 15, textAlign: "center", textAlignVertical: "center" }}>Descripcion</Text>
-          </View>
-          <View style={{ backgroundColor: "white",padding: 12,flex: 1,borderRadius: 5,marginRight: 10}}>
-            <TextInput placeholder='Example' placeholderTextColor={"gray"} onChangeText={setDescripcion} value={descripcion}/>
-          </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Descripción:</Text>
+          <TextInput
+            placeholder='Descripción de la categoria'
+            placeholderTextColor={"gray"}
+            onChangeText={setDescripcion}
+            value={descripcion}
+            style={styles.input}
+          />
         </View>
         {/** Seleccionar la categoria */}
         <View
@@ -72,33 +104,104 @@ const RegistroCategoria = () => {
             gap: 10,
           }}
         >
-          <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria" values={["interno", "Externo"]} />
+          <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria:" values={["interno", "Externo"]} />
         </View>
       </View>
 
-      <View style={{ width: 300 }}>
-        <Boton
-          backgroundColor="black"
-          padding={20}
-          text="Continuar"
-          color="white"
-          textAlign="center"
-          fontSze={20}
-          borderRadius={10}
-          onPress={handleTerminar}
-        />
+      <View style={styles.campo}>
+        <Text style={[styles.campoText]}>Lugares a los que se asigna el Instituto:</Text>
+        <View style={styles.lugaresContainer}>
+          {lugares.map((lugar, index) => (
+            <View key={lugar.id} style={styles.checkboxContainer}>
+              <Checkbox
+                value={lugaresSeleccionados.includes(lugar.id)}
+                onValueChange={() => handleLugarSeleccionado(lugar.id)}
+              />
+              <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+            </View>
+          ))}
+        </View>
       </View>
-                
+
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
+  },
+  formContainer: {
+    flex: 1,
+    marginTop: 20,
+    width: '90%',
+  },
+  campo: {
+    flexDirection: 'column',
+    marginTop: 20,
+  },
+  campoText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+    marginBottom: '3%',
+    marginLeft:'1%'
+  },
+  lugaresContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginLeft:'10%'
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: '48%',
+    marginBottom: 10,
+  },
+  checkboxLabel: {
+    marginLeft: '2%',
+    color: "white",
+  },
+  inputContainer: {
+    height: 70,
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  labelText: {
+    color: "white",
+    fontSize: 15,
+    textAlign: "left",
+    width: "30%",
+    marginRight: 20, 
+  },
+  input: {
+    backgroundColor: "white",
+    padding: 10,
+    flex: 1,
+    borderRadius: 5,
+    color: 'black',
+    justifyContent: 'center',
+  },
+  button: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
+  },
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
 });
 
