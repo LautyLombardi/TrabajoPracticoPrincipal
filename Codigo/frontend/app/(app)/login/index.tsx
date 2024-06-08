@@ -9,10 +9,13 @@ import { ONLINE,URL} from "@/api/constantes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserById } from "@/api/services/user";
 import { logfacerecognitionAdmFail, logfacerecognitionUser } from "@/api/services/log";
+import useGetRol from "@/hooks/roles/useGetRol";
+import useGetUser from "@/hooks/user/useGetUserRole";
+import { Usuario } from "@/api/model/interfaces";
 
 
 const Login = () => {
-   const navigator = useRouter()
+  const navigator = useRouter()
 
     const [cameraPermission, setCameraPermission] = useCameraPermissions();
     const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
@@ -63,16 +66,20 @@ const Login = () => {
                   }
                   })
                   }) */
+                  const data = {dni:43022602}
+                  
+                  const adm_data = [
+                    {
+                      adm_dni: data.dni
+                    },
+                  ];                      
+                  await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+                  
+                  
+                  navigator.navigate('/menu');
 
-        const adm_data = [
-          {
-            adm_dni: 42433430
-          },
-        ];
-        
-        await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
-        navigator.navigate("/menu")
-      }catch(error){
+                }catch(error){
+        console.error("No se pudo sacar la foto", error)
         Alert.alert("No se pudo sacar la foto")
       }
   }

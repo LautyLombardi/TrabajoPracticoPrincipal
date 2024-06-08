@@ -1,15 +1,13 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
-import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Categoria } from '@/api/model/interfaces';
-import { obtenerCategorias } from '@/api/services/categorias';
-import { desactivarCategoria } from '@/api/services/categorias';
+import { Categoria, Rol } from '@/api/model/interfaces';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import CategoryModal from '@/components/Modal/CategoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useGetCategories from '@/hooks/category/useGetCategories';
 
 type PropsCol = {
   text?: string,
@@ -68,7 +66,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
   const handleDesactivarCategoria = async (id: number) => {
     try {
-      await desactivarCategoria(id);
+      //await desactivarCategoria(id);
       // Realizar cualquier otra acción necesaria después de desactivar la categoría
     } catch (error) {
       console.error('Error al desactivar la categoría:', error);
@@ -127,6 +125,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
 const AdministracionCategorias = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -160,23 +159,36 @@ const AdministracionCategorias = () => {
   };
 
   const handlerDay = async () =>{
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if(permisos){
+      setPermition(JSON.parse(permisos));
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
   }
 
   // Listado de categorias
+  const categoriesDB = useGetCategories()
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      obtenerCategorias().then((categories) => setCategorias(categories))
-      handlerDay();
-    }, [])
+      const { categories } = categoriesDB;
+      if (categories) {
+        setCategorias(categories);
+      }
+    }, [categoriesDB])
   );
 
   useEffect(() => {
-    obtenerCategorias().then((categories) => setCategorias(categories))
+    const { categories } = categoriesDB;
+    if (categories) {
+      setCategorias(categories);
+    }
+  }, [categoriesDB]);
+
+  useEffect(() => {
     handlerDay();
   }, []);
 
@@ -195,19 +207,31 @@ const AdministracionCategorias = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
-        <Ionicons name='eye-outline' size={20} color="black" />
-      </Pressable>
-      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
-        <FontAwesome6 name="trash" size={20} color="black" />
-      </Pressable>
-      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
-        <FontAwesome6 name="pen-clip" size={20} color="black" />
-      </Pressable>
-      <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/categorias/registrar")}>
-        <FontAwesome6 name="plus" size={20} color="black" />
-      </Pressable>
-    </View>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("ver")}>
+          <Ionicons name='eye-outline' size={20} color="black" />
+        </Pressable>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("delete")}>
+          <FontAwesome6 name="trash" size={20} color="black" />
+        </Pressable>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("edit")}>
+          <FontAwesome6 name="pen-clip" size={20} color="black" />
+        </Pressable>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => router.navigate("/categorias/registrar")}>
+          <FontAwesome6 name="plus" size={20} color="black" />
+        </Pressable>
+      </View>
 
     <ScrollView style={styles.tableContainer}>
       {/** Tabla */}

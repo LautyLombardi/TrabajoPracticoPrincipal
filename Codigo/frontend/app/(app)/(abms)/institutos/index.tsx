@@ -5,7 +5,7 @@ import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { Instituto } from '@/api/model/interfaces';
+import { Instituto, Rol } from '@/api/model/interfaces';
 import InstituteModal from '@/components/Modal/InstituteModal';
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -113,6 +113,7 @@ const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteStat
 
 const AdministracionInstitutos = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -141,6 +142,10 @@ const AdministracionInstitutos = () => {
   };
   
   const handlerDay = async () =>{
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if(permisos){
+      setPermition(JSON.parse(permisos));
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
@@ -156,7 +161,6 @@ const AdministracionInstitutos = () => {
       if (institutes) {
         setInstitutos(institutes);
       }
-      handlerDay();
     }, [[institutesDB]])
   );
 
@@ -165,8 +169,11 @@ const AdministracionInstitutos = () => {
     if (institutes) {
       setInstitutos(institutes);
     }
-    handlerDay();
   }, [institutesDB]);
+
+  useEffect(() => {
+    handlerDay();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -183,16 +190,28 @@ const AdministracionInstitutos = () => {
 
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
+        <Pressable  
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/institutos/registrar")}>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => router.navigate("/institutos/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>

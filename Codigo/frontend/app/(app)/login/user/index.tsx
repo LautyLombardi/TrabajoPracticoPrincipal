@@ -65,9 +65,7 @@ const LogueoUsuarioManual = () => {
             value={dni}
             style={styles.input}
           />
-          <TouchableOpacity onPress={() => setIsQrScannerVisible(true)}>
-            <Ionicons name="qr-code" size={30} color="white" style={{ alignSelf: "center" }} />
-          </TouchableOpacity>
+          
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.labelText}>Contraseña:</Text>
@@ -85,7 +83,11 @@ const LogueoUsuarioManual = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+
+        <TouchableOpacity onPress={() => setIsQrScannerVisible(true)} style={styles.qrButton}>
+          <Ionicons name="qr-code" size={90} color="white" style={styles.scannerQR} />
+        </TouchableOpacity>
+      </View>      
 
       <Pressable disabled={!status} style={[styles.button, !status && styles.buttonMenuDisabled]} onPress={handleTerminar}>
         <Text style={styles.buttonText}>Autenticar</Text>
@@ -162,6 +164,14 @@ const styles = StyleSheet.create({
   buttonMenuDisabled: {
     backgroundColor: '#a3a3a3',
   },
+  scannerQR: {
+    marginTop: '5%',
+    alignSelf: "center"
+  },
+  qrButton: {
+    alignItems: 'center',
+    marginTop: 20
+  }
 });
 
 export default LogueoUsuarioManual;

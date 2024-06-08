@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable } from "react-native";
 import { router } from "expo-router";
-import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { Rol } from "@/api/model/interfaces";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from "@expo/vector-icons";
-import { obtenerRoles } from "@/api/services/roles";
 import { createUsuario } from "@/api/services/user";
+import useGetRoles from "@/hooks/roles/useGetRoles";
 
 const RegistroVisitante = () => {
+  const rolesDB = useGetRoles()
+
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
@@ -17,12 +18,12 @@ const RegistroVisitante = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); 
   // future role
   const [rolesName, setRolesName] = useState<string[]>([]);
-  const [roles, setRoles] = useState<Rol[]>([]);
+  const [rolesData, setRolesData] = useState<Rol[]>([]);
   const [rolSeleccionadoName, setRolSeleccionadoName] = useState<string>('');
 
   const handleTerminar = async () => {
     try {
-      const rol = roles.find(rol => rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase());
+      const rol = rolesData.find(rol => rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase());
 
       if (rol) {
         const response = await createUsuario(
@@ -54,21 +55,15 @@ const RegistroVisitante = () => {
     }
   };
 
-
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const rolesData = await obtenerRoles();
-        setRoles(rolesData);
-        const nombresRoles = rolesData.map(role => role.name);
-        setRolesName(nombresRoles);
-      } catch (error) {
-        console.error("Error al obtener los roles:", error);
-      }
-    };
+    const { roles } = rolesDB;
 
-    fetchRoles();
-  }, []);
+    if (roles && roles !== rolesData) {
+      setRolesData(roles);
+      const nombresRoles = roles.map(role => role.name);
+      setRolesName(nombresRoles);
+    }
+  }, [rolesDB, rolesData]);
 
   return (
     <View style={styles.container}>
@@ -131,27 +126,18 @@ const RegistroVisitante = () => {
             values={rolesName}
           />
         </View>
-
-        <View style={{ width: 300 }}>
-          <Boton
-            backgroundColor="black"
-            padding={20}
-            text="Continuar"
-            color="white"
-            textAlign="center"
-            fontSze={20}
-            borderRadius={10}
-            onPress={handleTerminar}
-          />
-        </View>
       </View>
+
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
@@ -192,6 +178,9 @@ const styles = StyleSheet.create({
     padding: 10,
     color: 'black',
   },
+  icon: {
+    marginRight: 5,
+  },
   button: {
     backgroundColor: 'white',
     padding: 15,
@@ -202,9 +191,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#000051',
     fontSize: 16,
-  },
-  icon: {
-    marginRight: 5,
   },
 });
 

@@ -1,6 +1,6 @@
 export interface Usuario{  
     dni: number,
-    role_id: string,
+    role_id: number,
     name: string,
     lastname: string,
     username: string,
@@ -70,7 +70,7 @@ export interface Rol {
     name: string;
     description: string;
     createDate: string;
-    routingConnection:number;
+    routingConnection:number; // usar como systemConfigs
     onlineLogin:number;
     offlineLogin:number;
     dayStartEnd:number;
