@@ -7,11 +7,15 @@ import { Categoria, Empresa, Instituto } from "@/api/model/interfaces";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useGetVisitorRigisterData from "@/hooks/visitor/useGetVisitorRigisterData";
 import useInsertVisitor from "@/hooks/visitor/useInsertVisitor";
-
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 
 const RegistroVisitante = () => {
   const insertVisitor = useInsertVisitor()
   const visitorRigisterDataDB = useGetVisitorRigisterData()
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
+
 
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -38,10 +42,10 @@ const RegistroVisitante = () => {
       if(categoria){
         const insert = await insertVisitor(nombre, apellido, parseInt(dni), email, dateIngreso.toISOString(), categoria, empresa?.id || 0, instituto?.id || 0)
         if (insert === 0) {
-          // TODO: log de error
+          const log= await insertLogAdmFail(123,"ALTA","visitante")
           Alert.alert("Error al guardar visitante");
         } else {
-          // TODO: log de registro
+          const log= await insertLogAdm(123,"ALTA","visitante")
           Alert.alert(
             "Visitante guardado",
             "",
