@@ -50,15 +50,29 @@ export const Menu = () => {
   };
 
   const handlerDay = async () => {
-    const permisos = await AsyncStorage.getItem('adm_data');
-    if (permisos) {
+    const rolHardcodeado : Rol = {
+      id: 3,
+      name: 'RRHH',
+      description: 'recurso humanos',
+      createDate: '2024-06-02 21:48:43',
+      routingConnection: 0, // usar como systemConfigs
+      onlineLogin: 1,
+      offlineLogin: 1,
+      dayStartEnd: 1,
+      visitorAuthentication: 0,
+      visitorAuthorization: 1,
+      instituteConfiguration: 1,
+      entityABMs: 1,
+      systemReports: 0,
+      systemLog: 1,
+      exceptionLoading: 1,
+    }
+    await AsyncStorage.setItem('rol_data', JSON.stringify(rolHardcodeado));
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if(permisos){
       const parsedPermisos = JSON.parse(permisos);
-      console.log("Permisos del usuario", parsedPermisos);
-      if (parsedPermisos.length > 0) {
-        const rol = parsedPermisos[0].adm_dni;
-        console.log("Permisos del usuario", rol);
-        setPermition(rol);
-      }
+      console.log("parsedPermisos", parsedPermisos)
+      setPermition(parsedPermisos);
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     console.log("day status on menu", dayStatus);
@@ -85,23 +99,45 @@ export const Menu = () => {
         </TouchableOpacity>
         {isMenuOpen && (
           <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => router.navigate("/ruteo")}>
+            <TouchableOpacity
+              disabled={permition ? permition?.routingConnection === 0 : true}
+              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => router.navigate("/ruteo")}>
               <MaterialIcons name="router" size={24} color="black" />
               <Text style={styles.menuText}>Ruteo</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de mail')}>
+            <TouchableOpacity
+              disabled={permition ? permition?.routingConnection === 0 : true}
+              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => console.log('Cambio de mail')}>
               <Foundation name="mail" size={24} color="black" />
               <Text style={styles.menuText}>Cambio de mail</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Horatio de entrenamiento de la IA')}>
+            <TouchableOpacity
+              disabled={permition ? permition?.routingConnection === 0 : true}
+              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => console.log('Horatio de entrenamiento de la IA')}>
               <MaterialCommunityIcons name="clock" size={24} color="black" />
               <Text style={styles.menuText}>Horario de entrenamiento de la IA</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Cambio de imagen institucional')}>
+            <TouchableOpacity 
+              disabled={permition ? permition?.routingConnection === 0 : true}
+              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => console.log('Cambio de imagen institucional')}>
               <MaterialCommunityIcons name="city-variant" size={24} color="black" />
               <Text style={styles.menuText}>Cambio de imagen institucional</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => router.navigate("/logs")}>
+            <TouchableOpacity 
+              disabled={permition ? permition?.routingConnection === 0 : true}
+              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => console.log('Cambio de imagen institucional')}>
+              <MaterialCommunityIcons name="city-variant" size={24} color="black" />
+              <Text style={styles.menuText}>Horario de cierre automático</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              disabled={permition ? permition?.systemLog === 0 : true}
+              style={[styles.menuItem, (permition ? permition.systemLog === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => router.navigate("/logs")}>
               <Entypo name="code" size={24} color="black" />
               <Text style={styles.menuText}>Logs</Text>
             </TouchableOpacity>
@@ -116,7 +152,10 @@ export const Menu = () => {
       {/* Main Menu */}
       <View style={styles.mainMenu}>
         <View style={styles.mainMenuItem}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('auth')}>
+          <Pressable 
+            disabled={!status || (permition ? permition?.onlineLogin === 0 : true)} 
+            style={[styles.buttonMenu, (!status || (permition ? permition.onlineLogin === 0 : true)) && styles.buttonMenuDisabled]}
+            onPress={() =>toggleMenu('auth')}>
             <MaterialCommunityIcons name="face-recognition" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autorizar</Text>
           </Pressable>
@@ -130,7 +169,10 @@ export const Menu = () => {
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => router.navigate("/faceRecognition/visitor")}>
+              <Pressable 
+                disabled={!status || (permition ? permition?.visitorAuthentication === 0 : true)} 
+                style={[styles.buttonMenu, (!status || (permition ? permition.visitorAuthentication === 0 : true)) && styles.buttonMenuDisabled]}
+                onPress={() => router.navigate("/faceRecognition/visitor")}>
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Autorizar Visitante</Text>
               </Pressable>
@@ -138,7 +180,10 @@ export const Menu = () => {
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('login')}>
+          <Pressable 
+            disabled={!status || (permition ? permition?.offlineLogin === 0 : true)}  
+            style={[styles.buttonMenu, (!status || (permition ? permition.offlineLogin === 0 : true)) && styles.buttonMenuDisabled]} 
+            onPress={() =>toggleMenu('login')}>
             <MaterialCommunityIcons name="login" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autenticación Manual</Text>
           </Pressable>
@@ -233,7 +278,10 @@ export const Menu = () => {
         )}
         
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true}
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes")}>
             <Entypo name="bar-graph" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Reportes</Text>
           </Pressable>
@@ -242,11 +290,14 @@ export const Menu = () => {
 
       {/* Open CLose Day */}
       <View style={styles.dayButton}>
-        <Link href={"/openCloseDay"} asChild>
-          <Pressable style={styles.button}>
-            <Text style={styles.text}>Apertura y Cierre del dia</Text>
-          </Pressable>
-        </Link>
+      <Link href={"/openCloseDay"} asChild>
+        <Pressable 
+          disabled={permition ? permition?.dayStartEnd === 0 : true}
+          style={styles.button}
+        >
+          <Text style={styles.text}>Apertura y Cierre del dia</Text>
+        </Pressable>
+      </Link>
       </View>
     </SafeAreaView>
   );
@@ -274,7 +325,7 @@ const styles = StyleSheet.create({
   },
   menu: {
     position: 'absolute',
-    marginTop:8,
+    marginTop: 8,
     top: 60,
     right: 20,
     backgroundColor: '#fff',
@@ -335,18 +386,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontWeight: "bold",
   },
-  buttonMenuDisabled: {
-    backgroundColor: '#a3a3a3',
-  },
   // Open Close Day
   dayButton: {
     position: "absolute",
     bottom: 0,
     width: "100%",
+    height: 70,
     justifyContent: "center",
     alignItems: "center",
-    borderTopWidth: 2,
-    borderColor: "#000",
+    borderTopWidth: 1,
+    borderColor: '#E8E8E8',
   },
   button: {
     backgroundColor: "#f1f1f1",
@@ -358,6 +407,9 @@ const styles = StyleSheet.create({
     color: "#000",
     textAlign: "center",
     fontSize: 25,
+  },
+  buttonMenuDisabled: {
+    backgroundColor: '#a3a3a3',
   },
 });
 

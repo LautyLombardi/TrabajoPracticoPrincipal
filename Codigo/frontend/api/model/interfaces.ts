@@ -70,7 +70,7 @@ export interface Rol {
     name: string;
     description: string;
     createDate: string;
-    routingConnection:number;
+    routingConnection:number; // usar como systemConfigs
     onlineLogin:number;
     offlineLogin:number;
     dayStartEnd:number;

@@ -159,6 +159,7 @@ const AdministracionUsuarios = () => {
       if (users) {
         setUsuarios(users);
       }      
+      handlerDay();
     }, [[usersDB]])
   );
 
@@ -167,6 +168,7 @@ const AdministracionUsuarios = () => {
     if (users) {
       setUsuarios(users);
     }  
+    handlerDay();
   }, [usersDB]);
   
   return (

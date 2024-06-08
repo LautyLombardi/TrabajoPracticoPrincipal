@@ -108,11 +108,7 @@ const AdministracionExcepciones = () => {
   const handlerDay = async () =>{
     const permisos = await AsyncStorage.getItem('rol_data');
     if(permisos){
-      const parsedPermisos = JSON.parse(permisos);
-      if (parsedPermisos.length > 0) {
-        const rol = parsedPermisos[0].rol;
-        setPermition(rol);
-      }
+      setPermition(JSON.parse(permisos));
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
@@ -127,7 +123,6 @@ const AdministracionExcepciones = () => {
       if (exceptions) {
         setExcepciones(exceptions);
       }
-      handlerDay();
     }, [exceptionsDB])
   );
 
@@ -136,8 +131,11 @@ const AdministracionExcepciones = () => {
     if (exceptions) {
       setExcepciones(exceptions);
     }
-    handlerDay();
   }, [exceptionsDB]);
+
+  useEffect(() => {
+    handlerDay();
+  }, []);
   
   return (
     <View style={styles.container}>
@@ -155,7 +153,7 @@ const AdministracionExcepciones = () => {
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
         <Pressable 
-          disabled={!status || permition ? permition?.exceptionLoading === 0 : true} 
+          disabled={!status || (permition ? permition?.exceptionLoading === 0 : true)} 
           style={[styles.crudItem, (!status || (permition ? permition.exceptionLoading === 0 : true)) && styles.crudItemDisabled]} 
           onPress={() => router.navigate("/excepciones/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
