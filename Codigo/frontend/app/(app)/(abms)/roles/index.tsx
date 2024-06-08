@@ -9,6 +9,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import RoleModal from '@/components/Modal/RoleModal';
 import useGetRoles from '@/hooks/roles/useGetRoles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useInsertLoginLog from '@/hooks/logs/useInsertLoginLog';
 
 type PropsCol = {
   text?: string,
@@ -144,6 +145,7 @@ const AdministracionRoles = () => {
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
+
   }
 
   const rolesDB= useGetRoles();
