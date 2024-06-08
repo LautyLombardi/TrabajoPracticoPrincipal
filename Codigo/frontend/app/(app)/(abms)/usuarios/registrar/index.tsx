@@ -5,13 +5,21 @@ import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import useGetRolesData from "@/hooks/user/useGetRolData";  // Importar el nuevo hook
-import useInsertUser from "@/hooks/user/useInsertUser";  // Asegúrate de que esta ruta sea correcta
+import useGetRolesData from "@/hooks/user/useGetRolData";  
+import useInsertUser from "@/hooks/user/useInsertUser"; 
 import { Rol } from "@/api/model/interfaces";
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
+
+
 
 const RegistroUsuario = () => {
   const insertUser = useInsertUser();
-  const { rolies, isLoading, isError } = useGetRolesData();  // Usar el hook para recuperar roles
+  const { rolies, isLoading, isError } = useGetRolesData(); 
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
+
+
   
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -47,6 +55,8 @@ const RegistroUsuario = () => {
           new Date().toISOString()  // Fecha actual como fecha de activación
         );
         if (response !== 0) {
+          const log= await insertLogAdm(123,"ALTA","usuario")
+
           Alert.alert(
             "Usuario guardado",
             "",
@@ -55,6 +65,8 @@ const RegistroUsuario = () => {
             ]
           );
         } else {
+          const log= await insertLogAdmFail(123,"ALTA","usuario")
+          
           Alert.alert("Error al guardar usuario");
         }
       } else {

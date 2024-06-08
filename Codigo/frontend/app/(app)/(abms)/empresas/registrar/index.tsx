@@ -3,18 +3,23 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-nativ
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import { router } from 'expo-router';
 import { createEmpresa } from '@/api/services/empresa';
-
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 
 const RegistrarEmpresa = () => {
   const [nombre, setNombre] = useState<string>("");
   const [cuit, setCuit] = useState<string>("");
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
+
 
   const handleTerminar = async () => {
     const cuitNumber = parseInt(cuit, 10); 
     if (!isNaN(cuitNumber)) {
       const response = await createEmpresa(nombre, cuitNumber);
       if(response === 201){
+        const log= await insertLogAdm(123,"ALTA","empresa") 
         Alert.alert(
           "Empresa guardada",
           "",
@@ -23,6 +28,8 @@ const RegistrarEmpresa = () => {
           ]
         );
       } else {
+        const log= await insertLogAdmFail(123,"ALTA","empresa") 
+
         Alert.alert("Error al guardar empresa");
       }
     } else {
