@@ -191,27 +191,27 @@ const AdministracionInstitutos = () => {
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
         <Pressable 
-          disabled={!status || (permition ? permition?.instituteConfiguration === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.instituteConfiguration === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => handleToggleIco("ver")}>
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
         <Pressable 
-          disabled={!status || (permition ? permition?.instituteConfiguration === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.instituteConfiguration === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => handleToggleIco("delete")}>
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable 
-          disabled={!status || (permition ? permition?.instituteConfiguration === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.instituteConfiguration === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => handleToggleIco("edit")}>
+        <Pressable  
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
         <Pressable 
-          disabled={!status || (permition ? permition?.instituteConfiguration === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.instituteConfiguration === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => router.navigate("/institutos/registrar")}>
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => router.navigate("/institutos/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>

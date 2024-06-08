@@ -207,31 +207,31 @@ const AdministracionCategorias = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => handleToggleIco("ver")}>
-        <Ionicons name='eye-outline' size={20} color="black" />
-      </Pressable>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => handleToggleIco("delete")}>
-        <FontAwesome6 name="trash" size={20} color="black" />
-      </Pressable>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => handleToggleIco("edit")}>
-        <FontAwesome6 name="pen-clip" size={20} color="black" />
-      </Pressable>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-          onPress={() => router.navigate("/categorias/registrar")}>
-        <FontAwesome6 name="plus" size={20} color="black" />
-      </Pressable>
-    </View>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("ver")}>
+          <Ionicons name='eye-outline' size={20} color="black" />
+        </Pressable>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("delete")}>
+          <FontAwesome6 name="trash" size={20} color="black" />
+        </Pressable>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => handleToggleIco("edit")}>
+          <FontAwesome6 name="pen-clip" size={20} color="black" />
+        </Pressable>
+        <Pressable 
+            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
+            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
+            onPress={() => router.navigate("/categorias/registrar")}>
+          <FontAwesome6 name="plus" size={20} color="black" />
+        </Pressable>
+      </View>
 
     <ScrollView style={styles.tableContainer}>
       {/** Tabla */}
