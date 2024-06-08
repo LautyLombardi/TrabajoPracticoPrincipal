@@ -5,9 +5,7 @@ import { Link, router } from 'expo-router';
 // Icons
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Entypo from '@expo/vector-icons/Entypo';
-import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Foundation } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { logLoyout} from "@/api/services/log";
@@ -55,7 +53,7 @@ export const Menu = () => {
       name: 'RRHH',
       description: 'recurso humanos',
       createDate: '2024-06-02 21:48:43',
-      routingConnection: 0, // usar como systemConfigs
+      routingConnection: 1, // usar como systemConfigs
       onlineLogin: 1,
       offlineLogin: 1,
       dayStartEnd: 1,
@@ -111,28 +109,28 @@ export const Menu = () => {
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
               onPress={() => console.log('Cambio de mail')}>
               <Foundation name="mail" size={24} color="black" />
-              <Text style={styles.menuText}>Cambio de mail</Text>
+              <Text style={styles.menuText}>Cambio de Email</Text>
             </TouchableOpacity>
             <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
               onPress={() => console.log('Horatio de entrenamiento de la IA')}>
               <MaterialCommunityIcons name="clock" size={24} color="black" />
-              <Text style={styles.menuText}>Horario de entrenamiento de la IA</Text>
+              <Text style={styles.menuText}>Horario de Entrenamiento de la IA</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              disabled={permition ? permition?.routingConnection === 0 : true}
+              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
+              onPress={() => router.navigate("/institutionalImage")}>
+              <Entypo name="images" size={24} color="black" />
+              <Text style={styles.menuText}>Cambio de Imagen Institucional</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
               onPress={() => console.log('Cambio de imagen institucional')}>
               <MaterialCommunityIcons name="city-variant" size={24} color="black" />
-              <Text style={styles.menuText}>Cambio de imagen institucional</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              disabled={permition ? permition?.routingConnection === 0 : true}
-              style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Cambio de imagen institucional')}>
-              <MaterialCommunityIcons name="city-variant" size={24} color="black" />
-              <Text style={styles.menuText}>Horario de cierre automático</Text>
+              <Text style={styles.menuText}>Horario de Cierre Automático</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               disabled={permition ? permition?.systemLog === 0 : true}
