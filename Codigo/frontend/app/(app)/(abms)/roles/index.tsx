@@ -209,7 +209,7 @@ const AdministracionRoles = () => {
         <Pressable 
             disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
             style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => router.navigate("/categorias/registrar")}>
+            onPress={() => router.navigate("/roles/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
