@@ -6,10 +6,9 @@ import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Empresa } from '@/api/model/interfaces';
-import { getEmpresas } from '@/api/services/empresa';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import useGetEnterprice from '@/hooks/enterprice/useGetEnterprice';
 
 type PropsCol = {
   text?: string,
@@ -149,17 +148,24 @@ const AdministracionEmpresas = () => {
     setStatusDay(isDayOpen)
   }
 
+  const enterpricesDB = useGetEnterprice();
   const [empresas, setEmpresas] = useState<Empresa[]>([])
   
   useFocusEffect(
     useCallback(() => {
-      getEmpresas().then((enterprices) => setEmpresas(enterprices))
+      const {enterprices}=enterpricesDB
+      if (enterprices) {
+        setEmpresas(enterprices);
+      }
       handlerDay();
     }, [])
   );
 
   useEffect(() => {
-    getEmpresas().then((enterprices) => setEmpresas(enterprices))
+    const {enterprices}=enterpricesDB
+      if (enterprices) {
+        setEmpresas(enterprices);
+      }
     handlerDay();
   }, [])
 

@@ -11,9 +11,12 @@ import { Foundation } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { logLoyout} from "@/api/services/log";
+import { Rol } from '@/api/model/interfaces';
+import useGetUserRole from '@/hooks/user/useGetUserRole';
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isAuthMenuOpen, setAuthMenuOpen] = useState<boolean>(false);
   const [isLoginMenuOpen, setLoginMenuOpen] = useState<boolean>(false);
@@ -46,12 +49,22 @@ export const Menu = () => {
     setEntitiesMenuOpen(menu === 'entities' ? !isEntitiesMenuOpen : false)
   };
 
-  const handlerDay = async () =>{
+  const handlerDay = async () => {
+    const permisos = await AsyncStorage.getItem('adm_data');
+    if (permisos) {
+      const parsedPermisos = JSON.parse(permisos);
+      console.log("Permisos del usuario", parsedPermisos);
+      if (parsedPermisos.length > 0) {
+        const rol = parsedPermisos[0].adm_dni;
+        console.log("Permisos del usuario", rol);
+        setPermition(rol);
+      }
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
-    console.log("day status on menu", dayStatus)
+    console.log("day status on menu", dayStatus);
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
-    setStatusDay(isDayOpen)
-  }
+    setStatusDay(isDayOpen);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -72,7 +85,7 @@ export const Menu = () => {
         </TouchableOpacity>
         {isMenuOpen && (
           <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => console.log('Ruteo')}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => router.navigate("/ruteo")}>
               <MaterialIcons name="router" size={24} color="black" />
               <Text style={styles.menuText}>Ruteo</Text>
             </TouchableOpacity>
@@ -218,6 +231,7 @@ export const Menu = () => {
             </View>
           </>
         )}
+        
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes")}>
             <Entypo name="bar-graph" size={24} color="black" />

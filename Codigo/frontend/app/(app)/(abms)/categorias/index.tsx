@@ -5,11 +5,11 @@ import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Categoria } from '@/api/model/interfaces';
-import { obtenerCategorias } from '@/api/services/categorias';
 import { desactivarCategoria } from '@/api/services/categorias';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import CategoryModal from '@/components/Modal/CategoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useGetCategories from '@/hooks/category/useGetCategories';
 
 type PropsCol = {
   text?: string,
@@ -166,17 +166,24 @@ const AdministracionCategorias = () => {
   }
 
   // Listado de categorias
+  const categoriesDB = useGetCategories()
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      obtenerCategorias().then((categories) => setCategorias(categories))
+      const { categories } = categoriesDB;
+      if (categories) {
+        setCategorias(categories);
+      }
       handlerDay();
     }, [])
   );
 
   useEffect(() => {
-    obtenerCategorias().then((categories) => setCategorias(categories))
+    const { categories } = categoriesDB;
+    if (categories) {
+      setCategorias(categories);
+    }
     handlerDay();
   }, []);
 

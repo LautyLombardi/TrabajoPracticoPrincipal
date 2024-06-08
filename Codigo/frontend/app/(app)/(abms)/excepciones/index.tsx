@@ -4,11 +4,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Excepcion } from '@/api/model/interfaces';
+import { Excepcion, Rol } from '@/api/model/interfaces';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import ExceptionModal from '@/components/Modal/ExceptionModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetExceptions from '@/hooks/exception/useGetExceptions';
+import { getAdmDni } from '@/api/services/storage';
+import useGetUser from '@/hooks/user/useGetUserRole';
+import useGetRol from '@/hooks/roles/useGetRol';
 
 type PropsCol = {
   text?: string,
@@ -88,6 +91,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
 
 const AdministracionExcepciones = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [showException, setShowException] = useState(false);
   const [selectedException, setSelectedException] = useState<Excepcion | null>(null);
 
@@ -102,11 +106,18 @@ const AdministracionExcepciones = () => {
   };
 
   const handlerDay = async () =>{
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if(permisos){
+      const parsedPermisos = JSON.parse(permisos);
+      if (parsedPermisos.length > 0) {
+        const rol = parsedPermisos[0].rol;
+        setPermition(rol);
+      }
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
   }
-
   const exceptionsDB = useGetExceptions();
   const [excepciones, setExcepciones] = useState<Excepcion[]>([]);
 
@@ -116,6 +127,7 @@ const AdministracionExcepciones = () => {
       if (exceptions) {
         setExcepciones(exceptions);
       }
+      handlerDay();
     }, [exceptionsDB])
   );
 
@@ -124,6 +136,7 @@ const AdministracionExcepciones = () => {
     if (exceptions) {
       setExcepciones(exceptions);
     }
+    handlerDay();
   }, [exceptionsDB]);
   
   return (
@@ -138,10 +151,13 @@ const AdministracionExcepciones = () => {
           <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
         </Pressable>
       </View>
-
-        {/** Botones CRUD */}
+      
+      {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/excepciones/registrar")}>
+        <Pressable 
+          disabled={!status || permition ? permition?.exceptionLoading === 0 : true} 
+          style={[styles.crudItem, (!status || (permition ? permition.exceptionLoading === 0 : true)) && styles.crudItemDisabled]} 
+          onPress={() => router.navigate("/excepciones/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
