@@ -1,34 +1,37 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { router } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { loginVisitor } from "@/api/services/visitantes";
-import { Ionicons } from '@expo/vector-icons';
 import { logLoginManual,logLoginManuaFail } from "@/api/services/log";
+import useLogin from "@/hooks/visitor/useLogin";
 
 const LogueoVisitanteManual = () => {
   const [dni, setDni] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [email, setEmail] = useState("");
+
+  const { visitor, isLoading, isError } = useLogin(Number(dni), nombre, apellido, email);
 
   const handleTerminar = async () => {
-    const response = await loginVisitor(dni, password);
-    if (response === 200) {
-      Alert.alert(
-        "Visitante autenticado",
-        "",
-        [
-          { text: "OK", onPress: () => router.navigate("/menu") }
-        ]
-      );
-
-      await logLoginManual(dni,"visitante")
+    console.log('autenticando.....')
+    if (dni && nombre && apellido && email) {
+      if (visitor === 1) {
+        Alert.alert(
+          "Visitante autenticado",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/menu") }
+          ]
+        );
+      } else {
+        Alert.alert("Visitante no autenticado",
+          "DNI, nombre, apellido o email incorrectos"
+        );
+      }
     } else {
-      Alert.alert("Autenticación no autenticado",
-        "DNI o contraseña incorrectos"
-      );
-      await logLoginManuaFail(dni,"visitante")
-    }
+      Alert.alert("Error al cargar datos");
+    } 
   };
 
   return (
@@ -49,20 +52,35 @@ const LogueoVisitanteManual = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Contraseña:</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              placeholder='Password'
-              placeholderTextColor={"gray"}
-              onChangeText={setPassword}
-              value={password}
-              secureTextEntry={!isPasswordVisible}
-              style={styles.inputPassword}
-            />
-            <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-              <Ionicons name={isPasswordVisible ? 'eye-off' : 'eye'} size={22} style={styles.icon} color="gray" />
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.labelText}>Nombre:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Jose'
+            placeholderTextColor="gray"
+            onChangeText={setNombre}
+            value={nombre}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Apellido:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Perez'
+            placeholderTextColor="gray"
+            onChangeText={setApellido}
+            value={apellido}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='example@example.com'
+            placeholderTextColor="gray"
+            onChangeText={setEmail}
+            value={email}
+            keyboardType="email-address"
+          />
         </View>
       </View>
 

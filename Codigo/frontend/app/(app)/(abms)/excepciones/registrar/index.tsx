@@ -1,25 +1,67 @@
+import React from 'react';
 import { View, Text, StyleSheet, Pressable, Alert, TextInput, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import Checkbox from 'expo-checkbox';
 import { Categoria, Lugar } from '@/api/model/interfaces';
-import { getLugares } from '@/api/services/place';
-import { obtenerCategorias } from '@/api/services/categorias';
 import SelectItem from '@/components/seleccionar/SelectItem';
-import { createExcepcion } from '@/api/services/excepciones';
+import useGetCategories from '@/hooks/category/useGetCategories';
+import useGetPlaces from '@/hooks/place/useGetPlaces';
+import useInsertException from '@/hooks/exception/useInsertException';
 
 const Excepciones = () => {
+  const placesDB =useGetPlaces();
+  const categoriesDB = useGetCategories()
+  const insertException = useInsertException()
+
   const [nombre, setNombre] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
-  // Place
+  
   const [lugares, setLugares] = useState<Lugar[]>([]);
   const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
-  // Category
   const [categoriasName, setCategoriasName] = useState<string[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [categoriaSeleccionadaName, setCategoriaSeleccionadaName] = useState<string>('');
+
+  const handleTerminar = async () => {    
+    const category = categorias.find(categoria => {
+      return categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase();
+    });
+
+    if (!isValidTime(duration)) {
+      Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
+      return;
+    }
+
+    if (category) {
+      const insert = await insertException(nombre, descripcion, duration, lugaresSeleccionados, category.id);
+      if(insert === 0){
+        // TODO: log
+        Alert.alert("Error al guardar excepción");
+      } else {
+        // TODO: log
+        Alert.alert(
+          "Excepción guardada",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/excepciones") }
+          ]
+        );
+      }
+      
+    } else {
+      // TODO: log
+      Alert.alert("Categoría no encontrada o no seleccionada");
+      console.error('Categoría no encontrada o no seleccionada');
+    }
+  };
+
+  const isValidTime = (time: any) => {
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    return regex.test(time);
+  };
 
   const handleLugarSeleccionado = (id: number) => {
     setLugaresSeleccionados((prevSeleccionados) =>
@@ -29,64 +71,22 @@ const Excepciones = () => {
     );
   };
 
-  const handleTerminar = async () => {    
-    const category = categorias.find(categoria => {
-      console.log(`Comparando: ${categoria.name} con ${categoriaSeleccionadaName}`);
-      return categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase();
-    });
-
-    if (!isValidTime(duration)) {
-      Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
-      return;
+  useEffect(() => {
+    const { categories } = categoriesDB;
+    if (categories && categories.length > 0 && categorias.length === 0) {
+      setCategorias(categories);
+      const nombresCategorias = categories.map(categoria => categoria.name);
+      setCategoriasName(nombresCategorias);
     }
-    if (category) {
-      await Promise.all(
-        lugaresSeleccionados.map(async (lugar) => {
-          await createExcepcion(category.id, lugar, nombre, descripcion, duration);
-        })
-      );
-      Alert.alert(
-        "Excepción guardada",
-        "",
-        [
-          { text: "OK", onPress: () => router.navigate("/excepciones") }
-        ]
-      );
-    } else {
-      console.error('Categoría no encontrada');
-    }
-  };
-
-  const isValidTime = (time: any) => {
-    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    return regex.test(time);
-  };
+  }, [categoriesDB.categories]);
 
   useEffect(() => {
-    const fetchLugares = async () => {
-      try {
-        const lugaresData = await getLugares();
-        setLugares(lugaresData);
-      } catch (error) {
-        console.error("Error al obtener los lugares:", error);
-      }
-    };
-
-    const fetchCategorias = async () => {
-      try {
-        const categoriasData = await obtenerCategorias();
-        setCategorias(categoriasData);
-        const nombresCategorias = categoriasData.map(categoria => categoria.name);
-        setCategoriasName(nombresCategorias);
-      } catch (error) {
-        console.error("Error al obtener las categorías:", error);
-      }
-    };
-
-    fetchLugares();
-    fetchCategorias();
-  }, []);
-
+    const { places } = placesDB;
+    if (places && places.length > 0 && lugares.length === 0) {
+      setLugares(places);
+    }
+  }, [placesDB.places]);
+  
   return (
     <View style={styles.container}>
       {/** Header Menu */}
