@@ -1,49 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity, Modal } from 'react-native';
-import { loginUser } from "@/api/services/user";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from '@expo/vector-icons';
-import LectorQr from "@/components/QRCodeScan"; // Asegúrate de que la ruta es correcta
+import LectorQr from "@/components/QRCodeScan";
 import { router } from "expo-router";
-import { logLoginManual,logLoginManuaFail } from "@/api/services/log";
+import useLogin from "@/hooks/user/useLogin";
 
 const LogueoUsuarioManual = () => {
-  const [dni, setDni] = useState<string>("");
+  const [dni, setDni] = useState<string>('');
   const [password, setPassword] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isQrScannerVisible, setIsQrScannerVisible] = useState<boolean>(false);
   const [status, setStatusBoton] = useState<boolean>(false);
 
+  const { user, isLoading, isError } = useLogin(Number(dni), password);
 
-  const handleTerminar = async () => {
-    const response = await loginUser(dni, password);
-    if (response === 200) {
-      Alert.alert(
-        "Usuario autenticado",
-        "",
-        [
-          { text: "OK", onPress: () => router.navigate('/menu') }
-        ]
-      );
-      const responseManual =await logLoginManual(dni,"usuario")
-
-      if(responseManual!=200){
-        console.log(responseManual)
+  const handleTerminar = () => {
+    console.log('autenticando.....')
+    if(dni && password){
+      if (user === 1) {
+        // TODO: log await logLoginManual(dni.toString(),"usuario")
+        Alert.alert(
+          "Usuario autenticado",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate('/menu') }
+          ]
+        );
+      } else if (user === 0) {
+        Alert.alert("Usuario no autenticado",
+          "DNI o contraseña incorrectos"
+        );
+      } else if (user === 2) {
+        Alert.alert("Usuario no autenticado",
+          "Usuario no encontrado"
+        );
       }
-
     } else {
-      Alert.alert("Usuario no autenticado",
-        "DNI o contraseña incorrectos"
+      Alert.alert("Error al cargar datos"
       );
-      await logLoginManuaFail(dni,"usuario")
     }
   };
 
   const handleQRCodeScanned = (data: string) => {
-    //setDni(data); // Usa los datos del QR para llenar el DNI
-    if (dni==data){
+    if (dni == data) {
       setStatusBoton(true);
-    }else{
+    } else {
       setStatusBoton(false);
     }
     setIsQrScannerVisible(false); // Oculta el escáner QR
@@ -51,8 +53,7 @@ const LogueoUsuarioManual = () => {
 
   return (
     <View style={styles.container}>
-      {/** Header Menu */}
-      {<HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />}
+      <HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -65,7 +66,6 @@ const LogueoUsuarioManual = () => {
             value={dni}
             style={styles.input}
           />
-          
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.labelText}>Contraseña:</Text>
@@ -87,9 +87,10 @@ const LogueoUsuarioManual = () => {
         <TouchableOpacity onPress={() => setIsQrScannerVisible(true)} style={styles.qrButton}>
           <Ionicons name="qr-code" size={90} color="white" style={styles.scannerQR} />
         </TouchableOpacity>
-      </View>      
+      </View>
 
-      <Pressable disabled={!status} style={[styles.button, !status && styles.buttonMenuDisabled]} onPress={handleTerminar}>
+      {/* <Pressable disabled={!status || isLoading} style={[styles.button, (!status || isLoading) && styles.buttonMenuDisabled]} onPress={handleTerminar}> */}
+      <Pressable disabled={isLoading} style={[styles.button, (isLoading) && styles.buttonMenuDisabled]} onPress={handleTerminar}>
         <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
 
@@ -100,6 +101,8 @@ const LogueoUsuarioManual = () => {
       >
         <LectorQr onQRCodeScanned={handleQRCodeScanned} />
       </Modal>
+
+      {isError && <Text style={{ color: 'red' }}>Error al autenticar</Text>}
     </View>
   );
 };
