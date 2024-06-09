@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Lugar } from '@/api/model/interfaces';
+import { Lugar, Rol } from '@/api/model/interfaces';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -129,6 +129,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
 const AdministracionLugares = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -162,6 +163,10 @@ const AdministracionLugares = () => {
   };
 
   const handlerDay = async () =>{
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if(permisos){
+      setPermition(JSON.parse(permisos));
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
@@ -177,7 +182,6 @@ const AdministracionLugares = () => {
       if (places) {
         setLugares(places);
       }
-      handlerDay();
     }, [[placesDB]])
   );
 
@@ -186,8 +190,11 @@ const AdministracionLugares = () => {
     if (places) {
       setLugares(places);
     }
-    handlerDay();
   }, [placesDB]);
+
+  useEffect(() => {
+    handlerDay();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -204,18 +211,30 @@ const AdministracionLugares = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
-          <Ionicons name='eye-outline' size={20} color="black" />
-        </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
-          <FontAwesome6 name="trash" size={20} color="black" />
-        </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
-          <FontAwesome6 name="pen-clip" size={20} color="black" />
-        </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/lugares/registrar")}>
-          <FontAwesome6 name="plus" size={20} color="black" />
-        </Pressable>
+      <Pressable 
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          onPress={() => handleToggleIco("ver")}>
+        <Ionicons name='eye-outline' size={20} color="black" />
+      </Pressable>
+      <Pressable 
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          onPress={() => handleToggleIco("delete")}>
+        <FontAwesome6 name="trash" size={20} color="black" />
+      </Pressable>
+      <Pressable 
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          onPress={() => handleToggleIco("edit")}>
+        <FontAwesome6 name="pen-clip" size={20} color="black" />
+      </Pressable>
+      <Pressable 
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          onPress={() => router.navigate("/lugares/registrar")}>
+        <FontAwesome6 name="plus" size={20} color="black" />
+      </Pressable>
       </View>
 
       {/** Tabla */}

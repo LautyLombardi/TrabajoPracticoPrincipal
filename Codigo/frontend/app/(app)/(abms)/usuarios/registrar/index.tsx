@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable } from "react-native";
 import { router } from "expo-router";
-import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
@@ -28,6 +27,7 @@ const RegistroUsuario = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [role, setRol] = useState<Rol[]>([]);
   const [rolesName, setRolesName] = useState<string[]>([]);
+  const [rolesData, setRolesData] = useState<Rol[]>([]);
   const [rolSeleccionadoName, setRolSeleccionadoName] = useState<string>('');
 
   useEffect(() => {
@@ -76,7 +76,16 @@ const RegistroUsuario = () => {
       console.error("Error en createUsuario:", error);
     }
   };
-  
+
+  useEffect(() => {
+    const { roles } = rolesDB;
+
+    if (roles && roles !== rolesData) {
+      setRolesData(roles);
+      const nombresRoles = roles.map(role => role.name);
+      setRolesName(nombresRoles);
+    }
+  }, [rolesDB, rolesData]);
 
   return (
     <View style={styles.container}>
@@ -139,27 +148,18 @@ const RegistroUsuario = () => {
             values={rolesName}
           />
         </View>
-
-        <View style={{ width: 300 }}>
-          <Boton
-            backgroundColor="black"
-            padding={20}
-            text="Continuar"
-            color="white"
-            textAlign="center"
-            fontSze={20}
-            borderRadius={10}
-            onPress={handleTerminar}
-          />
-        </View>
       </View>
+
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#000051",
+    backgroundColor: "#00759c",
     flex: 1,
     paddingVertical: 30,
     alignItems: "center",
@@ -202,6 +202,17 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 5,
+  },
+  button: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
+  },
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
 });
 
