@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, Pressable } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { router } from "expo-router";
 import { Lugar } from "@/api/model/interfaces";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import Checkbox from "expo-checkbox";
 import useGetPlaces from "@/hooks/place/useGetPlaces";
 import useInsertInstitute from "@/hooks/institute/useInsertInstitute";
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistroInstituto = () => {
   const placesDB =useGetPlaces();
   const insertInstitute = useInsertInstitute();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const [nombre, setNombre] = useState<string>("");
   const [lugares, setLugares] = useState<Lugar[]>([])
@@ -18,8 +22,21 @@ const RegistroInstituto = () => {
   const handleTerminar = async () => {
     if (lugaresSeleccionados.length > 0) {
       console.log('lugaresSeleccionados', lugaresSeleccionados);
-      await insertInstitute(nombre, lugaresSeleccionados);
-      router.navigate("/institutos");
+      const response =await insertInstitute(nombre, lugaresSeleccionados);
+      if(response === 0){
+        await insertLogAdmFail("ALTA","instituto") 
+        Alert.alert("Error al guardar instituto");
+      } else {
+        await insertLogAdm("ALTA","instituto") 
+
+        Alert.alert(
+          "instituto guardado",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/institutos") }
+          ]
+        );
+      }
     } else {
       console.error("Debe seleccionar al menos un lugar");
     }

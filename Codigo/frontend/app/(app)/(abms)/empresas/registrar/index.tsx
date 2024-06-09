@@ -2,19 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import { router } from 'expo-router';
-import { createEmpresa } from '@/api/services/empresa';
-
-
+import useInsertEnterprice from '@/hooks/enterprice/useInsertEnterprice';
 
 const RegistrarEmpresa = () => {
+  const insertEnterprice = useInsertEnterprice()
+
   const [nombre, setNombre] = useState<string>("");
   const [cuit, setCuit] = useState<string>("");
 
   const handleTerminar = async () => {
+    if (!nombre || !cuit) {
+      Alert.alert("Campos incompletos", "Todos los campos son obligatorios.");
+      return;
+    }
+
     const cuitNumber = parseInt(cuit, 10); 
     if (!isNaN(cuitNumber)) {
-      const response = await createEmpresa(nombre, cuitNumber);
-      if(response === 201){
+      const response = await insertEnterprice(nombre, cuitNumber);
+      if(response === 0){
+        Alert.alert("Error al guardar empresa");
+      } else {
         Alert.alert(
           "Empresa guardada",
           "",
@@ -22,8 +29,6 @@ const RegistrarEmpresa = () => {
             { text: "OK", onPress: () => router.navigate("/empresas") }
           ]
         );
-      } else {
-        Alert.alert("Error al guardar empresa");
       }
     } else {
       Alert.alert("CUIT no válido");

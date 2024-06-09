@@ -15,6 +15,8 @@ const CategoryModal: React.FC<ModalProps> = ({ categoria, handleCloseModal }) =>
         { label: 'Nombre', value: categoria.name },
         { label: 'Descripción', value: categoria.description },
         { label: 'Externo', value: categoria.isExtern === 1 ? 'SI' : 'NO' },
+        { label: 'Lugares', value: categoria.places?.join(', ') || '' },
+        { label: 'Institutos', value: categoria.institutes?.join(', ') || '' },
         { label: 'Fecha de Creación', value: categoria.createDate },
         ];
 

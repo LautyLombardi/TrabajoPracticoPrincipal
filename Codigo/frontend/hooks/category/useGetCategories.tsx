@@ -20,7 +20,7 @@ const useGetCategories = () => {
             `SELECT place_id FROM category_place WHERE category_id = ?`,
             [categoryId]
         ) as { place_id: number }[];
-        
+
         const placeIds = placeCategory.map(place => place.place_id);
         
         const placeNames = await db.getAllAsync<{ name: string }>(
@@ -31,7 +31,7 @@ const useGetCategories = () => {
 
         if(category.isExtern === 0){
             const categoryInstitute = await db.getAllAsync<{ institute_id: number }>(
-                `SELECT institute_id FROM institute_place WHERE category_id = ?`,
+                `SELECT institute_id FROM category_institute WHERE category_id = ?`,
                 [categoryId]
             ) as { institute_id: number }[];
             
