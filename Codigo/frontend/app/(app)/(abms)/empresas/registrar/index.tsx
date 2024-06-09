@@ -19,7 +19,7 @@ const RegistrarEmpresa = () => {
     if (!isNaN(cuitNumber)) {
       const response = await createEmpresa(nombre, cuitNumber);
       if(response === 201){
-        const log= await insertLogAdm(123,"ALTA","empresa") 
+        const log= await insertLogAdm("ALTA","empresa") 
         Alert.alert(
           "Empresa guardada",
           "",
@@ -28,7 +28,7 @@ const RegistrarEmpresa = () => {
           ]
         );
       } else {
-        const log= await insertLogAdmFail(123,"ALTA","empresa") 
+        const log= await insertLogAdmFail("ALTA","empresa") 
 
         Alert.alert("Error al guardar empresa");
       }

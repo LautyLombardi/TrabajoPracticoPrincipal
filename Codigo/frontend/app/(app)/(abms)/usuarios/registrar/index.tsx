@@ -4,22 +4,17 @@ import { router } from "expo-router";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import useGetRolesData from "@/hooks/user/useGetRolData";  
 import useInsertUser from "@/hooks/user/useInsertUser"; 
 import { Rol } from "@/api/model/interfaces";
 import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
 import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
-
-
+import useGetRoles from "@/hooks/roles/useGetRoles";
 
 const RegistroUsuario = () => {
+  const rolesDB = useGetRoles()
   const insertUser = useInsertUser();
-  const { rolies, isLoading, isError } = useGetRolesData(); 
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()
-
-
-  
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
@@ -30,17 +25,9 @@ const RegistroUsuario = () => {
   const [rolesData, setRolesData] = useState<Rol[]>([]);
   const [rolSeleccionadoName, setRolSeleccionadoName] = useState<string>('');
 
-  useEffect(() => {
-    if (rolies) {
-      setRol(rolies)
-      const nombresRoles = rolies.map((rol: { name: any; }) => rol.name);
-      setRolesName(nombresRoles);
-    }
-  }, [rolies]);
 
   const handleTerminar = async () => {
     try {
-      // Normalizar nombres de roles para comparación
       const rol = role.find((rol: { name: string; }) =>
         rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase()
       );
@@ -52,10 +39,10 @@ const RegistroUsuario = () => {
           nombre,
           apellido,
           password,
-          new Date().toISOString()  // Fecha actual como fecha de activación
+          new Date().toISOString()  
         );
         if (response !== 0) {
-          const log= await insertLogAdm(123,"ALTA","usuario")
+          await insertLogAdm("ALTA","usuario")
 
           Alert.alert(
             "Usuario guardado",
@@ -65,7 +52,7 @@ const RegistroUsuario = () => {
             ]
           );
         } else {
-          const log= await insertLogAdmFail(123,"ALTA","usuario")
+          await insertLogAdmFail("ALTA","usuario")
           
           Alert.alert("Error al guardar usuario");
         }

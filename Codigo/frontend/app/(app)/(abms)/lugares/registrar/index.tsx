@@ -39,13 +39,13 @@ const RegistrarLugar = () => {
     const insert = await insertPlace(nombre, abbreviation, description, openTime, closeTime);
     if (insert === 0) {
       Alert.alert("Error al guardar lugar");
-      const log= await insertLogAdmFail(123,"ALTA","lugar")
+      const log= await insertLogAdmFail("ALTA","lugar")
       if(log ===0){
         Alert.alert("Error al crear el log")
       }
   
     }else {
-      const log= await insertLogAdm(123,"ALTA","lugar")
+      const log= await insertLogAdm("ALTA","lugar")
 
       if(log ===0){
         Alert.alert("Error al crear el log")
