@@ -61,7 +61,7 @@ export const Menu = () => {
       visitorAuthorization: 1,
       instituteConfiguration: 1,
       entityABMs: 1,
-      systemReports: 0,
+      systemReports: 1,
       systemLog: 1,
       exceptionLoading: 1,
     }

@@ -77,7 +77,11 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
   const modifyIcon = () => {
     return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp'  
+        style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+        color={"orange"} 
+        onPress={() => router.push(`/visitantes/editar`)}
+      />
     )
   }
   const handleToggleIcon = (visitante: Visitante): JSX.Element => {
