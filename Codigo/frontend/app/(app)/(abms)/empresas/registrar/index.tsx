@@ -2,24 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import { router } from 'expo-router';
-import { createEmpresa } from '@/api/services/empresa';
-import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
-import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
-
+import useInsertEnterprice from '@/hooks/enterprice/useInsertEnterprice';
 
 const RegistrarEmpresa = () => {
+  const insertEnterprice = useInsertEnterprice()
+
   const [nombre, setNombre] = useState<string>("");
   const [cuit, setCuit] = useState<string>("");
-  const insertLogAdm= useInsertLogAdm()
-  const insertLogAdmFail= useInsertLogAdmFail()
-
 
   const handleTerminar = async () => {
+    if (!nombre || !cuit) {
+      Alert.alert("Campos incompletos", "Todos los campos son obligatorios.");
+      return;
+    }
+
     const cuitNumber = parseInt(cuit, 10); 
     if (!isNaN(cuitNumber)) {
-      const response = await createEmpresa(nombre, cuitNumber);
-      if(response === 201){
-        await insertLogAdm("ALTA","empresa") 
+      const response = await insertEnterprice(nombre, cuitNumber);
+      if(response === 0){
+        Alert.alert("Error al guardar empresa");
+      } else {
         Alert.alert(
           "Empresa guardada",
           "",
@@ -27,9 +29,6 @@ const RegistrarEmpresa = () => {
             { text: "OK", onPress: () => router.navigate("/empresas") }
           ]
         );
-      } else {
-        await insertLogAdmFail("ALTA","empresa") 
-        Alert.alert("Error al guardar empresa");
       }
     } else {
       Alert.alert("CUIT no válido");
