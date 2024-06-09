@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { logLoyout} from "@/api/services/log";
 import { Rol } from '@/api/model/interfaces';
-import useGetUserRole from '@/hooks/user/useGetUserRole';
+
 
 export const Menu = () => {
   const [status, setStatusDay] = useState<boolean>(true);
@@ -107,7 +107,7 @@ export const Menu = () => {
             <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Cambio de mail')}>
+              onPress={() => router.navigate("/mail")}>
               <Foundation name="mail" size={24} color="black" />
               <Text style={styles.menuText}>Cambio de Email</Text>
             </TouchableOpacity>
