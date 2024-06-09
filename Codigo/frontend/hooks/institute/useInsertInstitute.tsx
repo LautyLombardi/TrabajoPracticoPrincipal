@@ -24,9 +24,11 @@ const useInsertInstitute = () => {
             await db.execAsync('COMMIT;');
 
             console.log('Institute inserted with ID:', instituteId);
+            return instituteId
         } catch (error) {
             await db.execAsync('ROLLBACK;');
             console.error('Error inserting institute:', error);
+            return 0
         }
     }, [db]);
 

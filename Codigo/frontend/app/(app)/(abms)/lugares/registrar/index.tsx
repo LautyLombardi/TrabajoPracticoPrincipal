@@ -4,9 +4,13 @@ import { router } from 'expo-router';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import useInsertPlace from '@/hooks/place/useInsertPlace';
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistrarLugar = () => {
   const insertPlace = useInsertPlace()
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const [nombre, setNombre] = useState<string>("");
   const [abbreviation, setAbbreviation] = useState<string>("");
@@ -34,10 +38,11 @@ const RegistrarLugar = () => {
 
     const insert = await insertPlace(nombre, abbreviation, description, openTime, closeTime);
     if (insert === 0) {
-      // TODO: log de error
       Alert.alert("Error al guardar lugar");
+      await insertLogAdmFail("ALTA","lugar")
+
     }else {
-      // TODO: log de registro
+      await insertLogAdm("ALTA","lugar")
       Alert.alert(
         "Lugar guardado",
         "",

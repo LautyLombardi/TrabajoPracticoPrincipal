@@ -9,10 +9,14 @@ import { Instituto, Lugar } from "@/api/model/interfaces";
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 import useGetPlaces from "@/hooks/place/useGetPlaces";
 import Checkbox from "expo-checkbox";
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistroCategoria = () => {
   const institutesDB = useGetInstitutes();
   const placesDB = useGetPlaces();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const insertCategory = useInsertCategory()
   const [nombre, setNombre] = useState("");
@@ -36,10 +40,10 @@ const RegistroCategoria = () => {
     
     const insert = await insertCategory(nombre, descripcion, isExtern, lugaresSeleccionados);
     if (insert === 0) {
-      // TODO: log de error
+      await insertLogAdmFail("ALTA","categoria")
       Alert.alert("Error al guardar categoria");
     }else {
-      // TODO: log de registro
+      await insertLogAdm("ALTA","categoria")
       Alert.alert(
         "Categoria guardada",
         "",

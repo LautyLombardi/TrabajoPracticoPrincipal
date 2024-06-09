@@ -2,38 +2,48 @@ import React, { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable } from "react-native";
 import { router } from "expo-router";
 import SelectItem from "@/components/seleccionar/SelectItem";
-import { Rol } from "@/api/model/interfaces";
-import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from "@expo/vector-icons";
-import { createUsuario } from "@/api/services/user";
+import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
+import useInsertUser from "@/hooks/user/useInsertUser"; 
+import { Rol } from "@/api/model/interfaces";
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 import useGetRoles from "@/hooks/roles/useGetRoles";
 
-const RegistroVisitante = () => {
+const RegistroUsuario = () => {
   const rolesDB = useGetRoles()
-
+  const insertUser = useInsertUser();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
   const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false); 
-  // future role
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [role, setRol] = useState<Rol[]>([]);
   const [rolesName, setRolesName] = useState<string[]>([]);
   const [rolesData, setRolesData] = useState<Rol[]>([]);
   const [rolSeleccionadoName, setRolSeleccionadoName] = useState<string>('');
 
+
   const handleTerminar = async () => {
     try {
-      const rol = rolesData.find(rol => rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase());
-
+      const rol = role.find((rol: { name: string; }) =>
+        rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase()
+      );
+  
       if (rol) {
-        const response = await createUsuario(
+        const response = await insertUser(
           parseInt(dni),
           rol.id,
           nombre,
           apellido,
-          password
+          password,
+          new Date().toISOString()  
         );
-        if(response === 201){
+        if (response !== 0) {
+          await insertLogAdm("ALTA","usuario")
+
           Alert.alert(
             "Usuario guardado",
             "",
@@ -42,13 +52,12 @@ const RegistroVisitante = () => {
             ]
           );
         } else {
+          await insertLogAdmFail("ALTA","usuario")
+          
           Alert.alert("Error al guardar usuario");
         }
       } else {
-
-        if (!rol) {
-          Alert.alert("Rol no encontrada.");
-        }
+        Alert.alert("Rol no encontrado.");
       }
     } catch (error) {
       console.error("Error en createUsuario:", error);
@@ -67,7 +76,7 @@ const RegistroVisitante = () => {
 
   return (
     <View style={styles.container}>
-      {<HandleGoBackReg title='Registro Usuarios' route='usuarios' />}
+      <HandleGoBackReg title='Registro Usuarios' route='usuarios' />
         
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -194,4 +203,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegistroVisitante;
+export default RegistroUsuario;
