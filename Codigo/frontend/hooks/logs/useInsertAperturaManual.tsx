@@ -2,12 +2,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { getCurrentCreateDate } from '@/util/getCreateDate';
 import { useCallback } from 'react';
+import { getAdmDni } from '@/api/services/storage';
 
 const useInsertAperturaManual = () => {
     const db = useSQLiteContext();
 
-    const insertAperturaManual = useCallback(async (admDni: number) => {
+    const insertAperturaManual = useCallback(async () => {
         const createDate = getCurrentCreateDate();
+        const admDni = await getAdmDni();
         console.log('data a cargar', admDni);
         
         try {

@@ -3,8 +3,12 @@ import { View, Text, StyleSheet, Pressable, SafeAreaView, Alert } from 'react-na
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useInsertAperturaManual from '@/hooks/logs/useInsertAperturaManual';
+import useInsertCierreManual from '@/hooks/logs/useInsertCierreManual';
 
 const OpenCloseDay = () => { 
+const insertApertura= useInsertAperturaManual()
+const insertCierre=useInsertCierreManual()
 
   const handleOpenDay = async () => {
     try {
@@ -15,6 +19,7 @@ const OpenCloseDay = () => {
         await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
         console.log('status del dia seteado en open day', await AsyncStorage.getItem('dayStatus'));
         // TODO: logica de disparar LOG
+        await insertApertura()
         Alert.alert(
           "Día Abierto",
           "",
@@ -45,6 +50,7 @@ const OpenCloseDay = () => {
         await AsyncStorage.setItem('dayStatus', JSON.stringify(false));
         console.log('status del dia seteado en close day', await AsyncStorage.getItem('dayStatus'));
         // TODO: logica de disparar LOG
+        await insertCierre()
         Alert.alert(
           "Día Cerrado",
           "",
