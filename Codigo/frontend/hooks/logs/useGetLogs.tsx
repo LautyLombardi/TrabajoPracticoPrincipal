@@ -8,7 +8,7 @@ const useGetLogs = () => {
     const logsQuery = useQuery<Logs[]>({
         queryKey: ['logs'],
         queryFn: (): Promise<Logs[]> =>
-          db.getAllAsync('SELECT * FROM logs ORDER BY createDate'),
+          db.getAllAsync('SELECT * FROM logs ORDER BY createDate DESC'),
     });
     console.log('logs data: ', logsQuery.data);
     return {
