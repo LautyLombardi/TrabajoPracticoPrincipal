@@ -1,102 +1,88 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
-import { getVisitantes } from '@/api/services/visitantes';
+import React from 'react';
+import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
+import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
-const Reportes: React.FC = () => {
-  const [fechas, setFechas] = useState<string[]>([]);
-  const [numeros, setNumeros] = useState<number[]>([]);
-
-  useEffect(() => {
-    getVisitantes().then(visitantes => {
-      const visitantesPorDia = {};
-    
-      visitantes.forEach(visitante => {
-        const fecha = visitante.createDate.split(' ')[0];
-        if (visitantesPorDia[fecha]) {
-          visitantesPorDia[fecha]++;
-        } else {
-          visitantesPorDia[fecha] = 1;
-        }
-      });
-    
-      const fechasArray = Object.keys(visitantesPorDia).sort((a, b) => {
-        // Convertir las fechas de cadena de texto a objetos de fecha
-        const dateA = new Date(a);
-        const dateB = new Date(b);
-        // Ordenar los objetos de fecha de menor a mayor
-        return dateA.getTime() - dateB.getTime();
-      });
-      
-      const numerosArray = fechasArray.map(fecha => visitantesPorDia[fecha]);
-    
-      setFechas(fechasArray);
-      setNumeros(numerosArray);
-    });
-
-  }, []);
-
-  const data = {
-    labels: fechas,
-    datasets: [
-      {
-        label: "pv",
-        data: numeros
-      }
-    ]
-  };
+export const Reportes = () => {
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/** Header Menu */}
       <HandleGoBack title='Reportes' route='menu' />
-      <View style={styles.chartContainer}>
-        <Text style={styles.title}>Reportes de Visitantes * Día</Text>
-        <BarChart
-          data={data}
-          width={Dimensions.get('window').width - 16}
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix=""
-          yAxisInterval={1}
-          chartConfig={{
-            backgroundColor: '#1cc910',
-            backgroundGradientFrom: '#eff3ff',
-            backgroundGradientTo: '#efefef',
-            decimalPlaces: 0, 
-            color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-            style: {
-              borderRadius: 16
-            }
-          }}
-          fromZero={true} 
-          showValuesOnTopOfBars={true} 
-          style={{
-            marginVertical: 8,
-            borderRadius: 16
-          }}
-        />
+
+      {/** Menu */}
+      <View style={styles.mainMenu}>
+        <View style={styles.mainMenuItem}>
+          <Pressable
+            style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorDia")}>
+            <Text style={styles.textBtnMenu}>Reportes Operativos: Visitantes que autorizó el usuario logueado</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorUsuario")}>
+              <Text style={styles.textBtnMenu}>Reportes Gestion: Visitantes autenticados por cada usuario</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico")}>
+              <Text style={styles.textBtnMenu}>Visitantes historico</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
+              <Text style={styles.textBtnMenu}>Visitantes historicos por usuario seleccionado</Text>
+          </Pressable>
+        </View>        
       </View>
-    </View>
+      <StatusBar style='light' />
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: '#00759c',
+    alignItems: 'center',
   },
-  chartContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+  // Menu de Botones
+  mainMenu: {
+    marginTop:'5%',
+    flexDirection: 'column',
+    width: '70%',
+    height: '20%',
+    alignSelf: "center",
   },
-  title: {
-    fontSize: 24,
+  mainMenuItem: {
+    flexDirection: 'row',
+    borderRadius: 5,
+    padding: 0,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+  },
+  buttonMenu: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E8E8',
+    paddingLeft: '3%'
+  },
+  textBtnMenu: {
+    color: '#000',
+    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10,
     fontWeight: "bold",
   },
 });
 
 export default Reportes;
+
+
+

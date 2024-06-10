@@ -71,12 +71,15 @@ const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState
     );
   };
 
-  const modifyIcon = (dni: any) => {
+  const modifyIcon = (dni: number) => {
     return (
-      <Ionicons name='pencil-sharp' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
-    );
-  };
-
+      <Ionicons name='pencil-sharp'  
+        style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+        color={"orange"} 
+        onPress={() => router.push(`/usuarios/editar?dni=${dni}`)}
+      />
+    )
+  }
   const handleToggleIcon = (usuario: Usuario): JSX.Element => {
     if (editState) {
       return modifyIcon(usuario.dni);

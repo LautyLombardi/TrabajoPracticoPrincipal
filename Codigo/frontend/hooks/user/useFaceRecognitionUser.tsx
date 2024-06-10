@@ -1,16 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Usuario } from '@/api/model/interfaces';
+import { getAdmDni } from '@/api/services/storage';
 
-function useGetUser(dni: number) {
+function useFaceRecognitionUser() {
     const db = useSQLiteContext();
-    console.log('get user by dni', dni)
+    
     const userQuery = useQuery({
-        queryKey: ['user', dni],
+        queryKey: ['user'],
         queryFn: async (): Promise<Usuario> => {
+            const admDNI = await getAdmDni();
+            console.log('get user by dni', admDNI)
+            
             const user = await db.getFirstAsync<Usuario>(
                 'SELECT * FROM user WHERE dni = ?',
-                [dni]
+                [admDNI]
             );
             if (!user) {
                 throw new Error('User not found');
@@ -27,4 +31,4 @@ function useGetUser(dni: number) {
     };
 }
 
-export default useGetUser;
+export default useFaceRecognitionUser;

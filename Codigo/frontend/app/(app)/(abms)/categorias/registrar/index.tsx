@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Text, TextInput, View, StyleSheet, Alert, Pressable } from 'react-native';
 import { router } from "expo-router";
-import Boton from "@/ui/Boton";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useInsertCategory from "@/hooks/category/useInsertCategory";
-import { Instituto, Lugar } from "@/api/model/interfaces";
+import { Lugar } from "@/api/model/interfaces";
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 import useGetPlaces from "@/hooks/place/useGetPlaces";
 import Checkbox from "expo-checkbox";
@@ -113,7 +112,7 @@ const RegistroCategoria = () => {
       </View>
 
       <View style={styles.campo}>
-        <Text style={[styles.campoText]}>Lugares a los que se asigna el Instituto:</Text>
+        <Text style={[styles.campoText]}>Lugares a los que se asigna la Categoria:</Text>
         <View style={styles.lugaresContainer}>
           {lugares.map((lugar, index) => (
             <View key={lugar.id} style={styles.checkboxContainer}>

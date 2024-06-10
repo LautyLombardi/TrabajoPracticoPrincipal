@@ -1,23 +1,38 @@
-import React, { useRef, useState } from "react";
-import { View, StyleSheet, TextInput, Alert } from "react-native";
+import React, {useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Text, Alert, Pressable } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
-import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import { ONLINE } from "@/api/constantes";
-import { logfacerecognitionUser } from "@/api/services/log";
+import { Usuario } from "@/api/model/interfaces";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import useFaceRecognition from "@/hooks/user/useFaceRecognition";
+import AdmUserModal from "@/components/Modal/AdmUserModel";
 
 
 const UserFaceRecognition = () => {
   const navigator = useRouter();
+  const { user, isLoading, isError } = useFaceRecognition();
   const [cameraPermission, setCameraPermission] = useCameraPermissions();
   const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
- 
+  const [usuario, setUsuario] = useState<Usuario>();
+  const [showUser, setShowUser] = useState(false);
+
+  useEffect(() => {
+    setUsuario(user)
+    console.log('user login', user)
+  }, [user])
+
+  const handleCloseUserModal = () => {
+    setShowUser(false);
+    navigator.navigate("/menu")
+  };
+
   const handleAutenticacion = async () => {
     try {
-      takePicture().then((foto) => {
+      /* takePicture().then((foto) => {
         const formData = new FormData();
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
           uri: foto,
@@ -28,18 +43,23 @@ const UserFaceRecognition = () => {
           method: 'POST',
           body: formData
         }).then(async (respuesta) => {
-          if (respuesta.status == 200) {
+          if (respuesta.status == 200) { */
+            //----------------------storage--------------
+            
+            //const data = await respuesta.json();
+            const data = {dni:123456};
+            const user_data = [
+              {
+                user_dni: data.dni
+              },
+            ];                      
+            await AsyncStorage.setItem('user_data', JSON.stringify(user_data));
+            setShowUser(true);
+            //------------------------------------
+            // TODO log
 
-            await logfacerecognitionUser(1)
-            Alert.alert(
-              "Autenticación exitosa",
-              "",
-              [
-                { text: "OK", onPress: () => navigator.navigate("/menu") }
-              ]
-            );
-          } else {
-            await logfacerecognitionUser(0)
+          /* } else {
+            // TODO log
             Alert.alert(
               "Falló la autenticación de la imagen del usuario",
               "",
@@ -49,11 +69,11 @@ const UserFaceRecognition = () => {
             );
           }
         });
-      });
+      }); */
     } catch (error) {
       Alert.alert("No se pudo sacar la foto");
-    }
-  };
+    }
+  };
   
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -75,14 +95,12 @@ const UserFaceRecognition = () => {
     <View style={styles.container}>
       <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>
       <View style={styles.buttonContainer}>
-        <Boton
-          text="Autenticar usuario"
-          styleText={styles.text}
-          style={styles.button}
-          onPress={handleAutenticacion}
-          hoverColor="#000000aa"
-        />
+        <Pressable onPress={handleAutenticacion} style={styles.button}>
+          <Text style={styles.buttonText}>Autenticar</Text>
+        </Pressable>
       </View>
+
+      {showUser && usuario && <AdmUserModal user={usuario} handleCloseModal={handleCloseUserModal} />}
     </View>
   );
 };
@@ -115,14 +133,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#000b",
-    width: 300,
-    padding: 20,
-    borderRadius: 12,
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
   },
-  text: {
-    color: "#fff",
-    textAlign: "center",
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
 });
 

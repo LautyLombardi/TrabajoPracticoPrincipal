@@ -225,12 +225,12 @@ const AdministracionLugares = () => {
       <HandleGoBack title='Administración de Lugares' route='menu' />
 
       {/** Buscador */}
-      <View style={styles.searchContainer}>
+      {/* <View style={styles.searchContainer}>
         <TextInput placeholder='Buscar' style={styles.searchText} />
         <Pressable style={styles.searchButton}>
           <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
         </Pressable>
-      </View>
+      </View> */}
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>

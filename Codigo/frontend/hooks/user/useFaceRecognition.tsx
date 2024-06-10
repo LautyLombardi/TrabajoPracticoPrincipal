@@ -1,21 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Usuario } from '@/api/model/interfaces';
+import { getUserDni } from '@/api/services/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function useGetUser(dni: number) {
+function useFaceRecognition() {
     const db = useSQLiteContext();
-    console.log('get user by dni', dni)
+    
     const userQuery = useQuery({
-        queryKey: ['user', dni],
+        queryKey: ['user'],
         queryFn: async (): Promise<Usuario> => {
+            const userDNI = await getUserDni();
+            console.log('get user faceRecognition by DNI', userDNI)
+            
             const user = await db.getFirstAsync<Usuario>(
                 'SELECT * FROM user WHERE dni = ?',
-                [dni]
+                [userDNI]
             );
             if (!user) {
                 throw new Error('User not found');
             }
-            console.log('user in hook', user)
+            console.log('user faceRecognition in hook', user)
+            await AsyncStorage.removeItem('user_data');
             return user;
         },
     });
@@ -27,4 +33,4 @@ function useGetUser(dni: number) {
     };
 }
 
-export default useGetUser;
+export default useFaceRecognition;
