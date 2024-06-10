@@ -4,16 +4,18 @@ import { Usuario } from '@/api/model/interfaces';
 
 function useGetUser(dni: number) {
     const db = useSQLiteContext();
+    console.log('get user by dni', dni)
     const userQuery = useQuery({
         queryKey: ['user', dni],
         queryFn: async (): Promise<Usuario> => {
             const user = await db.getFirstAsync<Usuario>(
-                'SELECT * FROM user WHERE id = ?',
+                'SELECT * FROM user WHERE dni = ?',
                 [dni]
             );
             if (!user) {
                 throw new Error('User not found');
             }
+            console.log('user in hook', user)
             return user;
         },
     });

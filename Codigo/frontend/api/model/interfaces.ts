@@ -3,7 +3,6 @@ export interface Usuario{
     role_id: number,
     name: string,
     lastname: string,
-    username: string,
     isActive:number,
     motive: string,
     activeData: string,

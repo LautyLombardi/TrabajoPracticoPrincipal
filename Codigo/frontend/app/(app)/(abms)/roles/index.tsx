@@ -1,13 +1,10 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Rol } from '@/api/model/interfaces';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import RoleModal from '@/components/Modal/RoleModal';
 import useGetRoles from '@/hooks/roles/useGetRoles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
   text?: string,
@@ -52,43 +49,17 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 
 type PropsTable = {
   roles: Rol[]
-  viewState: boolean,
-  editState: boolean,
-  deleteState: boolean,
 
   handleView: (rol: Rol) => void;
-  handleEdit: (id: number) => void;
-  handleDelete: (id: number) => void;
 };
 
-const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, roles, handleView }) => {
+const TablaRoles: React.FC<PropsTable> = ({ roles, handleView }) => {
 
   const iconVerMas = (rol: Rol) => {
     return (
       <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(rol)} />
     )
   }
-
-  const deleteIcon = () => {
-    return (
-      <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
-    )
-  }
-
-  const modifyIcon = () => {
-    return (
-      <Ionicons name='pencil-sharp' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"orange"} />
-    )
-  }
-  const handleToggleIcon = (rol: Rol): JSX.Element => {
-    if (editState) {
-      return modifyIcon();
-    } else if (deleteState) {
-      return deleteIcon();
-    } else {
-      return iconVerMas(rol);
-    }
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
@@ -103,7 +74,7 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, r
           <Col text={rol.id ? rol.id.toString() : ''} flexWidth={1} />
           <Col text={rol.name} flexWidth={3} />
           <Col text={rol.description} flexWidth={5} />
-          <Col flexWidth={1.5} icon={handleToggleIcon(rol)} />
+          <Col flexWidth={1.5} icon={iconVerMas(rol)} />
         </Row>
       )}
     </View>
@@ -111,11 +82,6 @@ const TablaRoles: React.FC<PropsTable> = ({ viewState, editState, deleteState, r
 };
 
 const AdministracionRoles = () => {
-  const [status, setStatusDay] = useState<boolean>(true);
-  const [permition, setPermition] = useState<Rol>();
-  const [view, setView] = useState(true);
-  const [edit, setEdit] = useState(false);
-  const [trash, setTrash] = useState(false);
   const [showRole, setShowRole] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Rol | null>(null);
 
@@ -129,38 +95,8 @@ const AdministracionRoles = () => {
     setShowRole(false);
   };
 
-  // Cambio de iconos
-  function handleToggleIco(icon: string) {
-    if (icon == "edit" && edit || icon == "delete" && trash) {
-      setEdit(false)
-      setTrash(false)
-    } else {
-      setEdit(icon == "edit")
-      setTrash(icon == "delete")
-    }
-  };
-
-  const handlerDay = async () =>{
-    const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
-      setPermition(JSON.parse(permisos));
-    }
-    const dayStatus = await AsyncStorage.getItem('dayStatus');
-    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
-    setStatusDay(isDayOpen)
-  }
-
   const rolesDB= useGetRoles();
   const [roles, setRoles] = useState<Rol[]>([])
-
-  useFocusEffect(
-    useCallback(() => {
-      const { roles } = rolesDB
-      if (roles) {
-        setRoles(roles);
-      }
-    }, [[rolesDB]])
-  );
 
   useEffect(() => {
     const { roles } = rolesDB
@@ -169,61 +105,24 @@ const AdministracionRoles = () => {
     }
   }, [rolesDB]);
 
-  useEffect(() => {
-    handlerDay();
-  }, []);
-
   return (
     <View style={styles.container}>
       {/** Header Menu */}
       <HandleGoBack title='Administraion de Roles' route='menu' />
 
       {/** Buscador */}
-      <View style={styles.searchContainer}>
+      {/* <View style={styles.searchContainer}>
         <TextInput placeholder='Buscar' style={styles.searchText} />
         <Pressable style={styles.searchButton}>
           <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
         </Pressable>
-      </View>
-
-      {/** Botones CRUD */}
-      <View style={styles.crudBtn}>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("ver")}>
-          <Ionicons name='eye-outline' size={20} color="black" />
-        </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("delete")}>
-          <FontAwesome6 name="trash" size={20} color="black" />
-        </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("edit")}>
-          <FontAwesome6 name="pen-clip" size={20} color="black" />
-        </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => router.navigate("/roles/registrar")}>
-          <FontAwesome6 name="plus" size={20} color="black" />
-        </Pressable>
-      </View>
-
+      </View> */}
+    
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
         <TablaRoles
-          viewState={view}
-          editState={edit}
-          deleteState={trash}
           roles={roles}
           handleView={handleOpenUserModal}
-          handleEdit={() => console.log("editar")}
-          handleDelete={() => console.log("borrar")}
         />
       </ScrollView>
 
@@ -240,6 +139,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tableContainer: {
+    marginTop:'2%',
     width: '100%',
   },
   crudBtn: {
