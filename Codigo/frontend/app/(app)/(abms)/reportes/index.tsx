@@ -2,49 +2,38 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 
 export const Reportes = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/** Header Menu */}
+      <HandleGoBack title='Reportes' route='menu' />
+
       {/** Menu */}
-      <View style={styles.listBtns}>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorDia")}>
-              <Text style={styles.textBtnMenu}>reportes operativos_visitantes que autorizo el user logeado</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorUsuario")}>
-              <Text style={styles.textBtnMenu}>reportes gestion_visitantes autenticados por cada usuario</Text>
-            </Pressable>
-          </View>
+      <View style={styles.mainMenu}>
+        <View style={styles.mainMenuItem}>
+          <Pressable
+            style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorDia")}>
+            <Text style={styles.textBtnMenu}>Reportes Operativos: Visitantes que autorizó el usuario logueado</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico")}>
-              <Text style={styles.textBtnMenu}>visitantes historico</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
-              <Text style={styles.textBtnMenu}>visitantes historicos por usuario seleccionado</Text>
-            </Pressable>
-          </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorUsuario")}>
+              <Text style={styles.textBtnMenu}>Reportes Gestion: Visitantes autenticados por cada usuario</Text>
+          </Pressable>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/image/user")}>
-              <Text style={styles.textBtnMenu}>Registrar Imagen de Usuario</Text>
-            </Pressable>
-          </View>
-          <View style={styles.col}>
-            <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/image/visitor")}>
-              <Text style={styles.textBtnMenu}>Registrar Imagen de Visitante</Text>
-            </Pressable>
-          </View>          
-        </View>          
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico")}>
+              <Text style={styles.textBtnMenu}>Visitantes historico</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
+              <Text style={styles.textBtnMenu}>Visitantes historicos por usuario seleccionado</Text>
+          </Pressable>
+        </View>        
       </View>
       <StatusBar style='light' />
     </SafeAreaView>
@@ -57,49 +46,39 @@ const styles = StyleSheet.create({
     backgroundColor: '#00759c',
     alignItems: 'center',
   },
-  header: {
-    width: "100%",
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerText: {
-    fontWeight: "bold",
-  },
   // Menu de Botones
-  listBtns: {
+  mainMenu: {
+    marginTop:'5%',
     flexDirection: 'column',
-    width: 350,
-    marginTop: 40,
+    width: '70%',
+    height: '20%',
+    alignSelf: "center",
   },
-  row: {
+  mainMenuItem: {
     flexDirection: 'row',
-  },
-  col: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 5,
+    borderRadius: 5,
+    padding: 0,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
   },
   buttonMenu: {
-    height: 80,
+    height: 50,
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
-    elevation: 5,
-    justifyContent: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E8E8',
+    paddingLeft: '3%'
   },
   textBtnMenu: {
     color: '#000',
     textAlign: 'center',
-  },
-  buttonMenuDisabled: {
-    backgroundColor: '#a3a3a3',
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "bold",
   },
 });
 

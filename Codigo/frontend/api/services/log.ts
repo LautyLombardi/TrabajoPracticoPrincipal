@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Logs } from '../model/interfaces';
 import { URL} from '@/api/constantes'
 import { getAdmDni } from './storage';
 const BASE_URL = `${URL}/logs`;
@@ -83,64 +82,6 @@ export async function logfacerecognitionVisitor(hasAccess: number, visitor_dni: 
             "abm_dni": admDni,
             "visitor_dni": visitor_dni,
             "hasAccess": hasAccess
-        },{
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.status;
-    } catch (error) {
-        console.error('Error al cargar log: ', error);
-        return 400;
-    }
-}
-
-
-
-export async function logLoginManual(client_dni: String, table_client:String): Promise<number> {
-    try {
-        const admDni = await getAdmDni();
-        const response = await axios.post(`${BASE_URL}/manualregistration`,{
-            "adm_dni": admDni,
-            "client_dni": client_dni,
-            "table_client": table_client
-        },{
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.status;
-    } catch (error) {
-        console.error('Error al cargar log: ', error);
-        return 400;
-    }
-}
-
-export async function logLoginManuaFail(client_dni: string, table_client:String): Promise<number> {
-    try {
-        const admDni = await getAdmDni();
-        const response = await axios.post(`${BASE_URL}/manualregistrationFail`,{
-            "adm_dni": admDni,
-            "client_dni": parseInt(client_dni),
-            "table_client": table_client
-        },{
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.status;
-    } catch (error) {
-        console.error('Error al cargar log: ', error);
-        return 400;
-    }
-}
-
-
-export async function logLoyout(): Promise<number> {
-    try {
-        const admDni = await getAdmDni();
-        const response = await axios.post(`${BASE_URL}/loyoutUser`,{
-            "adm_dni": admDni
         },{
             headers: {
                 'Content-Type': 'application/json'

@@ -1,21 +1,38 @@
-import React, { useRef, useState } from "react";
-import { View, StyleSheet, TextInput, Alert } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Text, Alert, Pressable } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
-import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import { ONLINE } from "@/api/constantes";
-import { logfacerecognitionUser, logfacerecognitionVisitor } from "@/api/services/log";
+import { Visitante } from "@/api/model/interfaces";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useFaceRecognition from "@/hooks/visitor/useFaceRecognition";
+import FRVisitorModel from "@/components/Modal/FRVisitorModel";
 
 const VisitorFaceRecognition = () => {
   const navigator = useRouter();
+  const { visitor, isLoading, isError } = useFaceRecognition();
   const [cameraPermission, setCameraPermission] = useCameraPermissions();
   const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
+
+  const [visitante, setVisitante] = useState<Visitante>();
+  const [showUser, setShowUser] = useState(false);
+
+  useEffect(() => {
+    setVisitante(visitor)
+    console.log('visitor login', visitor)
+  }, [visitor])
+
+  const handleCloseUserModal = () => {
+    setShowUser(false);
+    navigator.navigate("/menu")
+  };
+
   const handleAutenticacion = async () => {
     try {
-      takePicture().then((foto) => {
+      /* takePicture().then((foto) => {
         const formData = new FormData();
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
           uri: foto,
@@ -26,23 +43,26 @@ const VisitorFaceRecognition = () => {
           method: 'POST',
           body: formData
         }).then(async (respuesta) => {
-          if (respuesta.status == 200) {
-            const data = await respuesta.json();
+          if (respuesta.status == 200) { */
+            //----------------------storage--------------
             
-            await logfacerecognitionVisitor(1, data.dni)
-            Alert.alert(
-              "Autenticación exitosa",
-              "",
-              [
-                { text: "OK", onPress: () => navigator.navigate("/menu") }
-              ]
-            );
-          } else {
+            //const data = await respuesta.json();
+            const data = {dni:44172212};
+            const visitor_data = [
+              {
+                visitor_dni: data.dni
+              },
+            ];                      
+            await AsyncStorage.setItem('visitor_data', JSON.stringify(visitor_data));
+            setShowUser(true);
+            // TODO log
+         /*  } else {
+            // TODO log
             await logfacerecognitionUser(0)
             Alert.alert("Falló la autenticación de la imagen del visitante")
           }
         });
-      });
+      }); */
     } catch (error) {
       Alert.alert("No se pudo sacar la foto");
     }
@@ -62,14 +82,12 @@ const VisitorFaceRecognition = () => {
     <View style={styles.container}>
       <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>
       <View style={styles.buttonContainer}>
-        <Boton
-          text="Autenticar visitante"
-          styleText={styles.text}
-          style={styles.button}
-          onPress={handleAutenticacion}
-          hoverColor="#000000aa"
-        />
+        <Pressable onPress={handleAutenticacion} style={styles.button}>
+          <Text style={styles.buttonText}>Autenticar</Text>
+        </Pressable>
       </View>
+
+      {showUser && visitante && <FRVisitorModel visitor={visitante} handleCloseModal={handleCloseUserModal} />}
     </View>
   );
 };
@@ -102,14 +120,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#000b",
-    width: 300,
-    padding: 20,
-    borderRadius: 12,
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
   },
-  text: {
-    color: "#fff",
-    textAlign: "center",
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
 });
 
