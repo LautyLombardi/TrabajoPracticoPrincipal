@@ -41,3 +41,17 @@ export const getUserDni = async () => {
   }
 };
 
+export const getVisitorDni = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('visitor_data');
+    if (jsonValue != null) {
+      const admData = JSON.parse(jsonValue);
+      const dataInt=parseInt(admData[0].visitor_dni) // Suponiendo que siempre hay un objeto en el array
+      return dataInt; 
+    }
+    return null; // Retorna null si no hay datos
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
