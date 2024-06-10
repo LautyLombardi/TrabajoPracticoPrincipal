@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Pressable,TextInput, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
@@ -8,6 +8,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import UserModal from '@/components/Modal/UserModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetUsers from "@/hooks/user/useGetUsers";
+import useDeactivateUser from '@/hooks/user/useDeactivateUser';
+import useActivateUser from '@/hooks/user/useActivateUser';
 
 type PropsCol = {
   text?: string,
@@ -16,24 +18,21 @@ type PropsCol = {
 };
 
 const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
-
   const renderChildren = () => {
-    if((text || text=='') && !icon){
+    if((text || text === '') && !icon){
       return (
-      <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
-      )
-    }else{
-      if(icon){
-        return (icon) 
-      }else {
-        return <Text>Not Found</Text>
-      }
+        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+      );
+    }else if(icon){
+      return (icon);
+    }else {
+      return <Text>Not Found</Text>;
     }
-  }
+  };
 
   return (
     <View style={{ flex: flexWidth, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-        {renderChildren()}
+      {renderChildren()}
     </View>
   );
 };
@@ -51,43 +50,38 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 };
 
 type PropsTable = {
-  usuarios: Usuario[]
+  usuarios: Usuario[],
   viewState: boolean,
   editState: boolean,
   deleteState: boolean,
-  
   handleView: (usuario: Usuario) => void;
-  handleEdit: (id: number) => void;
-  handleDelete: (id: number) => void;
+  handleDelete: (user: Usuario) => void;
 };
 
-const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState, usuarios, handleView}) => {
-
+const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState, usuarios, handleView, handleDelete }) => {
   const iconVerMas = (usuario: Usuario) => {
     return (
       <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(usuario)} />
-    )
-  }
+    );
+  };
 
-  const deleteIcon = (dni: any) => {
+  const deleteIcon = (usuario: Usuario) => {
     return (
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
-    )
-  }
+      <Ionicons name='trash' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDelete(usuario)} />
+    );
+  };
 
   const modifyIcon = (dni: any) => {
     return (
-      <Ionicons name='pencil-sharp'  
-        style={{fontSize: 20, padding: 7, borderRadius: 100}} 
-        color={"orange"} 
-      />
-    )
-  }
+      <Ionicons name='pencil-sharp' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+    );
+  };
+
   const handleToggleIcon = (usuario: Usuario): JSX.Element => {
     if (editState) {
       return modifyIcon(usuario.dni);
     } else if (deleteState) {
-      return deleteIcon(usuario.dni);
+      return deleteIcon(usuario);
     } else {
       return iconVerMas(usuario);
     }
@@ -96,7 +90,7 @@ const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='DNI'flexWidth={3}/>
+        <Col text='DNI' flexWidth={3}/>
         <Col text='Nombre' flexWidth={3}/>
         <Col text='Apellido' flexWidth={3}/>
         <Col text='Rol' flexWidth={3}/>
@@ -124,6 +118,9 @@ const AdministracionUsuarios = () => {
   const [showUser, setShowUser] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
+  const deactivateUser = useDeactivateUser();
+  const activateUser = useActivateUser();
+
   const handleOpenUserModal = (user: Usuario) => {
     setSelectedUser(user);
     setShowUser(true);
@@ -134,41 +131,61 @@ const AdministracionUsuarios = () => {
     setShowUser(false);
   };
 
-  // Cambio de iconos
-  function handleToggleIco(icon : string){
-    if(icon == "edit" && edit || icon == "delete" && trash){
-      setEdit(false)
-      setTrash(false)
-    }else {
-      setEdit(icon == "edit")
-      setTrash(icon == "delete")        
+  const handleDeleteUser = async (user: Usuario) => {
+    if (user.isActive) {
+      const result = await deactivateUser(user.dni);
+      if (result !== 0) {
+        console.log('User deactivated successfully.');
+        setUsuarios(prevUsuarios => prevUsuarios.filter(inst => inst.dni !== user.dni));
+      } else {
+        console.error('Failed to deactivate user.');
+      }
+    } else {
+      const result = await activateUser(user.dni);
+      if (result !== 0) {
+        console.log('User activated successfully.');
+        setUsuarios(prevUsuarios => prevUsuarios.filter(inst => inst.dni !== user.dni));
+      } else {
+        console.error('Failed to activate user.');
+      }
     }
   };
 
-  const handlerDay = async () =>{
+  // Cambio de iconos
+  function handleToggleIco(icon: string) {
+    if (icon === "edit" && edit || icon === "delete" && trash) {
+      setEdit(false);
+      setTrash(false);
+    } else {
+      setEdit(icon === "edit");
+      setTrash(icon === "delete");        
+    }
+  };
+
+  const handlerDay = async () => {
     const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
+    if (permisos) {
       setPermition(JSON.parse(permisos));
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
-    setStatusDay(isDayOpen)
-  }
+    setStatusDay(isDayOpen);
+  };
 
   const usersDB = useGetUsers();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const {users} = usersDB
+      const { users } = usersDB;
       if (users) {
         setUsuarios(users);
       }      
-    }, [[usersDB]])
+    }, [usersDB])
   );
 
   useEffect(() => {
-    const {users} = usersDB
+    const { users } = usersDB;
     if (users) {
       setUsuarios(users);
     } 
@@ -227,15 +244,15 @@ const AdministracionUsuarios = () => {
           deleteState={trash} 
           usuarios={usuarios}
           handleView={handleOpenUserModal}
-          handleEdit={() => console.log("editar")} 
-          handleDelete={() => console.log("borrar")}
+          //handleEdit={() => console.log("editar")} 
+          handleDelete={handleDeleteUser}
         />
       </ScrollView>
 
       {showUser && selectedUser && <UserModal user={selectedUser} handleCloseModal={handleCloseUserModal} />}
 
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -255,13 +272,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, 
     gap: 4
   },
-  crudItem:{
+  crudItem: {
     padding: 10, 
     backgroundColor: '#fff', 
     borderRadius: 5,
     width: '5.3%',
     height: 'auto',
-    marginVertical:'2%',
+    marginVertical: '2%',
     justifyContent: "center", 
   },
   crudItemDisabled: {
@@ -301,5 +318,4 @@ const styles = StyleSheet.create({
   }
 });
 
-
-export default AdministracionUsuarios
+export default AdministracionUsuarios;
