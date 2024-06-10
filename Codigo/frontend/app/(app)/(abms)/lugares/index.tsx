@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import PlaceModal from '@/components/Modal/PlaceModal';
 import useGetPlaces from '@/hooks/place/useGetPlaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useDeactivatePlace from '@/hooks/place/useDeactivatePlace';
+import useActivatePlace from '@/hooks/place/useActivatePlace';
 
 type PropsCol = {
   text?: string,
@@ -17,17 +19,17 @@ type PropsCol = {
   icon?: React.ReactNode
 };
 
-const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
+const Col: React.FC<PropsCol> = ({ text, flexWidth = 1, icon }) => {
 
   const renderChildren = () => {
-    if((text || text=='') && !icon){
+    if ((text || text == '') && !icon) {
       return (
-      <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
       )
-    }else{
-      if(icon){
-        return (icon) 
-      }else {
+    } else {
+      if (icon) {
+        return (icon)
+      } else {
         return <Text>Not Found</Text>
       }
     }
@@ -35,7 +37,7 @@ const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
 
   return (
     <View style={{ flex: flexWidth, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-        {renderChildren()}
+      {renderChildren()}
     </View>
   );
 };
@@ -57,18 +59,18 @@ type PropsTable = {
   viewState: boolean,
   editState: boolean,
   deleteState: boolean,
-  
+
   handleView: (lugar: Lugar) => void;
   handleEdit: (id: number) => void;
-  handleDelete: (id: number) => void;
+  handleDelete: (lug: Lugar) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView, handleDelete }) => {
 
   const handleDesactivarCategoria = async (id: number) => {
     try {
       // TODO:
-       //await desactivarLugar(id);
+      //await desactivarLugar(id);
       // Realizar cualquier otra acción necesaria después de desactivar la categoría
     } catch (error) {
       console.error('Error al desactivar la categoría:', error);
@@ -77,19 +79,21 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
   const iconVerMas = (lugar: Lugar) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(lugar)} />
+      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
     )
   }
 
-  const deleteIcon = (id: any) => {
+  const deleteIcon = (lug: Lugar) => {
     return (
-      <Ionicons name='trash' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
+      <TouchableOpacity onPress={() => handleDelete(lug)}>
+        <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
+      </TouchableOpacity>
     )
   }
 
   const modifyIcon = (id: any) => {
     return (
-      <Ionicons name='pencil-sharp' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"orange"} />
     )
   }
 
@@ -97,21 +101,21 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
     if (editState) {
       return modifyIcon(lugar.id);
     } else if (deleteState) {
-      return deleteIcon(lugar.id);
+      return deleteIcon(lugar);
     } else {
       return iconVerMas(lugar);
     }
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
         <Col text='ID' flexWidth={0.8} />
-        <Col text='Nombre' flexWidth={3}/>
-        <Col text='Abreviación' flexWidth={3}/>
-        <Col text='openTime' flexWidth={3}/>
-        <Col text='closeTime' flexWidth={3}/>
-        <Col text='' flexWidth={1.5}/>
+        <Col text='Nombre' flexWidth={3} />
+        <Col text='Abreviación' flexWidth={3} />
+        <Col text='openTime' flexWidth={3} />
+        <Col text='closeTime' flexWidth={3} />
+        <Col text='' flexWidth={1.5} />
       </Row>
       {lugares.map((lugar) => (
         <Row key={lugar.id}>
@@ -120,7 +124,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
           <Col text={lugar.abbreviation} flexWidth={3} />
           <Col text={lugar.openTime} flexWidth={3} />
           <Col text={lugar.closeTime} flexWidth={3} />
-          <Col flexWidth={1.5} icon={handleToggleIcon(lugar)} /> 
+          <Col flexWidth={1.5} icon={handleToggleIcon(lugar)} />
         </Row>
       ))}
     </View>
@@ -136,11 +140,10 @@ const AdministracionLugares = () => {
   const [showUser, setShowUser] = useState(false);
   const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
 
+  const deactivatePlace = useDeactivatePlace()
+  const activatePlace = useActivatePlace()
+
   // HandleDeleteCategoria 
-  const handleDeletePlace = () => {
-
-  }
-
   const handleOpenUserModal = (lugar: Lugar) => {
     setSelectedLugar(lugar);
     setShowUser(true);
@@ -150,21 +153,41 @@ const AdministracionLugares = () => {
     setSelectedLugar(null);
     setShowUser(false);
   };
+  
+  const handleDeletePlace = async (lug: Lugar) => {
+    if (lug.isActive) {
+      const result=await deactivatePlace(lug.id)
+      if (result !== 0) {
+        console.log('place deactivated successfully.');
+        setLugares(prevPlace => prevPlace.filter(inst=>inst.id!==lug.id))
+      }else{
+        console.error('Failed to deactivate place.');
+      }
+    } else {
+      const result=await activatePlace(lug.id)
+      if (result !== 0) {
+        console.log('place activated successfully.');
+        setLugares(prevPlace => prevPlace.filter(inst=>inst.id!==lug.id))
+      }else{
+        console.error('Failed to deactivate place.');
+      }
+    }
+  }
 
   // Cambio de iconos
-  function handleToggleIco(icon : string){
-    if(icon === "edit" && edit || icon === "delete" && trash){
+  function handleToggleIco(icon: string) {
+    if (icon === "edit" && edit || icon === "delete" && trash) {
       setEdit(false);
       setTrash(false);
     } else {
       setEdit(icon === "edit");
-      setTrash(icon === "delete");        
+      setTrash(icon === "delete");
     }
   };
 
-  const handlerDay = async () =>{
+  const handlerDay = async () => {
     const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
+    if (permisos) {
       setPermition(JSON.parse(permisos));
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
@@ -173,12 +196,12 @@ const AdministracionLugares = () => {
   }
 
   //conexion con db
-  const placesDB =useGetPlaces();
+  const placesDB = useGetPlaces();
   const [lugares, setLugares] = useState<Lugar[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const {places}=placesDB
+      const { places } = placesDB
       if (places) {
         setLugares(places);
       }
@@ -186,7 +209,7 @@ const AdministracionLugares = () => {
   );
 
   useEffect(() => {
-    const {places}=placesDB
+    const { places } = placesDB
     if (places) {
       setLugares(places);
     }
@@ -211,44 +234,44 @@ const AdministracionLugares = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => handleToggleIco("ver")}>
-        <Ionicons name='eye-outline' size={20} color="black" />
-      </Pressable>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          <Ionicons name='eye-outline' size={20} color="black" />
+        </Pressable>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => handleToggleIco("delete")}>
-        <FontAwesome6 name="trash" size={20} color="black" />
-      </Pressable>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          <FontAwesome6 name="trash" size={20} color="black" />
+        </Pressable>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => handleToggleIco("edit")}>
-        <FontAwesome6 name="pen-clip" size={20} color="black" />
-      </Pressable>
-      <Pressable 
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
+          <FontAwesome6 name="pen-clip" size={20} color="black" />
+        </Pressable>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => router.navigate("/lugares/registrar")}>
-        <FontAwesome6 name="plus" size={20} color="black" />
-      </Pressable>
+          <FontAwesome6 name="plus" size={20} color="black" />
+        </Pressable>
       </View>
 
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
-        <Tablacategorias 
-          viewState={view} 
-          editState={edit} 
-          deleteState={trash} 
-          lugares={lugares} 
-          handleView={handleOpenUserModal} 
-          handleEdit={() => console.log("editar")} 
-          handleDelete={handleDeletePlace}/>
+        <Tablacategorias
+          viewState={view}
+          editState={edit}
+          deleteState={trash}
+          lugares={lugares}
+          handleView={handleOpenUserModal}
+          handleEdit={() => console.log("editar")}
+          handleDelete={handleDeletePlace} />
       </ScrollView>
-      
+
       {showUser && selectedLugar && <PlaceModal place={selectedLugar} handleCloseModal={handleCloseUserModal} />}
     </View>
   );
@@ -264,21 +287,21 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   crudBtn: {
-    flexDirection: "row", 
-    width: "100%", 
-    justifyContent: "flex-end", 
-    alignItems: "center", 
-    paddingHorizontal: 20, 
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: 20,
     gap: 4
   },
-  crudItem:{
-    padding: 10, 
-    backgroundColor: '#fff', 
+  crudItem: {
+    padding: 10,
+    backgroundColor: '#fff',
     borderRadius: 5,
     width: '5.3%',
     height: 'auto',
-    marginVertical:'2%',
-    justifyContent: "center", 
+    marginVertical: '2%',
+    justifyContent: "center",
   },
   crudItemDisabled: {
     backgroundColor: '#a3a3a3',
@@ -308,9 +331,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    aspectRatio: 1, 
+    aspectRatio: 1,
     maxHeight: '80%',
-    flexBasis: '8%', 
+    flexBasis: '8%',
   },
   searchButtonIcon: {
     fontSize: 20,
