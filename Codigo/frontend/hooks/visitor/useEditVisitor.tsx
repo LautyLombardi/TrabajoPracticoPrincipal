@@ -8,28 +8,23 @@ import { Visitante } from '@/api/model/interfaces';
 const useEditVisitor = () => {
     const db = useSQLiteContext();
 
-    const editVisitor = useCallback(async (visitorOld: Visitante, dniNew: number, nameNew: string, lastnameNew: string, passwordNew: string, dateActive: string,emailNew:String) => {
-    /*  const createDate = getCurrentCreateDate();
-        const dateActiveN = parseFecha(dateActive);
-        console.log('Data a modificar', userOld, dniNew, nameNew, lastnameNew, role_idNew, 'passwordNew', passwordNew, dateActiveN, motive);
+    const editVisitor = useCallback(async (visitorOld: Visitante, dniNew: number, nameNew: string, lastnameNew: string,emailNew:string) => {
+        const createDate = getCurrentCreateDate();
+        console.log('Data a modificar', visitorOld, dniNew, nameNew, lastnameNew, emailNew);
         try {
             await db.execAsync('BEGIN TRANSACTION;');
             
             // Insert into user_history
             await db.runAsync(
-                `INSERT INTO user_history (dniO, dniN, enterprice_idO, enterprice_idN, nameO, nameN, lastnameO, lastnameN, passwordO, passwordN, emailN,emailO isActiveO, isActiveN,
-                                        motiveO, motiveN, activeDateO, activeDateN, createDateO, createDateN ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', ?, 0, 1, '', ?, '', ?, ?, ?);`,
-                [userOld.dni, dniNew, userOld.role_id, role_idNew || userOld.role_id, userOld.name, nameNew, userOld.lastname, lastnameNew, passwordNew || '', motive, dateActiveN, userOld.createDate,createDate]
+                `INSERT INTO visitor_history (dniO, dniN, nameO, nameN, lastnameO, lastnameN, emailN,emailO, isActiveO, isActiveN,
+                                         createDateO, createDateN ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?);`,
+                [visitorOld.dni, dniNew, visitorOld.name, nameNew, visitorOld.lastname, lastnameNew,visitorOld.email, emailNew  , visitorOld.createDate,createDate]
             )
 
-            // Update user table
-            const updateParams = [dniNew, role_idNew || userOld.role_id, nameNew, lastnameNew, dateActiveN, createDate, userOld.dni];
-            let updateQuery = `UPDATE user SET dni = ?, role_id = ?, name = ?, lastname = ?, isActive = 1, activeDate = ?, createDate = ?`;
+            // Update visitor table
+            const updateParams = [dniNew, nameNew, lastnameNew, emailNew, visitorOld.dni];
+            let updateQuery = `UPDATE visitor SET dni = ?, name = ?, lastname = ?, email = ?`;
 
-            if (passwordNew) {
-                updateQuery += `, password = ?`;
-                updateParams.splice(4, 0, passwordNew);
-            }
             
             updateQuery += ` WHERE dni = ?;`;
 
@@ -39,14 +34,14 @@ const useEditVisitor = () => {
 
             await db.execAsync('COMMIT;');
 
-            console.log('User updated successfully');
+            console.log('visitor updated successfully');
             return resultUpdate.lastInsertRowId;
         } catch (error) {
             await db.execAsync('ROLLBACK;');
-            console.error('Error updating user:', error);
+            console.error('Error updating visitor:', error);
             return 0;
         }
-*/    }, [db]);
+   }, [db]);
   return editVisitor;
 
 };

@@ -10,7 +10,7 @@ const useGetVisitors = () => {
     const visitorsQuery = useQuery<Visitante[]>({
         queryKey: ['visitors'],
         queryFn: async (): Promise<Visitante[]> =>
-            db.getAllAsync('SELECT * FROM visitor ORDER BY createDate'),
+            db.getAllAsync('SELECT * FROM visitor ORDER BY createDate DESC'),
     });
 
     const getCategory = async (visitor : Visitante ,visitorId: number): Promise<Visitante> => {

@@ -23,7 +23,7 @@ const useEditUser = () => {
 
             // Update user table
             const updateParams = [dniNew, role_idNew || userOld.role_id, nameNew, lastnameNew, dateActiveN, createDate, userOld.dni];
-            let updateQuery = `UPDATE user SET dni = ?, role_id = ?, name = ?, lastname = ?, isActive = 1, activeDate = ?, createDate = ?`;
+            let updateQuery = `UPDATE user SET dni = ?, role_id = ?, name = ?, lastname = ?, activeDate = ?, createDate = ?`;
 
             if (passwordNew) {
                 updateQuery += `, password = ?`;

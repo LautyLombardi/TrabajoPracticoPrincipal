@@ -27,7 +27,7 @@ const EditarVisitante = () => {
         setNombreN(visitor.name);
         setApellidoN(visitor.lastname);
         setDniN(visitor.dni.toString());
-        setCategorySeleccionadoName(visitor.category);
+       // setCategorySeleccionadoName(visitor.category);
         setEmailN(visitor.email)
       }
     }, [visitor]);
@@ -49,7 +49,7 @@ const EditarVisitante = () => {
   
   
     const handleTerminar = async () => {
-      var categoryID : number | undefined = 0;
+     /* var categoryID : number | undefined = 0;
       if(CategorySeleccionadoName !==undefined){
         console.log('handler category')
         const category = categoria.find((category: { name: string }) =>
@@ -57,27 +57,27 @@ const EditarVisitante = () => {
         );
         categoryID = category?.id
       }
-  /*
+  */
       if (visitor) {
-        const response = await editVisitor(visitor, parseInt(dniN), nombreN, apellidoN, password, dateActive.toISOString());
+        const response = await editVisitor(visitor, parseInt(dniN), nombreN, apellidoN, emailN);
         if (response !== 0) {
-          await insertLogAdm("MODIFICACIÓN", "usuario");
+          await insertLogAdm("MODIFICACIÓN", "visitante");
           Alert.alert(
-            "Usuario modificado",
+            "visitante modificado",
             "",
             [
-              { text: "OK", onPress: () => router.navigate("/usuarios") }
+              { text: "OK", onPress: () => router.navigate("/visitantes") }
             ]
           );
         } else {
-          await insertLogAdmFail("MODIFICACIÓN", "usuario");
-          Alert.alert("Error al guardar usuario");
+          await insertLogAdmFail("MODIFICACIÓN", "visitante");
+          Alert.alert("Error al guardar visitante");
         }
       } else {
-        await insertLogAdmFail("MODIFICACIÓN", "usuario");
-        Alert.alert("Error al guardar usuario");
+        await insertLogAdmFail("MODIFICACIÓN", "visitante");
+        Alert.alert("Error al guardar visitante");
       }
-  */
+  
     };
   /*
     useEffect(() => {
@@ -125,23 +125,6 @@ const EditarVisitante = () => {
               value={dniN}
               keyboardType="numeric"
             />
-          </View>
-  
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Contraseña:</Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                placeholder="Password"
-                placeholderTextColor="gray"
-                onChangeText={setPassword}
-                value={password}
-                secureTextEntry={!isPasswordVisible}
-                style={styles.inputPassword}
-              />
-              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-                <Ionicons name={isPasswordVisible ? "eye-off" : "eye"} size={22} style={styles.icon} color="gray" />
-              </TouchableOpacity>
-            </View>
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.labelText}>Email:</Text>

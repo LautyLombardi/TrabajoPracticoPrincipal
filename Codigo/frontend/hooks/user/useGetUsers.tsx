@@ -12,7 +12,7 @@ const useGetUsers = () => {
                 SELECT User.*, Role.name AS roleName
                 FROM User
                 INNER JOIN Role ON User.role_id = Role.id
-                ORDER BY User.createDate
+                ORDER BY User.createDate DESC
             `);
 
             // Parsear los resultados y mapearlos a objetos de usuario
