@@ -66,7 +66,7 @@ const Login = () => {
                   }
                   })
                   }) */
-                  const data = {dni:43022602}
+                  const data = {dni:123456}
                   
                   const adm_data = [
                     {
@@ -80,6 +80,7 @@ const Login = () => {
 
                 }catch(error){
         console.error("No se pudo sacar la foto", error)
+        
         Alert.alert("No se pudo sacar la foto")
       }
   }

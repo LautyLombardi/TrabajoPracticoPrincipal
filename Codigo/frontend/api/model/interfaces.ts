@@ -97,6 +97,7 @@ export interface Logs {
     createDate: string;
     isEnter: number;
     isAutomatic: number;
+    isError: number;
 }
 
 export interface Excepcion {

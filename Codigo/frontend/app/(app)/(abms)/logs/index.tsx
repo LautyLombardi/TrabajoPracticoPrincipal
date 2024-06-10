@@ -26,6 +26,7 @@ const AdministracionLogs = () => {
       <View style={styles.itemContainer}>
         {item.admDni !== null && <Text style={styles.itemText}>{renderText('Usuario que realizo la accion', item.admDni)}</Text>}
         {item.userId !== null && <Text style={styles.itemText}>{renderText('Usuario DNI', item.userId)}</Text>}
+        {item.visitorId !== null && <Text style={styles.itemText}>{renderText('Visitante DNI', item.visitorId)}</Text>}
         {item.abm && <Text style={styles.itemText}>{item.abm}</Text>}
         {item.description && <Text style={styles.itemText}>{item.description}</Text>}
         {item.abmType && <Text style={styles.itemText}>{renderText('Tipo de ABM', item.abmType)}</Text>}
@@ -34,9 +35,9 @@ const AdministracionLogs = () => {
         {item.exceptionId !== null && <Text style={styles.itemText}>{renderText('Exception ID', item.exceptionId)}</Text>}
         {item.hasAccess !== null && <Text style={styles.itemText}>{renderText('Tiene Acceso', item.hasAccess)}</Text>}
         {item.isAutomatic !== null && <Text style={styles.itemText}>{renderText('Es Automatico', item.isAutomatic)}</Text>}
-        {item.isEnter !== null && <Text style={styles.itemText}>{renderText('Is Enter', item.isEnter)}</Text>}
+        {item.isEnter !== null && <Text style={styles.itemText}>{renderText('Es Enter', item.isEnter)}</Text>}
         {item.isFaceRecognition !== null && <Text style={styles.itemText}>{renderText('Reconocimiento Facial', item.isFaceRecognition)}</Text>}
-        {item.visitorId !== null && <Text style={styles.itemText}>{renderText('Visitante DNI', item.visitorId)}</Text>}
+        {item.isError !== null && <Text style={styles.itemText}>{renderText('Es un Error',item.isError)}</Text>}
       </View>
     );
   };

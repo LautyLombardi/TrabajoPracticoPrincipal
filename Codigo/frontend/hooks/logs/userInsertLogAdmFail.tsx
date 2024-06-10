@@ -17,9 +17,9 @@ const useInsertLogAdmFail = () => {
             if(type_adm !== "desactivar"){
                  
                 const abm = type_adm + " de " + table_adm 
-                const description = "Error al dar de  " + type_adm +  " un git"  + table_adm
+                const description = "Error al dar de  " + type_adm +" "+ table_adm
                 const result = await db.runAsync(
-                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isAutomatic) VALUES (?, ?, ?, ?, ?, 1);`,
+                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isAutomatic, isError) VALUES (?, ?, ?, ?, ?, 1, 1);`,
                     [admDni,abm, type_adm , description, createDate]
                 );
 
@@ -31,7 +31,7 @@ const useInsertLogAdmFail = () => {
                 const abm = type_adm + " de " + table_adm 
                 const description = "Error al  desactivar un"  + table_adm
                 const result = await db.runAsync(
-                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isAutomatic) VALUES (?, ?, ?, ?, ?, 1);`,
+                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isAutomatic, isError) VALUES (?, ?, ?, ?, ?, 1, 1);`,
                     [admDni,abm, type_adm , description, createDate]
                 );
                 number = result.lastInsertRowId

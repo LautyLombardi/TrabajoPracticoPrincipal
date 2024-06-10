@@ -9,8 +9,10 @@ import SelectItem from '@/components/seleccionar/SelectItem';
 import useGetCategories from '@/hooks/category/useGetCategories';
 import useGetPlaces from '@/hooks/place/useGetPlaces';
 import useInsertException from '@/hooks/exception/useInsertException';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const Excepciones = () => {
+  const insertLogAdmFail= useInsertLogAdmFail()
   const placesDB =useGetPlaces();
   const categoriesDB = useGetCategories()
   const insertException = useInsertException()
@@ -39,6 +41,7 @@ const Excepciones = () => {
       const insert = await insertException(nombre, descripcion, duration, lugaresSeleccionados, category.id);
       if(insert === 0){
         // TODO: log
+        await insertLogAdmFail("ALTA","excepción")
         Alert.alert("Error al guardar excepción");
       } else {
         // TODO: log
