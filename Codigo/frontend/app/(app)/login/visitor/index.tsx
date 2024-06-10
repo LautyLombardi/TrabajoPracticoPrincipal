@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { router } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { logLoginManual,logLoginManuaFail } from "@/api/services/log";
 import useLogin from "@/hooks/visitor/useLogin";
 
 const LogueoVisitanteManual = () => {
