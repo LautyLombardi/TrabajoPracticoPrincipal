@@ -1,22 +1,29 @@
-import { View, StyleSheet, Pressable, Text } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Pressable, Text, Alert } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
-import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
-import { Alert} from "react-native";
 import { ONLINE} from "@/api/constantes";
+import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
+import AdmUserModal from "@/components/Modal/AdmUserModel";
 
 const Login = () => {
   const navigator = useRouter()
+  const { user, isLoading, isError } = useFaceRecognitionUser();
+  const [cameraPermission, setCameraPermission] = useCameraPermissions();
+  const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
+  const cameraRef = useRef<any>();
+  const [imagen, setImagen] = useState(null);
+  const [usuario, setUsuario] = useState<Usuario>();
+  const [showUser, setShowUser] = useState(false);
 
-    const [cameraPermission, setCameraPermission] = useCameraPermissions();
-    const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
-    const cameraRef = useRef<any>();
-    const [imagen, setImagen] = useState(null);
-
+  useEffect(() => {
+    setUsuario(user)
+    console.log('user login', user)
+  }, [user])
+  
   const takePicture = async () => {
     if (cameraRef.current) {
       const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
@@ -25,7 +32,12 @@ const Login = () => {
       return photo.uri
     }
   };
-  
+
+  const handleCloseUserModal = () => {
+    setShowUser(false);
+    navigator.navigate("/menu")
+  };
+
   const handleAuterizar = async () => {
     try{
       /* takePicture().then((foto) => {
@@ -44,23 +56,17 @@ const Login = () => {
 
             //----------------------storage--------------
             //const data = await respuesta.json();
-            const data = {dni:43026602};
-                
+            const data = {dni:43022602};
             const adm_data = [
               {
                 adm_dni: data.dni
               },
             ];                      
             await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+            setShowUser(true);
             //------------------------------------
             // TODO: log
-            Alert.alert(
-              "Autenticación exitosa",
-              "",
-              [
-                { text: "OK", onPress: () => navigator.navigate("/menu") }
-              ]
-            )
+            
           /* }else{
             // TODO: log
             Alert.alert( "Falló la autenticación de la imagen del usuario")
@@ -92,6 +98,8 @@ const Login = () => {
             <Text style={styles.buttonText}>Autenticar</Text>
           </Pressable>
         </View>
+
+        {showUser && usuario && <AdmUserModal user={usuario} handleCloseModal={handleCloseUserModal} />}
     </View>
     );
 };
