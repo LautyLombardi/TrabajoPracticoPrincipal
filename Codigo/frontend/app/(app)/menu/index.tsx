@@ -114,7 +114,7 @@ export const Menu = () => {
             <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Horatio de entrenamiento de la IA')}>
+              onPress={() => router.navigate("/entrenamiento")}>
               <MaterialCommunityIcons name="clock" size={24} color="black" />
               <Text style={styles.menuText}>Horario de Entrenamiento de la IA</Text>
             </TouchableOpacity>
