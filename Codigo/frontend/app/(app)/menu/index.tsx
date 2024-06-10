@@ -93,14 +93,14 @@ const Menu = () => {
             <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Cambio de mail')}>
+              onPress={() => router.navigate("/mail")}>
               <Foundation name="mail" size={24} color="black" />
               <Text style={styles.menuText}>Cambio de Email</Text>
             </TouchableOpacity>
             <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Horatio de entrenamiento de la IA')}>
+              onPress={() => router.navigate("/entrenamiento")}>
               <MaterialCommunityIcons name="clock" size={24} color="black" />
               <Text style={styles.menuText}>Horario de Entrenamiento de la IA</Text>
             </TouchableOpacity>
@@ -114,7 +114,7 @@ const Menu = () => {
             <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Cambio de imagen institucional')}>
+              onPress={() => router.navigate("/aperturaCierre")}>
               <MaterialCommunityIcons name="city-variant" size={24} color="black" />
               <Text style={styles.menuText}>Horario de Cierre Automático</Text>
             </TouchableOpacity>
