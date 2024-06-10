@@ -9,7 +9,6 @@ import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetEnterprice from '@/hooks/enterprice/useGetEnterprice';
 import useDeactivateEnterprice from '@/hooks/enterprice/useDeactivateEnterprice';
-import useActivateCategory from '@/hooks/category/useActivateCategory';
 import useActivateEnterprice from '@/hooks/enterprice/useActivateEnterprice';
 
 type PropsCol = {
