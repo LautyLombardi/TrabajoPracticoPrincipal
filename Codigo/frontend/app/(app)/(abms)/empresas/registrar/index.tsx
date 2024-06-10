@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-nativ
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import { router } from 'expo-router';
 import useInsertEnterprice from '@/hooks/enterprice/useInsertEnterprice';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistrarEmpresa = () => {
   const insertEnterprice = useInsertEnterprice()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const [nombre, setNombre] = useState<string>("");
   const [cuit, setCuit] = useState<string>("");
@@ -20,6 +22,7 @@ const RegistrarEmpresa = () => {
     if (!isNaN(cuitNumber)) {
       const response = await insertEnterprice(nombre, cuitNumber);
       if(response === 0){
+        await insertLogAdmFail("ALTA","empresa")
         Alert.alert("Error al guardar empresa");
       } else {
         Alert.alert(
@@ -31,6 +34,7 @@ const RegistrarEmpresa = () => {
         );
       }
     } else {
+      await insertLogAdmFail("ALTA","empresa")
       Alert.alert("CUIT no válido");
     }
   };
