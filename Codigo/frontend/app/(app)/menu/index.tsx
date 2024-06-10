@@ -128,7 +128,7 @@ export const Menu = () => {
             <TouchableOpacity 
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
-              onPress={() => console.log('Cambio de imagen institucional')}>
+              onPress={() => router.navigate("/aperturaCierre")}>
               <MaterialCommunityIcons name="city-variant" size={24} color="black" />
               <Text style={styles.menuText}>Horario de Cierre Automático</Text>
             </TouchableOpacity>
