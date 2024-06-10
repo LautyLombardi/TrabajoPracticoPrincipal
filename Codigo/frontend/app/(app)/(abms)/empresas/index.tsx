@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -8,6 +8,9 @@ import { Empresa, Rol } from '@/api/model/interfaces';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetEnterprice from '@/hooks/enterprice/useGetEnterprice';
+import useDeactivateEnterprice from '@/hooks/enterprice/useDeactivateEnterprice';
+import useActivateCategory from '@/hooks/category/useActivateCategory';
+import useActivateEnterprice from '@/hooks/enterprice/useActivateEnterprice';
 
 type PropsCol = {
   text?: string,
@@ -58,10 +61,10 @@ type PropsTable = {
 
   handleView: (empresa: Empresa) => void;
   handleEdit: (id: number) => void;
-  handleDelete: (id: number) => void;
+  handleDelete: (enterprice: Empresa) => void;
 };
 
-const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState, empresas, handleView }) => {
+const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState, empresas, handleView, handleEdit, handleDelete }) => {
 
   const iconVerMas = (empresa: Empresa) => {
     return (
@@ -69,9 +72,11 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
     )
   }
 
-  const deleteIcon = () => {
+  const deleteIcon = (enterprice:Empresa) => {
     return (
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
+      <TouchableOpacity onPress={() => handleDelete(enterprice)}>
+        <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
+      </TouchableOpacity>
     )
   }
 
@@ -80,11 +85,12 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
       <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
     )
   }
+
   const handleToggleIcon = (empresa: Empresa): JSX.Element => {
     if (editState) {
       return modifyIcon();
     } else if (deleteState) {
-      return deleteIcon();
+      return deleteIcon(empresa);
     } else {
       return iconVerMas(empresa);
     }
@@ -121,6 +127,9 @@ const AdministracionEmpresas = () => {
   const [showEnterprice, setShowEnterprice] = useState(false);
   const [selectedEnterprice, setSelectedEnterprice] = useState<Empresa | null>(null);
 
+  const deactivateEnterprice = useDeactivateEnterprice();
+  const activateEnterprice = useActivateEnterprice();
+
   const handleOpenUserModal = (empresa: Empresa) => {
     setSelectedEnterprice(empresa);
     setShowEnterprice(true);
@@ -131,20 +140,40 @@ const AdministracionEmpresas = () => {
     setShowEnterprice(false);
   };
 
+  const handleDeleteEnterprice = async (enterprice: Empresa) => {
+    if (enterprice.isActive) {
+      const result = await deactivateEnterprice(enterprice.id)
+      if (result !== 0) {
+        console.log('Enterprice deactivated successfully.');
+        setEmpresas(prevEnterprice => prevEnterprice.filter(inst => inst.id !== enterprice.id))
+      } else {
+        console.error('Failed to deactivate enterprice.');
+      }
+    } else {
+      const result = await activateEnterprice(enterprice.id);
+      if (result !== 0) {
+        console.log('Enterprice activated successfully.');
+        setEmpresas(prevEnterprice => prevEnterprice.filter(inst => inst.id !== enterprice.id))
+      } else {
+        console.error('Failed to activate enterprice.');
+      }
+    }
+  }
+
   // Cambio de iconos
-  function handleToggleIco(icon : string){
-    if(icon == "edit" && edit || icon == "delete" && trash){
+  function handleToggleIco(icon: string) {
+    if (icon == "edit" && edit || icon == "delete" && trash) {
       setEdit(false)
       setTrash(false)
-    }else {
+    } else {
       setEdit(icon == "edit")
-      setTrash(icon == "delete")        
+      setTrash(icon == "delete")
     }
   };
 
-  const handlerDay = async () =>{
+  const handlerDay = async () => {
     const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
+    if (permisos) {
       setPermition(JSON.parse(permisos));
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
@@ -154,10 +183,10 @@ const AdministracionEmpresas = () => {
 
   const enterpricesDB = useGetEnterprice();
   const [empresas, setEmpresas] = useState<Empresa[]>([])
-  
+
   useFocusEffect(
     useCallback(() => {
-      const {enterprices}=enterpricesDB
+      const { enterprices } = enterpricesDB
       if (enterprices) {
         setEmpresas(enterprices);
       }
@@ -165,7 +194,7 @@ const AdministracionEmpresas = () => {
   );
 
   useEffect(() => {
-    const {enterprices}=enterpricesDB
+    const { enterprices } = enterpricesDB
     if (enterprices) {
       setEmpresas(enterprices);
     }
@@ -188,44 +217,44 @@ const AdministracionEmpresas = () => {
         </Pressable>
       </View>
 
-        {/** Botones CRUD */}
+      {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("ver")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("delete")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("edit")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => router.navigate("/empresas/registrar")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => router.navigate("/empresas/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
 
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
-        <TablaEmpresa 
-          viewState={view} 
-          editState={edit} 
-          deleteState={trash} 
-          empresas={empresas} 
+        <TablaEmpresa
+          viewState={view}
+          editState={edit}
+          deleteState={trash}
+          empresas={empresas}
           handleView={handleOpenUserModal}
-          handleEdit={() => console.log("editar")} 
-          handleDelete={() => console.log("borrar")}
+          handleEdit={(id) => console.log("editar", id)}
+          handleDelete={handleDeleteEnterprice}
         />
       </ScrollView>
 
@@ -237,29 +266,29 @@ const AdministracionEmpresas = () => {
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#00759c',
-      alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#00759c',
+    alignItems: 'center',
   },
   tableContainer: {
     width: '100%',
   },
   crudBtn: {
-    flexDirection: "row", 
-    width: "100%", 
-    justifyContent: "flex-end", 
-    alignItems: "center", 
-    paddingHorizontal: 20, 
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: 20,
     gap: 4
   },
-  crudItem:{
-    padding: 10, 
-    backgroundColor: '#fff', 
+  crudItem: {
+    padding: 10,
+    backgroundColor: '#fff',
     borderRadius: 5,
     width: '5.3%',
     height: 'auto',
-    marginVertical:'2%',
-    justifyContent: "center", 
+    marginVertical: '2%',
+    justifyContent: "center",
   },
   crudItemDisabled: {
     backgroundColor: '#a3a3a3',
@@ -289,9 +318,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    aspectRatio: 1, 
+    aspectRatio: 1,
     maxHeight: '80%',
-    flexBasis: '8%', 
+    flexBasis: '8%',
   },
   searchButtonIcon: {
     fontSize: 20,

@@ -10,7 +10,7 @@ const useDeactivateVisitor = () => {
             await db.execAsync('BEGIN TRANSACTION;');
             // Update query
             const result = await db.runAsync(
-                `UPDATE visitor SET isActive = 0 WHERE id = ?;`,
+                `UPDATE visitor SET isActive = 0 WHERE dni = ?;`,
                 [instituteId]
             );
 
