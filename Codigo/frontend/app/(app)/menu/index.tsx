@@ -8,23 +8,27 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { AntDesign, Ionicons, MaterialIcons, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
-import { logLoyout} from "@/api/services/log";
 import { Rol } from '@/api/model/interfaces';
+import useGetRolByDni from '@/hooks/roles/useGetRolByDni';
 
-
-export const Menu = () => {
-  const [status, setStatusDay] = useState<boolean>(true);
+const Menu = () => {
   const [permition, setPermition] = useState<Rol>();
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isAuthMenuOpen, setAuthMenuOpen] = useState<boolean>(false);
-  const [isLoginMenuOpen, setLoginMenuOpen] = useState<boolean>(false);
-  const [isImageMenuOpen, setImageMenuOpen] = useState<boolean>(false);
-  const [isEntitiesMenuOpen, setEntitiesMenuOpen] = useState<boolean>(false);
+  const {role} = useGetRolByDni();
+
+  const fetchRol = useCallback(async () => {
+    if (role) {
+      setPermition(role);
+      await AsyncStorage.setItem('rol_data', JSON.stringify(role));
+    }
+  }, [role]);
+
+  useEffect(() => {
+    fetchRol();
+  }, [fetchRol]);
 
   const handlerLogout = async () => {
     try {
-      const data = await getAdmDni()
-      await logLoyout();
+      const data = await getAdmDni();
       await AsyncStorage.removeItem('adm_data');
       Alert.alert(
         "Usuario deslogueado",
@@ -44,55 +48,37 @@ export const Menu = () => {
     setAuthMenuOpen(menu === 'auth' ? !isAuthMenuOpen : false);
     setLoginMenuOpen(menu === 'login' ? !isLoginMenuOpen : false);
     setImageMenuOpen(menu === 'image' ? !isImageMenuOpen : false);
-    setEntitiesMenuOpen(menu === 'entities' ? !isEntitiesMenuOpen : false)
+    setEntitiesMenuOpen(menu === 'entities' ? !isEntitiesMenuOpen : false);
   };
 
-  const handlerDay = async () => {
-    const rolHardcodeado : Rol = {
-      id: 3,
-      name: 'RRHH',
-      description: 'recurso humanos',
-      createDate: '2024-06-02 21:48:43',
-      routingConnection: 1, // usar como systemConfigs
-      onlineLogin: 1,
-      offlineLogin: 1,
-      dayStartEnd: 1,
-      visitorAuthentication: 0,
-      visitorAuthorization: 1,
-      instituteConfiguration: 1,
-      entityABMs: 1,
-      systemReports: 0,
-      systemLog: 1,
-      exceptionLoading: 1,
+  const [status, setStatusDay] = useState<boolean>(true);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isAuthMenuOpen, setAuthMenuOpen] = useState<boolean>(false);
+  const [isLoginMenuOpen, setLoginMenuOpen] = useState<boolean>(false);
+  const [isImageMenuOpen, setImageMenuOpen] = useState<boolean>(false);
+  const [isEntitiesMenuOpen, setEntitiesMenuOpen] = useState<boolean>(false);
+
+  const handlerDay = useCallback(async () => {
+    try {
+      const dayStatus = await AsyncStorage.getItem('dayStatus');
+      const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
+      setStatusDay(isDayOpen);
+    } catch (error) {
+      console.error('Error al obtener el estado del día:', error);
     }
-    await AsyncStorage.setItem('rol_data', JSON.stringify(rolHardcodeado));
-    const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
-      const parsedPermisos = JSON.parse(permisos);
-      console.log("parsedPermisos", parsedPermisos)
-      setPermition(parsedPermisos);
-    }
-    const dayStatus = await AsyncStorage.getItem('dayStatus');
-    console.log("day status on menu", dayStatus);
-    const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
-    setStatusDay(isDayOpen);
-  };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
       handlerDay();
-    }, [])
+    }, [handlerDay])
   );
-
-  useEffect(() => {
-    handlerDay();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Config button */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.gearButton} onPress={() =>toggleMenu('main')}>
+        <TouchableOpacity style={styles.gearButton} onPress={() => toggleMenu('main')}>
           <FontAwesome6 name="gear" size={24} color="black" />
         </TouchableOpacity>
         {isMenuOpen && (
@@ -118,21 +104,21 @@ export const Menu = () => {
               <MaterialCommunityIcons name="clock" size={24} color="black" />
               <Text style={styles.menuText}>Horario de Entrenamiento de la IA</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
               onPress={() => router.navigate("/institutionalImage")}>
               <Entypo name="images" size={24} color="black" />
               <Text style={styles.menuText}>Cambio de Imagen Institucional</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               disabled={permition ? permition?.routingConnection === 0 : true}
               style={[styles.menuItem, (permition ? permition.routingConnection === 0 : true) && styles.buttonMenuDisabled]}
               onPress={() => router.navigate("/aperturaCierre")}>
               <MaterialCommunityIcons name="city-variant" size={24} color="black" />
               <Text style={styles.menuText}>Horario de Cierre Automático</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               disabled={permition ? permition?.systemLog === 0 : true}
               style={[styles.menuItem, (permition ? permition.systemLog === 0 : true) && styles.buttonMenuDisabled]}
               onPress={() => router.navigate("/logs")}>
@@ -150,10 +136,10 @@ export const Menu = () => {
       {/* Main Menu */}
       <View style={styles.mainMenu}>
         <View style={styles.mainMenuItem}>
-          <Pressable 
-            disabled={!status || (permition ? permition?.onlineLogin === 0 : true)} 
+          <Pressable
+            disabled={!status || (permition ? permition?.onlineLogin === 0 : true)}
             style={[styles.buttonMenu, (!status || (permition ? permition.onlineLogin === 0 : true)) && styles.buttonMenuDisabled]}
-            onPress={() =>toggleMenu('auth')}>
+            onPress={() => toggleMenu('auth')}>
             <MaterialCommunityIcons name="face-recognition" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autorizar</Text>
           </Pressable>
@@ -167,8 +153,8 @@ export const Menu = () => {
               </Pressable>
             </View>
             <View style={[styles.mainMenuItem, { marginLeft: 5 }]}>
-              <Pressable 
-                disabled={!status || (permition ? permition?.visitorAuthentication === 0 : true)} 
+              <Pressable
+                disabled={!status || (permition ? permition?.visitorAuthentication === 0 : true)}
                 style={[styles.buttonMenu, (!status || (permition ? permition.visitorAuthentication === 0 : true)) && styles.buttonMenuDisabled]}
                 onPress={() => router.navigate("/faceRecognition/visitor")}>
                 <AntDesign name="right" size={24} color="black" />
@@ -178,10 +164,10 @@ export const Menu = () => {
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable 
-            disabled={!status || (permition ? permition?.offlineLogin === 0 : true)}  
-            style={[styles.buttonMenu, (!status || (permition ? permition.offlineLogin === 0 : true)) && styles.buttonMenuDisabled]} 
-            onPress={() =>toggleMenu('login')}>
+          <Pressable
+            disabled={!status || (permition ? permition?.offlineLogin === 0 : true)}
+            style={[styles.buttonMenu, (!status || (permition ? permition.offlineLogin === 0 : true)) && styles.buttonMenuDisabled]}
+            onPress={() => toggleMenu('login')}>
             <MaterialCommunityIcons name="login" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autenticación Manual</Text>
           </Pressable>
@@ -203,7 +189,7 @@ export const Menu = () => {
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() =>toggleMenu('image')}>
+          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => toggleMenu('image')}>
             <Entypo name="camera" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Registrar Imagen</Text>
           </Pressable>
@@ -221,11 +207,11 @@ export const Menu = () => {
                 <AntDesign name="right" size={24} color="black" />
                 <Text style={styles.textBtnMenu}>Registrar Imagen de Visitante</Text>
               </Pressable>
-            </View> 
+            </View>
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() =>toggleMenu('entities')}>
+          <Pressable style={styles.buttonMenu} onPress={() => toggleMenu('entities')}>
             <Ionicons name="person-add-sharp" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Administración de Entidades</Text>
           </Pressable>
@@ -274,9 +260,9 @@ export const Menu = () => {
             </View>
           </>
         )}
-        
+
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable 
+          <Pressable
             disabled={permition ? permition?.systemReports === 0 : true}
             style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
             onPress={() => router.navigate("/reportes")}>
@@ -288,14 +274,14 @@ export const Menu = () => {
 
       {/* Open CLose Day */}
       <View style={styles.dayButton}>
-      <Link href={"/openCloseDay"} asChild>
-        <Pressable 
-          disabled={permition ? permition?.dayStartEnd === 0 : true}
-          style={styles.button}
-        >
-          <Text style={styles.text}>Apertura y Cierre del dia</Text>
-        </Pressable>
-      </Link>
+        <Link href={"/openCloseDay"} asChild>
+          <Pressable
+            disabled={permition ? permition?.dayStartEnd === 0 : true}
+            style={styles.button}
+          >
+            <Text style={styles.text}>Apertura y Cierre del dia</Text>
+          </Pressable>
+        </Link>
       </View>
     </SafeAreaView>
   );
@@ -340,8 +326,8 @@ const styles = StyleSheet.create({
     borderColor: '#E8E8E8',
   },
   menuItem: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#E8E8E8',
@@ -370,7 +356,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 5,
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,

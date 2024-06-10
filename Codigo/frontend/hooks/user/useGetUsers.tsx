@@ -12,7 +12,7 @@ const useGetUsers = () => {
                 SELECT User.*, Role.name AS roleName
                 FROM User
                 INNER JOIN Role ON User.role_id = Role.id
-                ORDER BY User.createDate
+                ORDER BY User.createDate DESC
             `);
 
             // Parsear los resultados y mapearlos a objetos de usuario
@@ -21,7 +21,6 @@ const useGetUsers = () => {
                 name: row.name,
                 role_id: row.role_id,
                 lastname: row.lastname,
-                username: row.username,
                 isActive: row.isActive,
                 motive: row.motive,
                 activeData: row.activeData,
@@ -33,7 +32,7 @@ const useGetUsers = () => {
         },
     });
 
-    console.log('enterprices data: ', usersQuery.data);
+    console.log('users data: ', usersQuery.data);
     
     return {
         users: usersQuery.data,
