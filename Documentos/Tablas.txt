@@ -1,0 +1,199 @@
+CREATE TABLE category (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  description TEXT,
+  isExtern INTEGER,
+  isActive INTEGER,
+  createDate TEXT
+);
+
+CREATE TABLE exception (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  description TEXT,
+  duration TEXT,
+  createDate TEXT
+);
+
+CREATE TABLE user (
+  dni INTEGER PRIMARY KEY,
+  role_id INTEGER,
+  name TEXT,
+  lastname TEXT,
+  password TEXT,
+  isActive INTEGER,
+  motive TEXT,
+  activeDate TEXT,
+  createDate TEXT,
+  FOREIGN KEY (role_id) REFERENCES role(id)
+);
+
+CREATE TABLE userHistory (
+  id INTEGER PRIMARY KEY,
+  dni INTEGER,
+  role_id INTEGER,
+  name TEXT,
+  lastname TEXT,
+  password TEXT,
+  isActive INTEGER,
+  motive TEXT,
+  activeDate TEXT,
+  createDate TEXT,
+  barcode TEXT,
+  FOREIGN KEY (dni) REFERENCES user(dni),
+  FOREIGN KEY (role_id) REFERENCES role(id)
+);
+
+CREATE TABLE role (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  description TEXT,
+  createDate TEXT,
+  routingConnection INTEGER,
+  onlineLogin INTEGER,
+  offlineLogin INTEGER,
+  dayStartEnd INTEGER,
+  visitorAuthentication INTEGER,
+  visitorAuthorization INTEGER,
+  instituteConfiguration INTEGER,
+  entityABMs INTEGER,
+  systemReports INTEGER,
+  systemLog INTEGER,
+  exceptionLoading INTEGER
+);
+
+CREATE TABLE enterprise (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  cuit INTEGER,
+  isActive INTEGER,
+  createDate TEXT
+);
+
+CREATE TABLE image (
+  id INTEGER PRIMARY KEY,
+  userId INTEGER,
+  visitorId INTEGER,
+  image BLOB,
+  createDate TEXT,
+  FOREIGN KEY (userId) REFERENCES user(dni),
+  FOREIGN KEY (visitorId) REFERENCES visitor(dni)
+);
+
+CREATE TABLE visitor (
+  dni INTEGER PRIMARY KEY,
+  enterprice_id INTEGER,
+  name TEXT,
+  lastname TEXT,
+  email TEXT,
+  startDate TEXT,
+  finishDate TEXT,
+  isActive INTEGER,
+  createDate TEXT,
+  password TEXT,
+  FOREIGN KEY (enterprice_id) REFERENCES enterprise(id)
+);
+
+CREATE TABLE visitorHistory (
+  id INTEGER PRIMARY KEY,
+  dni INTEGER,
+  enterprice_id INTEGER,
+  name TEXT,
+  lastname TEXT,
+  email TEXT,
+  startDate TEXT,
+  finishDate TEXT,
+  isActive INTEGER,
+  createDate TEXT,
+  isEnter INTEGER,
+  password TEXT,
+  FOREIGN KEY (dni) REFERENCES visitor(dni),
+  FOREIGN KEY (enterprice_id) REFERENCES enterprise(id)
+);
+
+CREATE TABLE place (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  abbreviation TEXT,
+  description TEXT,
+  openTime TEXT,
+  closeTime TEXT,
+  isActive INTEGER,
+  createDate TEXT
+);
+
+CREATE TABLE institute (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  isActive INTEGER,
+  createDate TEXT
+);
+
+CREATE TABLE logs (
+  id INTEGER PRIMARY KEY,
+  admDni INTEGER,
+  userId INTEGER,
+  exceptionId INTEGER,
+  visitorId INTEGER,
+  hasAccess INTEGER,
+  isFaceRecognition INTEGER,
+  abm TEXT,
+  abmType TEXT,
+  description TEXT,
+  aperturaCierre TEXT,
+  createDate TEXT,
+  isEnter INTEGER,
+  isAutomatic INTEGER,
+  FOREIGN KEY (admDni) REFERENCES user(dni),
+  FOREIGN KEY (userId) REFERENCES user(dni),
+  FOREIGN KEY (exceptionId) REFERENCES exception(id),
+  FOREIGN KEY (visitorId) REFERENCES visitor(dni)
+);
+
+CREATE TABLE category_visitor (
+  id INTEGER PRIMARY KEY,
+  category_id INTEGER,
+  visitor_id INTEGER,
+  FOREIGN KEY (category_id) REFERENCES category(id),
+  FOREIGN KEY (visitor_id) REFERENCES visitor(dni)
+);
+
+CREATE TABLE category_exception (
+  id INTEGER PRIMARY KEY,
+  category_id INTEGER,
+  exception_id INTEGER,
+  FOREIGN KEY (category_id) REFERENCES category(id),
+  FOREIGN KEY (exception_id) REFERENCES exception(id)
+);
+
+CREATE TABLE place_exception (
+  id INTEGER PRIMARY KEY,
+  place_id INTEGER,
+  exception_id INTEGER,
+  FOREIGN KEY (place_id) REFERENCES place(id),
+  FOREIGN KEY (exception_id) REFERENCES exception(id)
+);
+
+CREATE TABLE institute_place (
+  id INTEGER PRIMARY KEY,
+  institute_id INTEGER,
+  place_id INTEGER,
+  FOREIGN KEY (institute_id) REFERENCES institute(id),
+  FOREIGN KEY (place_id) REFERENCES place(id)
+);
+
+CREATE TABLE category_institute (
+  id INTEGER PRIMARY KEY,
+  category_id INTEGER,
+  institute_id INTEGER,
+  FOREIGN KEY (category_id) REFERENCES category(id),
+  FOREIGN KEY (institute_id) REFERENCES institute(id)
+);
+
+CREATE TABLE category_place (
+  id INTEGER PRIMARY KEY,
+  category_id INTEGER,
+  place_id INTEGER,
+  FOREIGN KEY (category_id) REFERENCES category(id),
+  FOREIGN KEY (place_id) REFERENCES place(id)
+);
