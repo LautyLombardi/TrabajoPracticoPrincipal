@@ -10,7 +10,7 @@ const useDeactivateUser = () => {
             await db.execAsync('BEGIN TRANSACTION;');
             // Update query
             const result = await db.runAsync(
-                `UPDATE user SET isActive = 0 WHERE id = ?;`,
+                `UPDATE user SET isActive = 0 WHERE dni = ?;`,
                 [instituteId]
             );
 
