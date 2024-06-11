@@ -2,7 +2,6 @@ import CampoFecha from "@/components/CampoFecha/CampoFecha";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useEditPlace from "@/hooks/place/useEditPlaces";
 import useGetPlace from "@/hooks/place/useGetPlace";
-import useGetPlaces from "@/hooks/place/useGetPlaces";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -11,7 +10,6 @@ import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-nativ
 const EditPlace = () => {
     const { id } = useLocalSearchParams();
     const { place, isLoading, isError } = useGetPlace(Number(id));
-    const { places } = useGetPlaces();
 
     const [name, setName] = useState("");
     const [abbreviation, setAbbreviation] = useState("");
@@ -56,7 +54,7 @@ const EditPlace = () => {
 
     return (
         <View style={styles.container}>
-            <HandleGoBackReg title="Editar Visitante" route="visitantes" />
+            <HandleGoBackReg title="Editar Visitante" route="lugares" />
 
             <View style={styles.formContainer}>
                 <View style={styles.inputContainer}>
