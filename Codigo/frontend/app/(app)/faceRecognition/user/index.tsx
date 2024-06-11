@@ -32,7 +32,7 @@ const UserFaceRecognition = () => {
 
   const handleAutenticacion = async () => {
     try {
-      /* takePicture().then((foto) => {
+      takePicture().then((foto) => {
         const formData = new FormData();
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
           uri: foto,
@@ -43,11 +43,9 @@ const UserFaceRecognition = () => {
           method: 'POST',
           body: formData
         }).then(async (respuesta) => {
-          if (respuesta.status == 200) { */
-            //----------------------storage--------------
-            
-            //const data = await respuesta.json();
-            const data = {dni:123456};
+          if (respuesta.status == 200) { 
+            //----------------------storage--------------            
+            const data = await respuesta.json();
             const user_data = [
               {
                 user_dni: data.dni
@@ -57,8 +55,7 @@ const UserFaceRecognition = () => {
             setShowUser(true);
             //------------------------------------
             // TODO log
-
-          /* } else {
+          } else {
             // TODO log
             Alert.alert(
               "Falló la autenticación de la imagen del usuario",
@@ -69,7 +66,7 @@ const UserFaceRecognition = () => {
             );
           }
         });
-      }); */
+      });
     } catch (error) {
       Alert.alert("No se pudo sacar la foto");
     }
@@ -83,14 +80,7 @@ const UserFaceRecognition = () => {
       return photo.uri;
     }
   };
-/*
-  const uriToFile = async (uri: string): Promise<File> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-    return file;
-  };
-*/
+
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>

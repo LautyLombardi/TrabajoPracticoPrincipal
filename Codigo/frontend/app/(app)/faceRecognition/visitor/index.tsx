@@ -32,7 +32,7 @@ const VisitorFaceRecognition = () => {
 
   const handleAutenticacion = async () => {
     try {
-      /* takePicture().then((foto) => {
+      takePicture().then((foto) => {
         const formData = new FormData();
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
           uri: foto,
@@ -43,11 +43,9 @@ const VisitorFaceRecognition = () => {
           method: 'POST',
           body: formData
         }).then(async (respuesta) => {
-          if (respuesta.status == 200) { */
+          if (respuesta.status == 200) {
             //----------------------storage--------------
-            
-            //const data = await respuesta.json();
-            const data = {dni:44172212};
+            const data = await respuesta.json();
             const visitor_data = [
               {
                 visitor_dni: data.dni
@@ -56,13 +54,12 @@ const VisitorFaceRecognition = () => {
             await AsyncStorage.setItem('visitor_data', JSON.stringify(visitor_data));
             setShowUser(true);
             // TODO log
-         /*  } else {
+          } else {
             // TODO log
-            await logfacerecognitionUser(0)
             Alert.alert("Falló la autenticación de la imagen del visitante")
           }
         });
-      }); */
+      });
     } catch (error) {
       Alert.alert("No se pudo sacar la foto");
     }
@@ -76,7 +73,6 @@ const VisitorFaceRecognition = () => {
       return photo.uri;
     }
   };
-
 
   return (
     <View style={styles.container}>
