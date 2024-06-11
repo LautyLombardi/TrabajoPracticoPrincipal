@@ -61,41 +61,33 @@ type PropsTable = {
   deleteState: boolean,
 
   handleView: (lugar: Lugar) => void;
-  handleEdit: (id: number) => void;
   handleDelete: (lug: Lugar) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView, handleDelete }) => {
-
-  const handleDesactivarCategoria = async (id: number) => {
-    try {
-      // TODO:
-      //await desactivarLugar(id);
-      // Realizar cualquier otra acción necesaria después de desactivar la categoría
-    } catch (error) {
-      console.error('Error al desactivar la categoría:', error);
-    }
-  };
+const TablaLugares: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView, handleDelete }) => {
 
   const iconVerMas = (lugar: Lugar) => {
     return (
       <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
-    )
-  }
+    );
+  };
 
   const deleteIcon = (lug: Lugar) => {
     return (
       <TouchableOpacity onPress={() => handleDelete(lug)}>
         <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
       </TouchableOpacity>
-    )
-  }
+    );
+  };
 
-  const modifyIcon = (id: any) => {
+  const modifyIcon = (id: number) => {
     return (
-      <Ionicons name='pencil-sharp' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"orange"} />
-    )
-  }
+      <Ionicons name='pencil-sharp'
+        style={{ fontSize: 20, padding: 7, borderRadius: 100 }}
+        color={"orange"}
+        onPress={() => router.push(`/lugares/editar?id=${id}`)} />
+    );
+  };
 
   const handleToggleIcon = (lugar: Lugar): JSX.Element => {
     if (editState) {
@@ -133,17 +125,17 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
 const AdministracionLugares = () => {
   const [status, setStatusDay] = useState<boolean>(true);
-  const [permition, setPermition] = useState<Rol>();
+  const [permition, setPermition] = useState<Rol | null>(null);
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
 
-  const deactivatePlace = useDeactivatePlace()
-  const activatePlace = useActivatePlace()
 
-  // HandleDeleteCategoria 
+  const deactivatePlace = useDeactivatePlace();
+  const activatePlace = useActivatePlace();
+
   const handleOpenUserModal = (lugar: Lugar) => {
     setSelectedLugar(lugar);
     setShowUser(true);
@@ -153,28 +145,27 @@ const AdministracionLugares = () => {
     setSelectedLugar(null);
     setShowUser(false);
   };
-  
+
   const handleDeletePlace = async (lug: Lugar) => {
     if (lug.isActive) {
-      const result=await deactivatePlace(lug.id)
+      const result = await deactivatePlace(lug.id);
       if (result !== 0) {
         console.log('place deactivated successfully.');
-        setLugares(prevPlace => prevPlace.filter(inst=>inst.id!==lug.id))
-      }else{
+        setLugares(prevPlace => prevPlace.filter(inst => inst.id !== lug.id));
+      } else {
         console.error('Failed to deactivate place.');
       }
     } else {
-      const result=await activatePlace(lug.id)
+      const result = await activatePlace(lug.id);
       if (result !== 0) {
         console.log('place activated successfully.');
-        setLugares(prevPlace => prevPlace.filter(inst=>inst.id!==lug.id))
-      }else{
-        console.error('Failed to deactivate place.');
+        setLugares(prevPlace => prevPlace.filter(inst => inst.id !== lug.id));
+      } else {
+        console.error('Failed to activate place.');
       }
     }
-  }
+  };
 
-  // Cambio de iconos
   function handleToggleIco(icon: string) {
     if (icon === "edit" && edit || icon === "delete" && trash) {
       setEdit(false);
@@ -192,28 +183,23 @@ const AdministracionLugares = () => {
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
-    setStatusDay(isDayOpen)
-  }
+    setStatusDay(isDayOpen);
+  };
 
-  //conexion con db
-  const placesDB = useGetPlaces();
+  const { places, refetch } = useGetPlaces();
+
   const [lugares, setLugares] = useState<Lugar[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const { places } = placesDB
-      if (places) {
-        setLugares(places);
-      }
-    }, [[placesDB]])
-  );
+      refetch();
+    }, [refetch]))
 
   useEffect(() => {
-    const { places } = placesDB
     if (places) {
       setLugares(places);
     }
-  }, [placesDB]);
+  }, [places]);
 
   useEffect(() => {
     handlerDay();
@@ -221,61 +207,46 @@ const AdministracionLugares = () => {
 
   return (
     <View style={styles.container}>
-      {/** Header Menu */}
       <HandleGoBack title='Administración de Lugares' route='menu' />
-
-      {/** Buscador */}
-      {/* <View style={styles.searchContainer}>
-        <TextInput placeholder='Buscar' style={styles.searchText} />
-        <Pressable style={styles.searchButton}>
-          <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
-        </Pressable>
-      </View> */}
-
-      {/** Botones CRUD */}
       <View style={styles.crudBtn}>
         <Pressable
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          disabled={!status || (permition ? permition.entityABMs === 0 : true)}
           style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
         <Pressable
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          disabled={!status || (permition ? permition.entityABMs === 0 : true)}
           style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
         <Pressable
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          disabled={!status || (permition ? permition.entityABMs === 0 : true)}
           style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
         <Pressable
-          disabled={!status || (permition ? permition?.entityABMs === 0 : true)}
+          disabled={!status || (permition ? permition.entityABMs === 0 : true)}
           style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => router.navigate("/lugares/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
-
-      {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
-        <Tablacategorias
+        <TablaLugares
           viewState={view}
           editState={edit}
           deleteState={trash}
           lugares={lugares}
           handleView={handleOpenUserModal}
-          handleEdit={() => console.log("editar")}
           handleDelete={handleDeletePlace} />
       </ScrollView>
-
       {showUser && selectedLugar && <PlaceModal place={selectedLugar} handleCloseModal={handleCloseUserModal} />}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable } from "react-native";
-import { router, useLocalSearchParams  } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
@@ -95,125 +95,124 @@ const EditarVisitante = () => {
       }
     }, [categoryDB, categoria]);
   */
-    return (
-      <View style={styles.container}>
-        <HandleGoBackReg title="Editar Visitante" route="visitantes" />
-  
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Nombre:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Jose"
-              placeholderTextColor="gray"
-              onChangeText={setNombreN}
-              value={nombreN}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Apellido:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Perez"
-              placeholderTextColor="gray"
-              onChangeText={setApellidoN}
-              value={apellidoN}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>DNI: </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="00000000"
-              placeholderTextColor="gray"
-              onChangeText={setDniN}
-              value={dniN}
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Email:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="gray"
-              onChangeText={setEmailN}
-              value={emailN}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.labelText}>Fecha de Activacion:</Text>
-            <View style={{ flex: 1 }}>
-              <CampoFecha date={dateActive} setDate={setDateActive} />
-            </View>
+  return (
+    <View style={styles.container}>
+      <HandleGoBackReg title="Editar Visitante" route="visitantes" />
+
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Nombre:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Jose"
+            placeholderTextColor="gray"
+            onChangeText={setNombreN}
+            value={nombreN}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Apellido:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Perez"
+            placeholderTextColor="gray"
+            onChangeText={setApellidoN}
+            value={apellidoN}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>DNI: </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="00000000"
+            placeholderTextColor="gray"
+            onChangeText={setDniN}
+            value={dniN}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Email:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="gray"
+            onChangeText={setEmailN}
+            value={emailN}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.labelText}>Fecha de Activacion:</Text>
+          <View style={{ flex: 1 }}>
+            <CampoFecha date={dateActive} setDate={setDateActive} />
           </View>
         </View>
-  
-        <Pressable onPress={handleTerminar} style={styles.button}>
-          <Text style={styles.buttonText}>Editar</Text>
-        </Pressable>
       </View>
-    );
-  };
-  
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: "#00759c",
-      flex: 1,
-      paddingVertical: 30,
-      alignItems: "center",
-    },
-    formContainer: {
-      flex: 1,
-      marginTop: 20,
-      width: '90%',
-    },
-    inputContainer: {
-      height: 70,
-      alignItems: "center",
-      flexDirection: "row",
-      marginBottom: 20,
-    },
-    labelText: {
-      color: "white",
-      fontSize: 16,
-      textAlign: "left",
-      width: "30%",
-    },
-    input: {
-      backgroundColor: "white",
-      padding: 10,
-      flex: 1,
-      borderRadius: 5,
-      color: 'black',
-    },
-    passwordContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'white',
-      borderRadius: 5,
-    },
-    inputPassword: {
-      flex: 1,
-      padding: 10,
-      color: 'black',
-    },
-    icon: {
-      marginRight: 5,
-    },
-    button: {
-      backgroundColor: 'white',
-      padding: 15,
-      borderRadius: 5,
-      alignItems: 'center',
-      width: '90%',
-    },
-    buttonText: {
-      color: '#000051',
-      fontSize: 16,
-    },
-  });
-  
-  export default EditarVisitante;
-  
+
+      <Pressable onPress={handleTerminar} style={styles.button}>
+        <Text style={styles.buttonText}>Editar</Text>
+      </Pressable>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#00759c",
+    flex: 1,
+    paddingVertical: 30,
+    alignItems: "center",
+  },
+  formContainer: {
+    flex: 1,
+    marginTop: 20,
+    width: '90%',
+  },
+  inputContainer: {
+    height: 70,
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  labelText: {
+    color: "white",
+    fontSize: 16,
+    textAlign: "left",
+    width: "30%",
+  },
+  input: {
+    backgroundColor: "white",
+    padding: 10,
+    flex: 1,
+    borderRadius: 5,
+    color: 'black',
+  },
+  passwordContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 5,
+  },
+  inputPassword: {
+    flex: 1,
+    padding: 10,
+    color: 'black',
+  },
+  icon: {
+    marginRight: 5,
+  },
+  button: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
+  },
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
+  },
+});
+
+export default EditarVisitante;

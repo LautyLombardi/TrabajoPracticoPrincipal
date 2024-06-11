@@ -7,14 +7,18 @@ const useGetPlaces = () => {
 
     const placesQuery = useQuery<Lugar[]>({
         queryKey: ['places'],
-        queryFn: (): Promise<Lugar[]> =>
-          db.getAllAsync('SELECT * FROM place ORDER BY createDate'),
+        queryFn: (): Promise<Lugar[]> => {
+            return db.getAllAsync('SELECT * FROM place ORDER BY createDate DESC');
+        },
+        refetchOnWindowFocus: true, // Refetch al volver al foco
+        refetchOnMount: true,
     });
 
     return {
         places: placesQuery.data,
         isLoading: placesQuery.isLoading,
         isError: placesQuery.isError,
+        refetch:placesQuery.refetch,
     };
 }
 
