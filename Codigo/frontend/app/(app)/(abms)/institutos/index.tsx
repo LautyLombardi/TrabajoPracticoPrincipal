@@ -7,6 +7,8 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Instituto, Rol } from '@/api/model/interfaces';
 import InstituteModal from '@/components/Modal/InstituteModal';
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
+import useDeactivateInstitute from '@/hooks/institute/useDeactivateInstitute';
+import useActivateInstitute from '@/hooks/institute/useActivateInstitute';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
@@ -57,10 +59,10 @@ type PropsTable = {
   deleteState: boolean
 
   handleView: (instituto: Instituto) => void;
-  handleDelete: (id: number) => void;
+  handleDelete: (insti: Instituto) => void;
 };
 
-const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteState, institutos, handleView }) => {
+const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteState, institutos, handleView, handleDelete}) => {
 
   const iconVerMas = (instituto: Instituto) => {
     return (
@@ -68,12 +70,12 @@ const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteStat
     )
   }
 
-  const deleteIcon = () => {
+   const deleteIcon = (insti: Instituto) => {
     return (
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
-    )
-  }
-
+      <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"}  onPress={() =>handleDelete(insti)}/>
+    );
+  };
+  
   const modifyIcon = (id: number) => {
     return (
       <Ionicons name='pencil-sharp'
@@ -87,7 +89,7 @@ const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteStat
     if (editState) {
       return modifyIcon(instituto.id);
     } else if (deleteState) {
-      return deleteIcon();
+      return deleteIcon(instituto);
     } else {
       return iconVerMas(instituto);
     }
@@ -122,6 +124,32 @@ const AdministracionInstitutos = () => {
   const [showInstitute, setShowInstitute] = useState(false);
   const [selectedInstitute, setSelectedInstitute] = useState<Instituto | null>(null);
 
+  const deactivateInstitute = useDeactivateInstitute();
+  const activateInstitute = useActivateInstitute();
+
+  const handleDeleteInstitute = async (insti: Instituto) => {
+
+    if (insti.isActive) {
+      const result = await deactivateInstitute(insti.id);
+      if (result !== 0) {
+        console.log('Institute deactivated successfully.');
+        // Actualiza la lista de institutos después de desactivar uno
+        setInstitutos(prevInstitutes => prevInstitutes.filter(inst => inst.id !== insti.id));
+      } else {
+        console.error('Failed to deactivate institute.');
+      }
+    }else{
+      const result = await activateInstitute(insti.id);
+      if (result !== 0) {
+        console.log('Institute activated successfully.');
+        // Actualiza la lista de institutos después de desactivar uno
+        setInstitutos(prevInstitutes => prevInstitutes.filter(inst => inst.id !== insti.id));
+      } else {
+        console.error('Failed to activate institute.');
+      }
+    }
+  };
+  
   const handleOpenUserModal = (instituto: Instituto) => {
     setSelectedInstitute(instituto);
     setShowInstitute(true);
@@ -221,7 +249,7 @@ const AdministracionInstitutos = () => {
           deleteState={trash} 
           institutos={institutos} 
           handleView={handleOpenUserModal}
-          handleDelete={() => console.log("borrar")}
+          handleDelete={handleDeleteInstitute}
         />
       </ScrollView>
 
