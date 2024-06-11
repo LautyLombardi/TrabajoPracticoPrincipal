@@ -22,8 +22,8 @@ const useEditVisitor = () => {
             )
 
             // Update visitor table
-            const updateParams = [dniNew, nameNew, lastnameNew, emailNew, visitorOld.dni];
-            let updateQuery = `UPDATE visitor SET dni = ?, name = ?, lastname = ?, email = ?`;
+            const updateParams = [ nameNew, lastnameNew, emailNew, visitorOld.dni];
+            let updateQuery = `UPDATE visitor SET  name = ?, lastname = ?, email = ?`;
 
             
             updateQuery += ` WHERE dni = ?;`;

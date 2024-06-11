@@ -1,3 +1,5 @@
+//Cantidad de usuarios AUTENTICADOS por el usuario logueado 
+//--hecho
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import useGetLogs from '@/hooks/logs/useGetLogs'; // Asegúrate de importar correctamente
@@ -19,7 +21,7 @@ const ReportesHistoricos: React.FC = () => {
 
         logs.forEach(visitante => {
           const fecha = visitante.createDate.split(' ')[0];
-          if (visitante.visitorId != null && visitante.admDni == 1111) {
+          if (visitante.visitorId != null && visitante.admDni == admDni) {
             if (!visitantesPorDia[fecha]) {
               visitantesPorDia[fecha] = { ingresos: 0, egresos: 0 };
             }

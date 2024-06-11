@@ -9,8 +9,8 @@ const DB_NAME = 'dataBase.db';
 
 function useDb() {
     const [loading, setLoading] = useState(false);
-
-    const createDB = async (): Promise<SQLiteDatabase | undefined> => {
+    
+     const createDB = async (): Promise<SQLiteDatabase | undefined> => {
         setLoading(true);
         try {
             const dbDirectory = `${FileSystem.documentDirectory}SQLite`;
@@ -44,7 +44,7 @@ function useDb() {
             setLoading(false);
         }
     };
-    /*
+   /*
      const createDB = async (): Promise<SQLiteDatabase | undefined> => {
         setLoading(true);
         try {

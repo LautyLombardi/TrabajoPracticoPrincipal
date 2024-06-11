@@ -179,26 +179,26 @@ const AdministracionVisitantes = () => {
     setStatusDay(isDayOpen);
   };
 
-  const visitorsDB = useGetVisitors();
+  const visitorDB = useGetVisitors();
   const [visitantes, setVisitantes] = useState<Visitante[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const { visitors } = visitorsDB;
+      const {visitors} = visitorDB
       if (visitors) {
         setVisitantes(visitors);
       }
       handlerDay();
-    }, [visitorsDB])
+    }, [visitorDB])
   );
 
   useEffect(() => {
-    const { visitors } = visitorsDB;
+    const {visitors} = visitorDB
     if (visitors) {
       setVisitantes(visitors);
     }
     handlerDay();
-  }, [visitorsDB]);
+  }, [visitorDB]);
 
   return (
     <View style={styles.container}>
