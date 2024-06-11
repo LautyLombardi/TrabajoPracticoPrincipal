@@ -205,13 +205,6 @@ const AdministracionInstitutos = () => {
       {/** Header Menu */}
       <HandleGoBack title='Administración de Institutos' route='menu' />
 
-      {/** Buscador */}
-      {/* <View style={styles.searchContainer}>
-        <TextInput placeholder='Buscar' style={styles.searchText} />
-        <Pressable style={styles.searchButton}>
-          <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
-        </Pressable>
-      </View> */}
 
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
