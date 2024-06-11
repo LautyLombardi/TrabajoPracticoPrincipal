@@ -7,7 +7,7 @@ import { ONLINE} from "@/api/constantes";
 import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
-import AdmUserModal from "@/components/Modal/AdmUserModel";
+import AdmUserModal from "@/components/Modal/AdmUserModal";
 
 const Login = () => {
   const navigator = useRouter()

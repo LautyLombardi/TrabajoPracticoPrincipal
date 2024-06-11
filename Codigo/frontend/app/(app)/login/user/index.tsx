@@ -1,46 +1,65 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity, Modal } from 'react-native';
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from '@expo/vector-icons';
 import LectorQr from "@/components/QRCodeScan";
 import { router } from "expo-router";
 import useLogin from "@/hooks/user/useLogin";
+import useInsertLoginLogFail from "@/hooks/logs/useInsertLoginLogFail";
+import useInsertLoginLog from "@/hooks/logs/useInsertLoginLog";
+import { getAdmDni } from "@/api/services/storage";
+
 
 const LogueoUsuarioManual = () => {
+  const insertLoginLog=useInsertLoginLog();
+  const insertLoginLogFail= useInsertLoginLogFail();
+  const loginHook= useLogin();
+
   const [dni, setDni] = useState<string>('');
   const [password, setPassword] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isQrScannerVisible, setIsQrScannerVisible] = useState<boolean>(false);
   const [status, setStatusBoton] = useState<boolean>(false);
 
-  const { user, isLoading, isError } = useLogin(Number(dni), password);
+  useEffect(()=> {
+    setDni("");
+    setPassword("");
+  },[])
 
-  const handleTerminar = () => {
+  const handleTerminar = async() => {
     console.log('autenticando.....')
-    if(dni && password){
-      if (user === 1) {
-        // TODO: log await logLoginManual(dni.toString(),"usuario")
-        Alert.alert(
-          "Usuario autenticado",
-          "",
-          [
-            { text: "OK", onPress: () => router.navigate('/menu') }
-          ]
-        );
-      } else if (user === 0) {
-        Alert.alert("Usuario no autenticado",
-          "DNI o contraseña incorrectos"
-        );
-      } else if (user === 2) {
-        Alert.alert("Usuario no autenticado",
-          "Usuario no encontrado"
+    const admDni=await getAdmDni();
+    if(admDni){
+      if(dni && password){
+        const user=await loginHook(Number(dni),password);
+        console.log("user es ",user)
+        if (user === 1) {
+          // TODO: log await logLoginManual(dni.toString(),"usuario")
+          insertLoginLog(admDni,Number(dni),"Usuario")
+          Alert.alert(
+            "Usuario autenticado",
+            "",
+            [
+              { text: "OK", onPress: () => router.navigate('/menu') }
+            ]
+          );
+        } else if (user === 0) {
+          await insertLoginLogFail(admDni,Number(dni),"Usuario")
+          Alert.alert("Usuario no autenticado",
+            "DNI o contraseña incorrectos"
+          );
+        }
+      } else {
+        await insertLoginLogFail(admDni,Number(dni),"Usuario")
+        Alert.alert("Error al cargar datos"
         );
       }
-    } else {
-      Alert.alert("Error al cargar datos"
-      );
+    }
+    else{
+      console.log("No se pudo fechear admDni")
     }
   };
+
 
   const handleQRCodeScanned = (data: string) => {
     if (dni == data) {
@@ -90,7 +109,7 @@ const LogueoUsuarioManual = () => {
       </View>
 
       {/* <Pressable disabled={!status || isLoading} style={[styles.button, (!status || isLoading) && styles.buttonMenuDisabled]} onPress={handleTerminar}> */}
-      <Pressable disabled={isLoading} style={[styles.button, (isLoading) && styles.buttonMenuDisabled]} onPress={handleTerminar}>
+      <Pressable  style={styles.button} onPress={handleTerminar}>
         <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
 
@@ -102,7 +121,7 @@ const LogueoUsuarioManual = () => {
         <LectorQr onQRCodeScanned={handleQRCodeScanned} />
       </Modal>
 
-      {isError && <Text style={{ color: 'red' }}>Error al autenticar</Text>}
+      
     </View>
   );
 };
