@@ -18,7 +18,6 @@ const insertCierre=useInsertCierreManual()
       if(!isDayOpen){
         await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
         console.log('status del dia seteado en open day', await AsyncStorage.getItem('dayStatus'));
-        // TODO: logica de disparar LOG
         await insertApertura()
         Alert.alert(
           "Día Abierto",
@@ -49,7 +48,6 @@ const insertCierre=useInsertCierreManual()
       if(isDayOpen){
         await AsyncStorage.setItem('dayStatus', JSON.stringify(false));
         console.log('status del dia seteado en close day', await AsyncStorage.getItem('dayStatus'));
-        // TODO: logica de disparar LOG
         await insertCierre()
         Alert.alert(
           "Día Cerrado",
