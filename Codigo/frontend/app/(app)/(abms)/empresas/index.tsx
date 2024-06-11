@@ -7,7 +7,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Empresa, Rol } from '@/api/model/interfaces';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useGetEnterprice from '@/hooks/enterprice/useGetEnterprice';
+import useGetEnterprices from '@/hooks/enterprice/useGetEnterprices';
 import useDeactivateEnterprice from '@/hooks/enterprice/useDeactivateEnterprice';
 import useActivateEnterprice from '@/hooks/enterprice/useActivateEnterprice';
 
@@ -79,15 +79,19 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
     )
   }
 
-  const modifyIcon = () => {
+  const modifyIcon = (id : number) => {
     return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp'  
+      style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+      color={"orange"} 
+      onPress={() => router.push(`/empresas/editar?id=${id}`)}
+      />
     )
   }
 
   const handleToggleIcon = (empresa: Empresa): JSX.Element => {
     if (editState) {
-      return modifyIcon();
+      return modifyIcon(empresa.id);
     } else if (deleteState) {
       return deleteIcon(empresa);
     } else {
@@ -144,7 +148,13 @@ const AdministracionEmpresas = () => {
       const result = await deactivateEnterprice(enterprice.id)
       if (result !== 0) {
         console.log('Enterprice deactivated successfully.');
-        setEmpresas(prevEnterprice => prevEnterprice.filter(inst => inst.id !== enterprice.id))
+        const handleInsts = empresas
+        handleInsts.forEach(emp =>{
+          if (emp.id === enterprice.id) {
+            emp.isActive = 0
+          }
+        })
+        setEmpresas(handleInsts)
       } else {
         console.error('Failed to deactivate enterprice.');
       }
@@ -152,7 +162,13 @@ const AdministracionEmpresas = () => {
       const result = await activateEnterprice(enterprice.id);
       if (result !== 0) {
         console.log('Enterprice activated successfully.');
-        setEmpresas(prevEnterprice => prevEnterprice.filter(inst => inst.id !== enterprice.id))
+        const handleInsts = empresas
+        handleInsts.forEach(emp =>{
+          if (emp.id === enterprice.id) {
+            emp.isActive = 1
+          }
+        })
+        setEmpresas(handleInsts)
       } else {
         console.error('Failed to activate enterprice.');
       }
@@ -180,28 +196,26 @@ const AdministracionEmpresas = () => {
     setStatusDay(isDayOpen)
   }
 
-  const enterpricesDB = useGetEnterprice();
-  const [empresas, setEmpresas] = useState<Empresa[]>([])
 
+  // Conexion con DB
+  const {enterprices, refetch} = useGetEnterprices();
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  
   useFocusEffect(
     useCallback(() => {
-      const { enterprices } = enterpricesDB
-      if (enterprices) {
-        setEmpresas(enterprices);
-      }
-    }, [enterpricesDB])
+      refetch();
+    }, [refetch])
   );
 
   useEffect(() => {
-    const { enterprices } = enterpricesDB
-    if (enterprices) {
-      setEmpresas(enterprices);
-    }
-  }, [enterpricesDB])
+    if(enterprices){
+      setEmpresas(enterprices);}
+  }, [enterprices]);
 
   useEffect(() => {
     handlerDay();
   }, []);
+
 
   return (
     <View style={styles.container}>
