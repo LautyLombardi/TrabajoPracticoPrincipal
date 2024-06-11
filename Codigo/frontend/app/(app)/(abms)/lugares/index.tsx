@@ -67,16 +67,6 @@ type PropsTable = {
 
 const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView, handleDelete }) => {
 
-  const handleDesactivarCategoria = async (id: number) => {
-    try {
-      // TODO:
-      //await desactivarLugar(id);
-      // Realizar cualquier otra acción necesaria después de desactivar la categoría
-    } catch (error) {
-      console.error('Error al desactivar la categoría:', error);
-    }
-  };
-
   const iconVerMas = (lugar: Lugar) => {
     return (
       <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
@@ -91,9 +81,12 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
     )
   }
 
-  const modifyIcon = (id: any) => {
+  const modifyIcon = (id: number) => {
     return (
-      <Ionicons name='pencil-sharp' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"orange"} />
+      <Ionicons name='pencil-sharp' 
+        style={{ fontSize: 20, padding: 7, borderRadius: 100 }} 
+        color={"orange"}
+        onPress={()=>router.push(`/lugares/editar?id=${id}`)} />
     )
   }
 
