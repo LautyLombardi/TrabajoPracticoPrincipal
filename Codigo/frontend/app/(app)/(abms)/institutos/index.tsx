@@ -70,7 +70,7 @@ const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteStat
     )
   }
 
-   const deleteIcon = (insti: Instituto) => {
+  const deleteIcon = (insti: Instituto) => {
     return (
       <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"}  onPress={() =>handleDelete(insti)}/>
     );
@@ -133,8 +133,13 @@ const AdministracionInstitutos = () => {
       const result = await deactivateInstitute(insti.id);
       if (result !== 0) {
         console.log('Institute deactivated successfully.');
-        // Actualiza la lista de institutos después de desactivar uno
-        setInstitutos(prevInstitutes => prevInstitutes.filter(inst => inst.id !== insti.id));
+        const handleInsts = institutos
+        handleInsts.forEach(inst =>{
+          if (inst.id === insti.id) {
+            inst.isActive = 0
+          }
+        })
+        setInstitutos(handleInsts)
       } else {
         console.error('Failed to deactivate institute.');
       }
@@ -142,8 +147,13 @@ const AdministracionInstitutos = () => {
       const result = await activateInstitute(insti.id);
       if (result !== 0) {
         console.log('Institute activated successfully.');
-        // Actualiza la lista de institutos después de desactivar uno
-        setInstitutos(prevInstitutes => prevInstitutes.filter(inst => inst.id !== insti.id));
+        const handleInsts = institutos
+        handleInsts.forEach(inst =>{
+          if (inst.id === insti.id) {
+            inst.isActive = 1
+          }
+        })
+        setInstitutos(handleInsts)
       } else {
         console.error('Failed to activate institute.');
       }
