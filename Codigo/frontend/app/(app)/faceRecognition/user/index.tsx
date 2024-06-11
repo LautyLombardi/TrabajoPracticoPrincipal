@@ -7,7 +7,7 @@ import { ONLINE } from "@/api/constantes";
 import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFaceRecognition from "@/hooks/user/useFaceRecognition";
-import AdmUserModal from "@/components/Modal/AdmUserModel";
+import AdmUserModal from "@/components/Modal/AdmUserModal";
 
 
 const UserFaceRecognition = () => {
@@ -83,14 +83,14 @@ const UserFaceRecognition = () => {
       return photo.uri;
     }
   };
-
+/*
   const uriToFile = async (uri: string): Promise<File> => {
     const response = await fetch(uri);
     const blob = await response.blob();
     const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
     return file;
   };
-
+*/
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>
