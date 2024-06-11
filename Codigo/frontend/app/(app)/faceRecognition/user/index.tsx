@@ -7,7 +7,7 @@ import { ONLINE } from "@/api/constantes";
 import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFaceRecognition from "@/hooks/user/useFaceRecognition";
-import AdmUserModal from "@/components/Modal/AdmUserModel";
+import AdmUserModal from "@/components/Modal/AdmUserModal";
 
 
 const UserFaceRecognition = () => {

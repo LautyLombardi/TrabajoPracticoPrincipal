@@ -1,36 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { router } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useLogin from "@/hooks/visitor/useLogin";
+import { getAdmDni } from "@/api/services/storage";
+import useInsertLoginLog from "@/hooks/logs/useInsertLoginLog";
+import useInsertLoginLogFail from "@/hooks/logs/useInsertLoginLogFail";
 
 const LogueoVisitanteManual = () => {
   const [dni, setDni] = useState<string>("");
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
+  const insertLoginLog=useInsertLoginLog();
+  const insertLoginLogFail= useInsertLoginLogFail();
+  const loginHook= useLogin();
 
-  const { visitor, isLoading, isError } = useLogin(Number(dni), nombre, apellido, email);
+  useEffect(()=> {
+    setDni("");
+    setNombre("");
+    setApellido("");
+    setEmail("");
+  },[])
 
   const handleTerminar = async () => {
     console.log('autenticando.....')
-    if (dni && nombre && apellido && email) {
-      if (visitor === 1) {
-        Alert.alert(
-          "Visitante autenticado",
-          "",
-          [
-            { text: "OK", onPress: () => router.navigate("/menu") }
-          ]
-        );
+    const admDni=await getAdmDni();
+    if(admDni){
+      if (dni && nombre && apellido && email) {
+        const visitor=await loginHook(Number(dni),nombre,apellido,email);
+        if (visitor === 1) {
+          insertLoginLog(admDni,Number(dni),"Visitante")
+          Alert.alert(
+            "Visitante autenticado",
+            "",
+            [
+              { text: "OK", onPress: () => router.navigate("/menu") }
+            ]
+          );
+        } else {
+          await insertLoginLogFail(admDni,Number(dni),"Visitante")
+          Alert.alert("Visitante no autenticado",
+            "DNI, nombre, apellido o email incorrectos"
+          );
+        }
       } else {
-        Alert.alert("Visitante no autenticado",
-          "DNI, nombre, apellido o email incorrectos"
-        );
-      }
-    } else {
-      Alert.alert("Error al cargar datos");
-    } 
+        await insertLoginLogFail(admDni,Number(dni),"Visitante")
+        Alert.alert("Error al cargar datos");
+      } 
+    }
   };
 
   return (
