@@ -38,6 +38,10 @@ const useInsertVisitor = () => {
                     [dni, name, lastname, email, startDate, createDate]
                 );
                 const visitorId = result.lastInsertRowId;
+                await db.runAsync(
+                    `INSERT INTO category_visitor (category_id, visitor_id) VALUES (?, ?);`,
+                    [categoria.id, visitorId]
+                );
 
                 await db.runAsync(
                     `INSERT INTO category_institute (category_id, institute_id)

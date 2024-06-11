@@ -147,7 +147,13 @@ const AdministracionVisitantes = () => {
       const result = await deactivateVisitor(visitor.dni);
       if (result !== 0) {
         console.log('visitor deactivated successfully.');
-        setVisitantes(prevVisitors => prevVisitors.filter(inst => inst.dni !== visitor.dni));
+        const handleInsts = visitantes
+        handleInsts.forEach(vist =>{
+          if (vist.dni === visitor.dni) {
+            vist.isActive = 0
+          }
+        })
+        setVisitantes(handleInsts)
       } else {
         console.error('Failed to deactivate visitor.');
       }
@@ -155,7 +161,13 @@ const AdministracionVisitantes = () => {
       const result = await activateVisitor(visitor.dni);
       if (result !== 0) {
         console.log('visitor activated successfully.');
-        setVisitantes(prevVisitors => prevVisitors.filter(inst => inst.dni !== visitor.dni));
+        const handleInsts = visitantes
+        handleInsts.forEach(vist =>{
+          if (vist.dni === visitor.dni) {
+            vist.isActive = 1
+          }
+        })
+        setVisitantes(handleInsts)
       } else {
         console.error('Failed to activate visitor.');
       }
@@ -179,26 +191,20 @@ const AdministracionVisitantes = () => {
     setStatusDay(isDayOpen);
   };
 
-  const visitorDB = useGetVisitors();
+  const {visitors, refetch} = useGetVisitors();
   const [visitantes, setVisitantes] = useState<Visitante[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const {visitors} = visitorDB
-      if (visitors) {
-        setVisitantes(visitors);
-      }
-      handlerDay();
-    }, [visitorDB])
+      refetch();
+    }, [refetch])
   );
 
   useEffect(() => {
-    const {visitors} = visitorDB
-    if (visitors) {
-      setVisitantes(visitors);
-    }
-    handlerDay();
-  }, [visitorDB]);
+    console.log("visitor en la pantalla" , visitors)
+    if(visitors){
+      setVisitantes(visitors);}
+    }, [visitors]);;
 
   return (
     <View style={styles.container}>

@@ -4,7 +4,7 @@ import { router, useLocalSearchParams  } from "expo-router";
 import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { Categoria, Rol } from "@/api/model/interfaces";
+import { Categoria, Rol, Visitante } from "@/api/model/interfaces";
 import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
 import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 import useGetCategories from "@/hooks/category/useGetCategories";
@@ -15,22 +15,27 @@ import CampoFecha from "@/components/CampoFecha/CampoFecha";
 
 const EditarVisitante = () => {
     const { dni } = useLocalSearchParams();
-    const { visitor, isLoading, isError } = useGetVisitor(Number(dni));
+    const getVisitor = useGetVisitor();
+    const [visitorByid , setVisitorByid] =  useState<Visitante>();
+  
   
     useEffect(() => {
-      // Aquí puedes usar el DNI para buscar los datos del usuario y rellenar el formulario de edición
-      console.log('DNI del visitante:', dni);
-    }, [dni]);
-  
-    useEffect(() => {
-      if (visitor) {
-        setNombreN(visitor.name);
-        setApellidoN(visitor.lastname);
-        setDniN(visitor.dni.toString());
-       // setCategorySeleccionadoName(visitor.category);
-        setEmailN(visitor.email)
+      const fetchVisitor = async () => {
+        console.log("DNI antes de hacer el getVisitor" , dni)
+        const visitor = await getVisitor(Number(dni));
+        console.log("visitor atravez de by id" , visitor)
+        if (visitor) {
+          setNombreN(visitor.name);
+          setApellidoN(visitor.lastname);
+        // setCategorySeleccionadoName(visitor.category);
+          setEmailN(visitor.email)
+          setVisitorByid(visitor)
+        }
       }
-    }, [visitor]);
+        fetchVisitor();
+      }, [dni, getVisitor]);
+
+
   
     const categoryDB = useGetCategories();
     const editVisitor = useEditVisitor();
@@ -58,9 +63,9 @@ const EditarVisitante = () => {
         categoryID = category?.id
       }
   */
-      if (visitor) {
-        const response = await editVisitor(visitor, parseInt(dniN), nombreN, apellidoN, emailN);
-        if (response !== 0) {
+      if (visitorByid) {
+        const edit = await editVisitor(visitorByid, parseInt(dniN), nombreN, apellidoN, emailN);
+        if (edit !== 0) {
           await insertLogAdm("MODIFICACIÓN", "visitante");
           Alert.alert(
             "visitante modificado",

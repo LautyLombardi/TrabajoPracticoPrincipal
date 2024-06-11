@@ -1,30 +1,32 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import {  Visitante } from '@/api/model/interfaces';
+import { useCallback } from 'react';
 
-function useGetVisitor(dni: number) {
+const useGetVisitor = () => {
     const db = useSQLiteContext();
-    console.log('get visitor by dni', dni)
-    const visitorQuery = useQuery({
-        queryKey: ['visitor', dni],
-        queryFn: async (): Promise<Visitante> => {
-            const visitor = await db.getFirstAsync<Visitante>(
+
+    const getVisitor = useCallback(async (dni : number) => {
+        console.log('visitant by id', dni);
+        try {
+
+            const visitantDB = await db.getFirstAsync<Visitante>(
                 'SELECT * FROM visitor WHERE dni = ?',
                 [dni]
             );
-            if (!visitor) {
-                throw new Error('visitor not found');
+            console.log('visitantDB by id', visitantDB);
+            if (visitantDB && visitantDB !== null) {
+                return visitantDB;
+            } else {
+                return undefined;
             }
-            console.log('visitor in hook', visitor)
-            return visitor;
-        },
-    });
+        } catch (error) {
+            console.error('Error updating visitor:', error);
+            return undefined;
+        }
+    }, [db]);
+    return getVisitor;
 
-    return {
-        visitor: visitorQuery.data,
-        isLoading: visitorQuery.isLoading,
-        isError: visitorQuery.isError,
-    };
-}
+};
 
 export default useGetVisitor;

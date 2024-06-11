@@ -3,10 +3,12 @@ import { getCurrentCreateDate } from '@/util/getCreateDate';
 import { useCallback } from 'react';
 import { parseFecha } from '@/util/parseDate';
 import { Visitante } from '@/api/model/interfaces';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 const useEditVisitor = () => {
     const db = useSQLiteContext();
+    const queryClient = useQueryClient();
 
     const editVisitor = useCallback(async (visitorOld: Visitante, dniNew: number, nameNew: string, lastnameNew: string,emailNew:string) => {
         const createDate = getCurrentCreateDate();
@@ -33,6 +35,8 @@ const useEditVisitor = () => {
             console.log('Update result:', resultUpdate);
 
             await db.execAsync('COMMIT;');
+
+            queryClient.invalidateQueries({ queryKey: ['visitors']});
 
             console.log('visitor updated successfully');
             return resultUpdate.lastInsertRowId;

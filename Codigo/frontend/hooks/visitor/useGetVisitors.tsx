@@ -7,23 +7,27 @@ const useGetVisitors = () => {
     const db = useSQLiteContext();
     const queryClient = useQueryClient();
 
+    
     const visitorsQuery = useQuery<Visitante[]>({
         queryKey: ['visitors'],
-        queryFn: async (): Promise<Visitante[]> =>
-            db.getAllAsync('SELECT * FROM visitor ORDER BY createDate DESC'),
+        queryFn: async (): Promise<Visitante[]> =>{
+           return db.getAllAsync('SELECT * FROM visitor ORDER BY createDate DESC');
+        },
+           
+        refetchOnWindowFocus: true, // Refetch al volver al foco
+        refetchOnMount: true, // Refetch al montar el componente
+    
     });
-
+    console.log("visitor query luego del select *" ,visitorsQuery.data)
     const getCategory = async (visitor : Visitante ,visitorId: number): Promise<Visitante> => {
         const { category_id } = await db.getFirstAsync<{ category_id: number}>(
             `SELECT category_id FROM category_visitor WHERE visitor_id = ?`,
             [visitorId]
         ) as { category_id: number};
-
         const category = await db.getFirstAsync<Categoria>(
             `SELECT * FROM category WHERE id = ?`,
             [category_id]
         ) as Categoria;
-
         const visitante: Visitante = {
             ...visitor,
             category: category.name,
@@ -83,17 +87,17 @@ const useGetVisitors = () => {
         return visitante;
     };
 
+
     useEffect(() => {
         if (visitorsQuery.isSuccess && visitorsQuery.data) {
             const fetchVisitors = async () => {
                 const updatedVisitors = await Promise.all(visitorsQuery.data.map(async (visitor) => {
-                    const updatedVisitor = await getCategory(visitor, visitor.dni);
-                    return updatedVisitor;
+                    return await getCategory(visitor, visitor.dni);
+                    
                 }));
-                
                 queryClient.setQueryData<Visitante[]>(['visitors'], updatedVisitors);
                 
-                console.log('visitors data: ', updatedVisitors);
+  
             };
             fetchVisitors()
         }
@@ -103,6 +107,7 @@ const useGetVisitors = () => {
         visitors: visitorsQuery.data,
         isLoading: visitorsQuery.isLoading,
         isError: visitorsQuery.isError,
+        refetch: visitorsQuery.refetch
     };
 };
 
