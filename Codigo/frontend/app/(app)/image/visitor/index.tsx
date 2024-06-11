@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, TextInput, Alert } from "react-native";
+import { View, StyleSheet, TextInput, Alert, Pressable, Text } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
-import Boton from "@/ui/Boton";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
-import axios from 'axios';
-import { sendImageToBackend } from '@/api/services/util'
 import { ONLINE } from '@/api/constantes'
-import { logimageVisitor } from "@/api/services/log";
 
 const UserImage = () => {
   const navigator = useRouter();
@@ -16,31 +12,6 @@ const UserImage = () => {
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
   const [dni, setDni] = useState<string>('');
-
-  const handleAutenticacion = async () => {
-    await takePicture();
-    
-    if (!dni) {
-      Alert.alert("Error", "Por favor, ingrese el DNI del visitante");
-      console.log('DNI no cargados')
-      return;
-    }
-    if (!imagen) {
-      return;
-    }
-  
-    try {
-      await sendImageToBackend(imagen, dni)
-      Alert.alert("Éxito", "Autenticación exitosa");
-      navigator.navigate("/menu"); // TODO change to faceRecognition/user
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        Alert.alert("Error", `Error al cargar la imagen: ${error.response?.data?.message || error.message}`);
-      } else {
-        Alert.alert("Error", `Error al cargar la imagen`);
-      }
-    }
-  };
   
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -51,11 +22,10 @@ const UserImage = () => {
       return photo.uri
     }
   };
-  
 
-  const handleTerminarBien = async () => {
+  const handleRegistrar = async () => {
     if (!dni) {
-      Alert.alert("Error", "Por favor, ingrese el DNI del usuario");
+      Alert.alert("Error", "Por favor, ingrese el DNI del visitante");
       return;
     }
 
@@ -77,7 +47,7 @@ const UserImage = () => {
         });
 
         if (response.status === 200) {
-          await logimageVisitor(dni)
+          // TODO: log
           Alert.alert(
             "Registro de imagen de visitante exitoso",
             "",
@@ -86,14 +56,17 @@ const UserImage = () => {
             ]
           );
         } else {
+          // TODO: log
           const errorData = await response.json();
           console.log("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
           Alert.alert("Fallo el registro de imagen de visitante")
         }
       } else {
+        // TODO: log
         Alert.alert("Error", "No se pudo tomar la foto");
       }
     } catch (error) {
+      // TODO: log
       Alert.alert("Error", "No se pudo registrar el visitante");
       console.error("Error:", error);
     }
@@ -109,15 +82,9 @@ const UserImage = () => {
         onChangeText={setDni}
         keyboardType="numeric"
       />
-      <View style={styles.buttonContainer}>
-        <Boton
-          text="Registrar visitante"
-          styleText={styles.text}
-          style={styles.button}
-          onPress={handleTerminarBien}
-          hoverColor="#000000aa"
-        />
-      </View>
+      <Pressable onPress={handleRegistrar} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar visitante</Text>
+      </Pressable>
     </View>
   );
 };
@@ -150,14 +117,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#000b",
-    width: 300,
-    padding: 20,
-    borderRadius: 12,
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '90%',
   },
-  text: {
-    color: "#fff",
-    textAlign: "center",
+  buttonText: {
+    color: '#000051',
+    fontSize: 16,
   },
 });
 

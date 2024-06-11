@@ -40,7 +40,7 @@ const Login = () => {
 
   const handleAuterizar = async () => {
     try{
-      /* takePicture().then((foto) => {
+      takePicture().then((foto) => {
         const formData= new FormData()
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
           uri: foto,
@@ -52,11 +52,9 @@ const Login = () => {
           body: formData
         }).then(async (respuesta) => {
           console.log(respuesta + "respuesta autenticacion ")
-          if(respuesta.status == 200){ */
-
+          if(respuesta.status == 200) {
             //----------------------storage--------------
-            //const data = await respuesta.json();
-            const data = {dni:43022602};
+            const data = await respuesta.json();
             const adm_data = [
               {
                 adm_dni: data.dni
@@ -65,14 +63,13 @@ const Login = () => {
             await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
             setShowUser(true);
             //------------------------------------
-            // TODO: log
-            
-          /* }else{
+            // TODO: log            
+          }else{
             // TODO: log
             Alert.alert( "Falló la autenticación de la imagen del usuario")
           }
         })
-      }) */
+      })
     }catch(error){
       console.error("No se pudo sacar la foto", error)
       Alert.alert("No se pudo sacar la foto")
