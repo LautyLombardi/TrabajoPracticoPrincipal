@@ -12,6 +12,8 @@ const useGetInstitutes = () => {
         queryFn: async (): Promise<Instituto[]> => {
             return db.getAllAsync('SELECT * FROM institute ORDER BY createDate');
         },
+        refetchOnWindowFocus: true, // Refetch al volver al foco
+        refetchOnMount: true, // Refetch al montar el componente
     });
     
     const getCategory = async (institute: Instituto, instituteId: number): Promise<Instituto> => {
@@ -48,12 +50,13 @@ const useGetInstitutes = () => {
             };
             fetchPlaceData();
         }
-    }, [institutesQuery.isSuccess, institutesQuery.data, queryClient]);
+    }, [institutesQuery.isSuccess, queryClient]);
 
     return {
         institutes: institutesQuery.data,
         isLoading: institutesQuery.isLoading,
         isError: institutesQuery.isError,
+        refetch: institutesQuery.refetch,
     };
 }
 

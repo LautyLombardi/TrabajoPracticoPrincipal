@@ -31,7 +31,7 @@ const RegistroUsuario = () => {
       const rol = role.find((rol: { name: string; }) =>
         rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase()
       );
-  
+      console.log( "ROL BUSCANDO" , rol)
       if (rol) {
         const response = await insertUser(
           parseInt(dni),
@@ -69,6 +69,7 @@ const RegistroUsuario = () => {
 
     if (roles && roles !== rolesData) {
       setRolesData(roles);
+      setRol(roles)
       const nombresRoles = roles.map(role => role.name);
       setRolesName(nombresRoles);
     }

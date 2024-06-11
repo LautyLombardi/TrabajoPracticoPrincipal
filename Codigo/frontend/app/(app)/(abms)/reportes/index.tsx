@@ -16,24 +16,29 @@ export const Reportes = () => {
         <View style={styles.mainMenuItem}>
           <Pressable
             style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorDia")}>
-            <Text style={styles.textBtnMenu}>Reportes Operativos: Visitantes que autorizó el usuario logueado</Text>
+            <Text style={styles.textBtnMenu}>Visitantes Por Dia</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorUsuario")}>
-              <Text style={styles.textBtnMenu}>Reportes Gestion: Visitantes autenticados por cada usuario</Text>
+              <Text style={styles.textBtnMenu}>Visitantes Por Usuario</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico")}>
-              <Text style={styles.textBtnMenu}>Visitantes historico</Text>
+              <Text style={styles.textBtnMenu}>Visitantes Historico</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
-              <Text style={styles.textBtnMenu}>Visitantes historicos por usuario seleccionado</Text>
+              <Text style={styles.textBtnMenu}>Visitantes historicos Por Usuario</Text>
           </Pressable>
-        </View>        
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/erroresPorHora")}>
+              <Text style={styles.textBtnMenu}>Errores</Text>
+          </Pressable>
+        </View>         
       </View>
       <StatusBar style='light' />
     </SafeAreaView>
@@ -83,6 +88,5 @@ const styles = StyleSheet.create({
 });
 
 export default Reportes;
-
 
 
