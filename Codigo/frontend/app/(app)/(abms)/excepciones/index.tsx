@@ -19,17 +19,17 @@ type PropsCol = {
   icon?: React.ReactNode
 };
 
-const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
+const Col: React.FC<PropsCol> = ({ text, flexWidth = 1, icon }) => {
 
   const renderChildren = () => {
-    if((text || text=='') && !icon){
+    if ((text || text == '') && !icon) {
       return (
-      <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
       )
-    }else{
-      if(icon){
-        return (icon) 
-      }else {
+    } else {
+      if (icon) {
+        return (icon)
+      } else {
         return <Text>Not Found</Text>
       }
     }
@@ -37,7 +37,7 @@ const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
 
   return (
     <View style={{ flex: flexWidth, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-        {renderChildren()}
+      {renderChildren()}
     </View>
   );
 };
@@ -63,18 +63,18 @@ const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
 
   const iconVerMas = (excepcion: Excepcion) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(excepcion)} />
+      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(excepcion)} />
     )
   }
 
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
-        <Col text='Nombre' flexWidth={3}/>
-        <Col text='Duracion' flexWidth={3}/>
-        <Col text='Categoria' flexWidth={3}/>
-        <Col text='' flexWidth={1.5}/>
+        <Col text='ID' flexWidth={0.8} />
+        <Col text='Nombre' flexWidth={3} />
+        <Col text='Duracion' flexWidth={3} />
+        <Col text='Categoria' flexWidth={3} />
+        <Col text='' flexWidth={1.5} />
       </Row>
       {excepciones.map((excepcion) => (
         <Row key={excepcion.id}>
@@ -82,7 +82,7 @@ const Tablacategorias: React.FC<PropsTable> = ({ excepciones, handleView }) => {
           <Col text={excepcion.name} flexWidth={3} />
           <Col text={excepcion.duration} flexWidth={3} />
           <Col text={excepcion.category_name} flexWidth={3} />
-          <Col flexWidth={1.5} icon={iconVerMas(excepcion)} /> 
+          <Col flexWidth={1.5} icon={iconVerMas(excepcion)} />
         </Row>
       ))}
     </View>
@@ -105,9 +105,9 @@ const AdministracionExcepciones = () => {
     setShowException(false);
   };
 
-  const handlerDay = async () =>{
+  const handlerDay = async () => {
     const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
+    if (permisos) {
       setPermition(JSON.parse(permisos));
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
@@ -136,25 +136,17 @@ const AdministracionExcepciones = () => {
   useEffect(() => {
     handlerDay();
   }, []);
-  
+
   return (
     <View style={styles.container}>
       {/** Header Menu */}
       <HandleGoBack title='Administración de Excepciones' route='menu' />
 
-      {/** Buscador */}
-      <View style={styles.searchContainer}>
-        <TextInput placeholder='Buscar' style={styles.searchText} />
-        <Pressable style={styles.searchButton}>
-          <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
-        </Pressable>
-      </View>
-      
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable 
-          disabled={!status || (permition ? permition?.exceptionLoading === 0 : true)} 
-          style={[styles.crudItem, (!status || (permition ? permition.exceptionLoading === 0 : true)) && styles.crudItemDisabled]} 
+        <Pressable
+          disabled={!status || (permition ? permition?.exceptionLoading === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.exceptionLoading === 0 : true)) && styles.crudItemDisabled]}
           onPress={() => router.navigate("/excepciones/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
@@ -162,8 +154,8 @@ const AdministracionExcepciones = () => {
 
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
-        <Tablacategorias  
-          excepciones={excepciones} 
+        <Tablacategorias
+          excepciones={excepciones}
           handleView={handleOpenUserModal}
         />
       </ScrollView>
@@ -184,21 +176,21 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   crudBtn: {
-    flexDirection: "row", 
-    width: "100%", 
-    justifyContent: "flex-end", 
-    alignItems: "center", 
-    paddingHorizontal: 20, 
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: 20,
     gap: 4
   },
-  crudItem:{
-    padding: 10, 
-    backgroundColor: '#fff', 
+  crudItem: {
+    padding: 10,
+    backgroundColor: '#fff',
     borderRadius: 5,
     width: '5.3%',
     height: 'auto',
-    marginVertical:'2%',
-    justifyContent: "center", 
+    marginVertical: '2%',
+    justifyContent: "center",
   },
   crudItemDisabled: {
     backgroundColor: '#a3a3a3',
@@ -228,9 +220,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    aspectRatio: 1, 
+    aspectRatio: 1,
     maxHeight: '80%',
-    flexBasis: '8%', 
+    flexBasis: '8%',
   },
   searchButtonIcon: {
     fontSize: 20,

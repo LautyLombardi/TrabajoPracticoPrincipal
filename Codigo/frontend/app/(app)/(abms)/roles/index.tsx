@@ -109,14 +109,6 @@ const AdministracionRoles = () => {
     <View style={styles.container}>
       {/** Header Menu */}
       <HandleGoBack title='Administraion de Roles' route='menu' />
-
-      {/** Buscador */}
-      {/* <View style={styles.searchContainer}>
-        <TextInput placeholder='Buscar' style={styles.searchText} />
-        <Pressable style={styles.searchButton}>
-          <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
-        </Pressable>
-      </View> */}
     
       {/** Tabla */}
       <ScrollView style={styles.tableContainer}>
