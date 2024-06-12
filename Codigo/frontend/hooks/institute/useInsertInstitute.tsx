@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { getCurrentCreateDate } from '@/util/getCreateDate';
 import { useCallback } from 'react';
@@ -17,9 +16,19 @@ const useInsertInstitute = () => {
                 `INSERT INTO institute (name, isActive, createDate) VALUES (?, 1, ?);`,
                 [name, createDate]
             );
-
-            console.log('Insert result:', result.lastInsertRowId, result.changes);
             const instituteId = result.lastInsertRowId;
+
+            placeIds.forEach(async placeId =>{
+                await db.runAsync(
+                    `INSERT INTO institute_place (place_id, institute_id)
+                        SELECT ?, ?
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM institute_place WHERE place_id = ? AND institute_id = ?
+                    );`,
+                    [placeId, instituteId, placeId, instituteId]
+                );
+            })
+            console.log('Insert result:', instituteId, result.changes);            
 
             await db.execAsync('COMMIT;');
 
