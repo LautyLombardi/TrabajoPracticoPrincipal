@@ -7,7 +7,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Empresa, Rol } from '@/api/model/interfaces';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useGetEnterprice from '@/hooks/enterprice/useGetEnterprice';
+import useGetEnterprices from '@/hooks/enterprice/useGetEnterprices';
 import useDeactivateEnterprice from '@/hooks/enterprice/useDeactivateEnterprice';
 import useActivateEnterprice from '@/hooks/enterprice/useActivateEnterprice';
 
@@ -17,17 +17,17 @@ type PropsCol = {
   icon?: React.ReactNode
 };
 
-const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
+const Col: React.FC<PropsCol> = ({ text, flexWidth = 1, icon }) => {
 
   const renderChildren = () => {
-    if((text || text=='') && !icon){
+    if ((text || text == '') && !icon) {
       return (
-      <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
       )
-    }else{
-      if(icon){
-        return (icon) 
-      }else {
+    } else {
+      if (icon) {
+        return (icon)
+      } else {
         return <Text>Not Found</Text>
       }
     }
@@ -35,7 +35,7 @@ const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
 
   return (
     <View style={{ flex: flexWidth, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-        {renderChildren()}
+      {renderChildren()}
     </View>
   );
 };
@@ -67,27 +67,31 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
 
   const iconVerMas = (empresa: Empresa) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(empresa)} />
+      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(empresa)} />
     )
   }
 
-  const deleteIcon = (enterprice:Empresa) => {
+  const deleteIcon = (enterprice: Empresa) => {
     return (
       <TouchableOpacity onPress={() => handleDelete(enterprice)}>
-        <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} />
+        <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
       </TouchableOpacity>
     )
   }
 
-  const modifyIcon = () => {
+  const modifyIcon = (id : number) => {
     return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp'  
+      style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+      color={"orange"} 
+      onPress={() => router.push(`/empresas/editar?id=${id}`)}
+      />
     )
   }
 
   const handleToggleIcon = (empresa: Empresa): JSX.Element => {
     if (editState) {
-      return modifyIcon();
+      return modifyIcon(empresa.id);
     } else if (deleteState) {
       return deleteIcon(empresa);
     } else {
@@ -98,18 +102,18 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
-        <Col text='Nombre' flexWidth={3}/>
-        <Col text='Cuit' flexWidth={3}/>
-        <Col text='' flexWidth={1.5}/>
+        <Col text='ID' flexWidth={0.8} />
+        <Col text='Nombre' flexWidth={3} />
+        <Col text='Cuit' flexWidth={3} />
+        <Col text='' flexWidth={1.5} />
       </Row>
       {
-        empresas.map(empresa =>(
+        empresas.map(empresa => (
           <Row key={empresa.id}>
-            <Col text={empresa.id?.toString() || ''} flexWidth={0.8}/>
+            <Col text={empresa.id?.toString() || ''} flexWidth={0.8} />
             <Col text={empresa.name} flexWidth={3} />
             <Col text={empresa.cuit.toString()} flexWidth={3} />
-            <Col flexWidth={1.5} icon={handleToggleIcon(empresa)} /> 
+            <Col flexWidth={1.5} icon={handleToggleIcon(empresa)} />
           </Row>
         ))
       }
@@ -144,7 +148,13 @@ const AdministracionEmpresas = () => {
       const result = await deactivateEnterprice(enterprice.id)
       if (result !== 0) {
         console.log('Enterprice deactivated successfully.');
-        setEmpresas(prevEnterprice => prevEnterprice.filter(inst => inst.id !== enterprice.id))
+        const handleInsts = empresas
+        handleInsts.forEach(emp =>{
+          if (emp.id === enterprice.id) {
+            emp.isActive = 0
+          }
+        })
+        setEmpresas(handleInsts)
       } else {
         console.error('Failed to deactivate enterprice.');
       }
@@ -152,7 +162,13 @@ const AdministracionEmpresas = () => {
       const result = await activateEnterprice(enterprice.id);
       if (result !== 0) {
         console.log('Enterprice activated successfully.');
-        setEmpresas(prevEnterprice => prevEnterprice.filter(inst => inst.id !== enterprice.id))
+        const handleInsts = empresas
+        handleInsts.forEach(emp =>{
+          if (emp.id === enterprice.id) {
+            emp.isActive = 1
+          }
+        })
+        setEmpresas(handleInsts)
       } else {
         console.error('Failed to activate enterprice.');
       }
@@ -180,41 +196,31 @@ const AdministracionEmpresas = () => {
     setStatusDay(isDayOpen)
   }
 
-  const enterpricesDB = useGetEnterprice();
-  const [empresas, setEmpresas] = useState<Empresa[]>([])
 
+  // Conexion con DB
+  const {enterprices, refetch} = useGetEnterprices();
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  
   useFocusEffect(
     useCallback(() => {
-      const { enterprices } = enterpricesDB
-      if (enterprices) {
-        setEmpresas(enterprices);
-      }
-    }, [enterpricesDB])
+      refetch();
+    }, [refetch])
   );
 
   useEffect(() => {
-    const { enterprices } = enterpricesDB
-    if (enterprices) {
-      setEmpresas(enterprices);
-    }
-  }, [enterpricesDB])
+    if(enterprices){
+      setEmpresas(enterprices);}
+  }, [enterprices]);
 
   useEffect(() => {
     handlerDay();
   }, []);
 
+
   return (
     <View style={styles.container}>
       {/** Header Menu */}
       <HandleGoBack title='Administración de Empresa' route='menu' />
-
-      {/** Buscador */}
-      <View style={styles.searchContainer}>
-        <TextInput placeholder='Buscar' style={styles.searchText} />
-        <Pressable style={styles.searchButton}>
-          <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
-        </Pressable>
-      </View>
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>

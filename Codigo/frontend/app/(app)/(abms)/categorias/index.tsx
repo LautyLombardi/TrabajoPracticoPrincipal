@@ -15,17 +15,17 @@ type PropsCol = {
   icon?: React.ReactNode
 };
 
-const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
+const Col: React.FC<PropsCol> = ({ text, flexWidth = 1, icon }) => {
 
   const renderChildren = () => {
-    if((text || text=='') && !icon){
+    if ((text || text == '') && !icon) {
       return (
-      <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
+        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold', textAlign: "center", textAlignVertical: "center" }}>{text}</Text>
       )
-    }else{
-      if(icon){
-        return (icon) 
-      }else {
+    } else {
+      if (icon) {
+        return (icon)
+      } else {
         return <Text>Not Found</Text>
       }
     }
@@ -33,7 +33,7 @@ const Col: React.FC<PropsCol> = ({text, flexWidth = 1, icon}) => {
 
   return (
     <View style={{ flex: flexWidth, paddingVertical: 12, justifyContent: "center", alignItems: "center" }}>
-        {renderChildren()}
+      {renderChildren()}
     </View>
   );
 };
@@ -56,7 +56,7 @@ type PropsTable = {
   viewState: boolean,
   editState: boolean,
   deleteState: boolean,
-  
+
   handleView: (categoria: Categoria) => void;
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
@@ -75,20 +75,20 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
   const iconVerMas = (categoria: Categoria) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(categoria)}/>
+      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(categoria)} />
     )
   }
 
   const deleteIcon = (id: any) => {
     return (
 
-      <Ionicons name='trash'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDesactivarCategoria(id)}/>
+      <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} onPress={() => handleDesactivarCategoria(id)} />
     )
   }
 
   const modifyIcon = (id: any) => {
     return (
-      <Ionicons name='pencil-sharp'  style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"orange"} />
+      <Ionicons name='pencil-sharp' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"orange"} />
     )
   }
   const handleToggleIcon = (categoria: Categoria): JSX.Element => {
@@ -104,19 +104,19 @@ const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteSta
   return (
     <View style={{ flex: 1, backgroundColor: 'transparent', height: '100%', width: '100%', paddingHorizontal: 10 }}>
       <Row>
-        <Col text='ID'flexWidth={0.8}/>
-        <Col text='Nombre' flexWidth={3}/>
-        <Col text='Descripcion' flexWidth={3}/>
-        <Col text='Externo' flexWidth={3}/>
-        <Col text='' flexWidth={1.5}/>
+        <Col text='ID' flexWidth={0.8} />
+        <Col text='Nombre' flexWidth={3} />
+        <Col text='Descripcion' flexWidth={3} />
+        <Col text='Externo' flexWidth={3} />
+        <Col text='' flexWidth={1.5} />
       </Row>
       {categorias.map((categoria) => (
         <Row key={categoria.id}>
           <Col text={categoria.id?.toString() || ''} flexWidth={1.5} />
           <Col text={categoria.name} flexWidth={3} />
           <Col text={categoria.description} flexWidth={3} />
-          <Col text={categoria.isExtern==0? "No":"Si"} flexWidth={3} />
-          <Col flexWidth={1.5} icon={handleToggleIcon(categoria)} /> 
+          <Col text={categoria.isExtern == 0 ? "No" : "Si"} flexWidth={3} />
+          <Col flexWidth={1.5} icon={handleToggleIcon(categoria)} />
         </Row>
       ))}
     </View>
@@ -148,19 +148,19 @@ const AdministracionCategorias = () => {
   }
 
   // Cambio de iconos
-  function handleToggleIco(icon : string){
-    if(icon == "edit" && edit || icon == "delete" && trash){
+  function handleToggleIco(icon: string) {
+    if (icon == "edit" && edit || icon == "delete" && trash) {
       setEdit(false)
       setTrash(false)
-    }else {
+    } else {
       setEdit(icon == "edit")
-      setTrash(icon == "delete")        
+      setTrash(icon == "delete")
     }
   };
 
-  const handlerDay = async () =>{
+  const handlerDay = async () => {
     const permisos = await AsyncStorage.getItem('rol_data');
-    if(permisos){
+    if (permisos) {
       setPermition(JSON.parse(permisos));
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
@@ -197,56 +197,48 @@ const AdministracionCategorias = () => {
       {/** Header Menu */}
       <HandleGoBack title='Administración de Categorías' route='menu' />
 
-      {/** Buscador */}
-      <View style={styles.searchContainer}>
-      <TextInput placeholder='Buscar' style={styles.searchText} />
-      <Pressable style={styles.searchButton}>
-        <FontAwesome5 name='search' color={"black"} style={styles.searchButtonIcon} />
-      </Pressable>
-    </View>
-
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("ver")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("delete")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => handleToggleIco("edit")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable 
-            disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)} 
-            style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]} 
-            onPress={() => router.navigate("/categorias/registrar")}>
+        <Pressable
+          disabled={!status || (permition ? permition?.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)}
+          style={[styles.crudItem, (!status || (permition ? permition.entityABMs === 0 : true) || (permition ? permition?.visitorAuthorization === 0 : true)) && styles.crudItemDisabled]}
+          onPress={() => router.navigate("/categorias/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
 
-    <ScrollView style={styles.tableContainer}>
-      {/** Tabla */}
-      <Tablacategorias 
-        viewState={view}
-        editState={edit} 
-        deleteState={trash} 
-        categorias={categorias} 
-        handleView={handleOpenUserModal} 
-        handleEdit={() => console.log("editar")} 
-        handleDelete={handleDeleteCategoria}
-      />
-    </ScrollView>
-    
-    {showCategory && selectedCategory && <CategoryModal categoria={selectedCategory} handleCloseModal={handleCloseUserModal} />}
+      <ScrollView style={styles.tableContainer}>
+        {/** Tabla */}
+        <Tablacategorias
+          viewState={view}
+          editState={edit}
+          deleteState={trash}
+          categorias={categorias}
+          handleView={handleOpenUserModal}
+          handleEdit={() => console.log("editar")}
+          handleDelete={handleDeleteCategoria}
+        />
+      </ScrollView>
+
+      {showCategory && selectedCategory && <CategoryModal categoria={selectedCategory} handleCloseModal={handleCloseUserModal} />}
 
     </View>
   )
@@ -262,21 +254,21 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   crudBtn: {
-    flexDirection: "row", 
-    width: "100%", 
-    justifyContent: "flex-end", 
-    alignItems: "center", 
-    paddingHorizontal: 20, 
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: 20,
     gap: 4
   },
-  crudItem:{
-    padding: 10, 
-    backgroundColor: '#fff', 
+  crudItem: {
+    padding: 10,
+    backgroundColor: '#fff',
     borderRadius: 5,
     width: '5.3%',
     height: 'auto',
-    marginVertical:'2%',
-    justifyContent: "center", 
+    marginVertical: '2%',
+    justifyContent: "center",
   },
   crudItemDisabled: {
     backgroundColor: '#a3a3a3',
@@ -306,9 +298,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    aspectRatio: 1, 
+    aspectRatio: 1,
     maxHeight: '80%',
-    flexBasis: '8%', 
+    flexBasis: '8%',
   },
   searchButtonIcon: {
     fontSize: 20,
