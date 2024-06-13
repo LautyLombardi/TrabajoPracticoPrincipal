@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "MSS",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/ungs.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -21,10 +21,14 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.facundohernandez.frontend"
+      "package": "com.franfallatti.frontend"
     },
     "web": {
       "bundler": "metro",
@@ -56,9 +60,8 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ddf7fab6-b2db-45ab-82ae-25a7dbb7640c"
+        "projectId": "b13f7579-043b-4785-afd8-bbe5066093c4"
       }
-    },
-    "owner": "facundohernandez"
+    }
   }
 }

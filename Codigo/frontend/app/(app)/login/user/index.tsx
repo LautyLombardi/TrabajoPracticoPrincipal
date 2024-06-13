@@ -9,7 +9,6 @@ import useInsertLoginLogFail from "@/hooks/logs/useInsertLoginLogFail";
 import useInsertLoginLog from "@/hooks/logs/useInsertLoginLog";
 import { getAdmDni } from "@/api/services/storage";
 
-
 const LogueoUsuarioManual = () => {
   const insertLoginLog=useInsertLoginLog();
   const insertLoginLogFail= useInsertLoginLogFail();
