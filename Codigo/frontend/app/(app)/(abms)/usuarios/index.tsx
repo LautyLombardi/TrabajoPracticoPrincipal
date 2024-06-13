@@ -139,7 +139,13 @@ const AdministracionUsuarios = () => {
       const result = await deactivateUser(user.dni);
       if (result !== 0) {
         console.log('User deactivated successfully.');
-        setUsuarios(prevUsuarios => prevUsuarios.filter(inst => inst.dni !== user.dni));
+        const handleInsts = usuarios
+        handleInsts.forEach(usua =>{
+          if (usua.dni === user.dni) {
+            usua.isActive = 0
+          }
+        })
+        setUsuarios(handleInsts)
       } else {
         console.error('Failed to deactivate user.');
       }
@@ -147,7 +153,13 @@ const AdministracionUsuarios = () => {
       const result = await activateUser(user.dni);
       if (result !== 0) {
         console.log('User activated successfully.');
-        setUsuarios(prevUsuarios => prevUsuarios.filter(inst => inst.dni !== user.dni));
+        const handleInsts = usuarios
+        handleInsts.forEach(usua =>{
+          if (usua.dni === user.dni) {
+            usua.isActive = 1
+          }
+        })
+        setUsuarios(handleInsts)
       } else {
         console.error('Failed to activate user.');
       }
@@ -201,7 +213,9 @@ const AdministracionUsuarios = () => {
   return (
     <View style={styles.container}>
       {/** Header Menu */}
-      <HandleGoBack title='Administraion de Usuarios' route='menu' />
+      <HandleGoBack title='Administracion de Usuarios' route='menu' />
+
+
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>

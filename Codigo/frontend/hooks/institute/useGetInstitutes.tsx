@@ -50,7 +50,7 @@ const useGetInstitutes = () => {
             };
             fetchPlaceData();
         }
-    }, [institutesQuery.isSuccess, queryClient]);
+    }, [institutesQuery.isSuccess, institutesQuery.data, queryClient]);
 
     return {
         institutes: institutesQuery.data,

@@ -4,6 +4,9 @@ import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import { ONLINE } from '@/api/constantes'
+import useInsertImageVisitor from "@/hooks/logs/useInsertImageVisitor";
+import useInsertImageVisitorFail from "@/hooks/logs/useInsertImageVisitorFail";
+import { getAdmDni } from "@/api/services/storage";
 
 const UserImage = () => {
   const navigator = useRouter();
@@ -12,7 +15,9 @@ const UserImage = () => {
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
   const [dni, setDni] = useState<string>('');
-  
+  const InsertImageVisitor = useInsertImageVisitor();
+  const InsertImageVisitorFail = useInsertImageVisitorFail();
+
   const takePicture = async () => {
     if (cameraRef.current) {
       const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
@@ -28,53 +33,57 @@ const UserImage = () => {
       Alert.alert("Error", "Por favor, ingrese el DNI del visitante");
       return;
     }
+    const admDni = await getAdmDni()
+    if (admDni) {
+      try {
+        const photoUri = await takePicture();
+        if (photoUri) {
+          const formData = new FormData();
+          formData.append('visitor_dni', dni);
+          formData.append("image", {
+            uri: photoUri,
+            name: "photo.jpg",
+            type: "image/jpeg",
+          });
 
-    try {
-      const photoUri = await takePicture();
-      if (photoUri) {
-        const formData = new FormData();
-        formData.append('visitor_dni', dni);
-        formData.append("image", {
-          uri: photoUri,
-          name: "photo.jpg",
-          type: "image/jpeg",
-        });
+          // Primera solicitud para registrar la imagen del usuario
+          const response = await fetch(`${ONLINE}/image/visitor`, {
+            method: 'POST',
+            body: formData,
+          });
 
-        // Primera solicitud para registrar la imagen del usuario
-        const response = await fetch(`${ONLINE}/image/visitor`, {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.status === 200) {
-          // TODO: log
-          Alert.alert(
-            "Registro de imagen de visitante exitoso",
-            "",
-            [
-              { text: "OK", onPress: () => navigator.navigate("/menu") }
-            ]
-          );
+          if (response.status === 200) {
+            InsertImageVisitor(admDni,Number(dni))
+            Alert.alert(
+              "Registro de imagen de visitante exitoso",
+              "",
+              [
+                { text: "OK", onPress: () => navigator.navigate("/menu") }
+              ]
+            );
+          } else {
+            InsertImageVisitorFail(admDni,Number(dni))
+            const errorData = await response.json();
+            console.log("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
+            Alert.alert("Fallo el registro de imagen de visitante")
+          }
         } else {
-          // TODO: log
-          const errorData = await response.json();
-          console.log("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
-          Alert.alert("Fallo el registro de imagen de visitante")
+          InsertImageVisitorFail(admDni,Number(dni))
+          Alert.alert("Error", "No se pudo tomar la foto");
         }
-      } else {
-        // TODO: log
-        Alert.alert("Error", "No se pudo tomar la foto");
+      } catch (error) {
+        InsertImageVisitorFail(admDni,Number(dni))
+        Alert.alert("Error", "No se pudo registrar el visitante");
+        console.error("Error:", error);
       }
-    } catch (error) {
-      // TODO: log
-      Alert.alert("Error", "No se pudo registrar el visitante");
-      console.error("Error:", error);
+    } else {
+      console.log("no se pudo fetchear admDni")
     }
   };
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>
+      <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef} />
       <TextInput
         style={styles.input}
         placeholder="Ingrese su DNI"

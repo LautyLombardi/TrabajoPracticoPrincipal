@@ -1,25 +1,32 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
-import { Empresa, Instituto } from '@/api/model/interfaces';
+import { useCallback } from 'react';
+import { Empresa } from '@/api/model/interfaces';
+
 
 const useGetEnterprice = () => {
     const db = useSQLiteContext();
-    const queryClient = useQueryClient();
 
-    const enterpricesQuery = useQuery<Empresa[]>({
-        queryKey: ['enterprices'],
-        queryFn: async (): Promise<Empresa[]> => {
-            return db.getAllAsync('SELECT * FROM enterprice ORDER BY createDate');
-        },
-    });
+    const getEnterprice = useCallback(async (id : number) => {
+        console.log('instituto by id', id);
+        try {
 
-    console.log('enterprices data: ', enterpricesQuery.data);
+            const enterpriceDB = await db.getFirstAsync<Empresa>(
+                'SELECT * FROM enterprice WHERE id = ?',
+                [id]
+            );
+            console.log('enterpriceDB by id', enterpriceDB);
+            if (enterpriceDB && enterpriceDB !== null) {
+                return enterpriceDB;
+            } else {
+                return undefined;
+            }
+        } catch (error) {
+            console.error('Error updating visitor:', error);
+            return undefined;
+        }
+    }, [db]);
+    return getEnterprice;
 
-    return {
-        enterprices: enterpricesQuery.data,
-        isLoading: enterpricesQuery.isLoading,
-        isError: enterpricesQuery.isError,
-    };
-}
+};
 
 export default useGetEnterprice;

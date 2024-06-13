@@ -1,5 +1,7 @@
 import CampoFecha from "@/components/CampoFecha/CampoFecha";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 import useEditPlace from "@/hooks/place/useEditPlaces";
 import useGetPlace from "@/hooks/place/useGetPlace";
 import { router, useLocalSearchParams } from "expo-router";
@@ -16,6 +18,8 @@ const EditPlace = () => {
     const [description, setDescription] = useState("");
     const [openTime, setOpenTime] = useState("");
     const [closeTime, setCloseTime] = useState("");
+    const insertLogAdm=useInsertLogAdm();
+    const insertLogAdmFail=useInsertLogAdmFail();
 
     useEffect(() => {
         if (place) {
@@ -33,13 +37,16 @@ const EditPlace = () => {
         if (place) {
             const response = await editPlace(Number(id), name, abbreviation, description, openTime, closeTime);
             if (response !== 0) {
+                await insertLogAdm("MODIFICACION","lugares")
                 Alert.alert("Place modificado", "", [
                     { text: "OK", onPress: () => router.navigate("/lugares") }
                 ]);
             } else {
+                await insertLogAdmFail("MODIFICACION","lugares")
                 Alert.alert("Error al guardar place");
             }
         } else {
+            await insertLogAdmFail("MODIFICACION","lugares")
             Alert.alert("Error completo al guardar place");
         }
     };
