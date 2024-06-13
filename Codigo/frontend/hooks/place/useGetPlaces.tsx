@@ -13,6 +13,9 @@ const useGetPlaces = () => {
         refetchOnWindowFocus: true, // Refetch al volver al foco
         refetchOnMount: true,
     });
+    
+    console.log('places data: ', placesQuery.data);
+
 
     return {
         places: placesQuery.data,
