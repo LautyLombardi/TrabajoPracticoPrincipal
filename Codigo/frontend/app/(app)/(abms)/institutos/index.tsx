@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView, Switch } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -66,20 +66,27 @@ const TablaInstituto: React.FC<PropsTable> = ({ viewState, editState, deleteStat
 
   const iconVerMas = (instituto: Instituto) => {
     return (
-      <Ionicons name='eye-outline' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(instituto)} />
+      <Ionicons name='eye-outline' style={{fontSize: 32, padding: 7, borderRadius: 100}} color={"white"} onPress={() => handleView(instituto)} />
     )
   }
 
   const deleteIcon = (insti: Instituto) => {
+    const isEnabled = insti.isActive === 1;
+  
     return (
-      <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"}  onPress={() =>handleDelete(insti)}/>
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(insti)}
+        value={isEnabled}
+      />
     );
   };
   
   const modifyIcon = (id: number) => {
     return (
       <Ionicons name='pencil-sharp'
-      style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+      style={{fontSize: 32, padding: 7, borderRadius: 100}} 
       color={"orange"} 
       onPress={() => router.push(`/institutos/editar?id=${id}`)}
       />
@@ -128,32 +135,23 @@ const AdministracionInstitutos = () => {
   const activateInstitute = useActivateInstitute();
 
   const handleDeleteInstitute = async (insti: Instituto) => {
-
     if (insti.isActive) {
       const result = await deactivateInstitute(insti.id);
       if (result !== 0) {
         console.log('Institute deactivated successfully.');
-        const handleInsts = institutos
-        handleInsts.forEach(inst =>{
-          if (inst.id === insti.id) {
-            inst.isActive = 0
-          }
-        })
-        setInstitutos(handleInsts)
+        setInstitutos(prevInstitutes => prevInstitutes.map(inst => 
+          inst.id === insti.id ? { ...inst, isActive: 0 } : inst
+        ));
       } else {
         console.error('Failed to deactivate institute.');
       }
-    }else{
+    } else {
       const result = await activateInstitute(insti.id);
       if (result !== 0) {
         console.log('Institute activated successfully.');
-        const handleInsts = institutos
-        handleInsts.forEach(inst =>{
-          if (inst.id === insti.id) {
-            inst.isActive = 1
-          }
-        })
-        setInstitutos(handleInsts)
+        setInstitutos(prevInstitutes => prevInstitutes.map(inst => 
+          inst.id === insti.id ? { ...inst, isActive: 1 } : inst
+        ));
       } else {
         console.error('Failed to activate institute.');
       }
@@ -197,6 +195,8 @@ const AdministracionInstitutos = () => {
   
   useFocusEffect(
     useCallback(() => {
+      setEdit(false)
+      setTrash(false)
       refetch();
     }, [refetch])
   );
@@ -214,7 +214,6 @@ const AdministracionInstitutos = () => {
     <View style={styles.container}>
       {/** Header Menu */}
       <HandleGoBack title='Administración de Institutos' route='menu' />
-
 
         {/** Botones CRUD */}
       <View style={styles.crudBtn}>
