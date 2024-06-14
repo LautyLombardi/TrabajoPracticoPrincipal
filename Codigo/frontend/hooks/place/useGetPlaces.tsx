@@ -14,6 +14,8 @@ const useGetPlaces = () => {
         refetchOnMount: true,
     });
 
+    console.log('places data: ', placesQuery.data);
+
     return {
         places: placesQuery.data,
         isLoading: placesQuery.isLoading,

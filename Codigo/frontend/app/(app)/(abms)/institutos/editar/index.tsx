@@ -12,18 +12,19 @@ import Checkbox from "expo-checkbox";
 
 const EditarInstituto = () => {
   const { id } = useLocalSearchParams();
-  const [nombre, setNombre] = useState<string>("");
-  const getInstitute = useGetInstitute();
   const { places } = useGetPlaces();
+  const getInstitute = useGetInstitute();
   const editInstitute = useEditInstitute();
   const insertLogAdm = useInsertLogAdm();
   const insertLogAdmFail = useInsertLogAdmFail();
+  const [nombre, setNombre] = useState<string>("");
   const [lugares, setLugares] = useState<Lugar[]>([]);
   const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchInstitute = async () => {
       const result = await getInstitute(Number(id));
+      console.log('Fetched Institute:', result);
       if (result) {
         const { institute, placeIds } = result;
         if (institute && institute.name !== nombre) {
@@ -38,7 +39,7 @@ const EditarInstituto = () => {
       }
     };
     fetchInstitute();
-  }, [id, getInstitute, places, nombre]);
+  }, [id, getInstitute, places]);
 
   const handleLugarSeleccionado = (id: number) => {
     setLugaresSeleccionados((prevSeleccionados) =>
@@ -49,7 +50,7 @@ const EditarInstituto = () => {
   };
 
   const handleTerminar = async () => {
-    if (nombre) {
+    if (nombre && lugaresSeleccionados.length > 0) {
       const edit = await editInstitute(Number(id), nombre, lugaresSeleccionados);
       if (edit === 0) {
         await insertLogAdmFail("MODIFICACIÓN", "instituto");
@@ -65,6 +66,11 @@ const EditarInstituto = () => {
           ]
         );
       }
+    } else if (!nombre) {
+      await insertLogAdmFail("MODIFICACIÓN", "instituto");
+      Alert.alert("Error al modificar instituto","Se debe ingresar un nombre para el instituto");
+    } else {
+      Alert.alert("Error al modificar instituto","Se debe seleccionar al menos un lugar para el instituto");
     }
   };
 
