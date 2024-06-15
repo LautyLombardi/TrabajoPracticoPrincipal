@@ -80,6 +80,7 @@ const useGetCategories = () => {
         categories: categoriesQuery.data,
         isLoading: categoriesQuery.isLoading,
         isError: categoriesQuery.isError,
+        refetch: categoriesQuery.refetch,
     };
 }
 

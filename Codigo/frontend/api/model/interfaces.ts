@@ -46,6 +46,7 @@ export interface Categoria {
     places: string[],
     institutes: string[],
     createDate: string;
+    isActive : number;
 }
 
 export interface Empresa{

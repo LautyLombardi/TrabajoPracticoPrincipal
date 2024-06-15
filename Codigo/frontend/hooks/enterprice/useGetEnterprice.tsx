@@ -7,7 +7,7 @@ const useGetEnterprice = () => {
     const db = useSQLiteContext();
 
     const getEnterprice = useCallback(async (id : number) => {
-        console.log('instituto by id', id);
+        console.log('enterprice by id', id);
         try {
 
             const enterpriceDB = await db.getFirstAsync<Empresa>(
@@ -21,7 +21,7 @@ const useGetEnterprice = () => {
                 return undefined;
             }
         } catch (error) {
-            console.error('Error updating visitor:', error);
+            console.error('Error updating enterprice:', error);
             return undefined;
         }
     }, [db]);

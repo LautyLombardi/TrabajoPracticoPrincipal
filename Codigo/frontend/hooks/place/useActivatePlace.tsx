@@ -5,23 +5,23 @@ import { useCallback } from 'react';
 const useActivatePlace = () => {
     const db = useSQLiteContext();
 
-    const activatePlace = useCallback(async (instituteId: number) => {
+    const activatePlace = useCallback(async (placeId: number) => {
         try {
             await db.execAsync('BEGIN TRANSACTION;');
             // Update query
             const result = await db.runAsync(
                 `UPDATE place SET isActive = 1 WHERE id = ?;`,
-                [instituteId]
+                [placeId]
             );
 
             console.log('Update result:', result.changes);
             await db.execAsync('COMMIT;');
 
             if (result.changes > 0) {
-                console.log('Place activated with ID:', instituteId);
-                return instituteId;
+                console.log('Place activated with ID:', placeId);
+                return placeId;
             } else {
-                console.warn('No Place found with ID:', instituteId);
+                console.warn('No Place found with ID:', placeId);
                 return 0;
             }
         } catch (error) {

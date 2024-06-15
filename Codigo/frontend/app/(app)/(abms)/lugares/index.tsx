@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity, Switch } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -69,22 +69,28 @@ const TablaLugares: React.FC<PropsTable> = ({ viewState, editState, deleteState,
 
   const iconVerMas = (lugar: Lugar) => {
     return (
-      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
+      <Ionicons name='eye-outline' style={{ fontSize: 32, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
     )
   }
 
   const deleteIcon = (place: Lugar) => {
+    const isEnabled = place.isActive === 1;
+    
+    
     return (
-      <TouchableOpacity onPress={() => handleDelete(place)}>
-        <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
-      </TouchableOpacity>
-    )
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(place)}
+        value={isEnabled}
+      />
+    );
   }
 
   const modifyIcon = (id : number) => {
     return (
       <Ionicons name='pencil-sharp'  
-      style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+      style={{fontSize: 32, padding: 7, borderRadius: 100}} 
       color={"orange"} 
       onPress={() => router.push(`/lugares/editar?id=${id}`)}
       />
@@ -149,28 +155,20 @@ const AdministracionLugares = () => {
     if (place.isActive) {
       const result = await deactivatePlace(place.id)
       if (result !== 0) {
-        console.log('Enterprice deactivated successfully.');
-        const handleInsts = lugares
-        handleInsts.forEach(pl =>{
-          if (pl.id === place.id) {
-            pl.isActive = 0
-          }
-        })
-        setLugares(handleInsts)
+        console.log('place deactivated successfully.');
+        setLugares(prevPlaces => prevPlaces.map(pla => 
+          pla.id === place.id ? { ...pla, isActive: 0 } : pla
+        ))
       } else {
         console.error('Failed to deactivate place.');
       }
     } else {
-      const result = await activatePlace(place.id);
+      const result = await activatePlace(place.id)
       if (result !== 0) {
         console.log('place activated successfully.');
-        const handleInsts = lugares
-        handleInsts.forEach(pl =>{
-          if (pl.id === place.id) {
-            pl.isActive = 1
-          }
-        })
-        setLugares(handleInsts)
+        setLugares(prevPlaces => prevPlaces.map(pla => 
+          pla.id === place.id ? { ...pla, isActive: 1 } : pla
+        ))
       } else {
         console.error('Failed to activate place.');
       }
@@ -205,9 +203,12 @@ const AdministracionLugares = () => {
   
   useFocusEffect(
     useCallback(() => {
+      setEdit(false)
+      setTrash(false)
       refetch();
     }, [refetch])
   );
+
 
   useEffect(() => {
     if(places){

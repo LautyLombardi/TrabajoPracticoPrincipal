@@ -109,23 +109,23 @@ const RegistroCategoria = () => {
         >
           <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria:" values={["interno", "Externo"]} />
         </View>
-      </View>
 
-      <View style={styles.campo}>
-        <Text style={[styles.campoText]}>Lugares a los que se asigna la Categoria:</Text>
-        <View style={styles.lugaresContainer}>
-          {lugares.map((lugar, index) => (
-            <View key={lugar.id} style={styles.checkboxContainer}>
-              <Checkbox
-                value={lugaresSeleccionados.includes(lugar.id)}
-                onValueChange={() => handleLugarSeleccionado(lugar.id)}
-              />
-              <Text style={styles.checkboxLabel}>{lugar.name}</Text>
-            </View>
-          ))}
+
+        <View style={styles.campo}>
+          <Text style={[styles.campoText]}>Lugares a los que se asigna la Categoria:</Text>
+          <View style={styles.lugaresContainer}>
+            {lugares.map((lugar, index) => (
+              <View key={lugar.id} style={styles.checkboxContainer}>
+                <Checkbox
+                  value={lugaresSeleccionados.includes(lugar.id)}
+                  onValueChange={() => handleLugarSeleccionado(lugar.id)}
+                />
+                <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
-
       <Pressable onPress={handleTerminar} style={styles.button}>
         <Text style={styles.buttonText}>Registrar</Text>
       </Pressable>
