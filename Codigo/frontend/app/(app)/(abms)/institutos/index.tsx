@@ -7,8 +7,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { Instituto, Rol } from '@/api/model/interfaces';
 import InstituteModal from '@/components/Modal/InstituteModal';
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
-import useDeactivateInstitute from '@/hooks/institute/useDeactivateInstitute';
-import useActivateInstitute from '@/hooks/institute/useActivateInstitute';
+import useActivateDesactive from '@/hooks/institute/useActivateDesactive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PropsCol = {
@@ -131,12 +130,11 @@ const AdministracionInstitutos = () => {
   const [showInstitute, setShowInstitute] = useState(false);
   const [selectedInstitute, setSelectedInstitute] = useState<Instituto | null>(null);
 
-  const deactivateInstitute = useDeactivateInstitute();
-  const activateInstitute = useActivateInstitute();
+  const activateDesactive = useActivateDesactive();
 
   const handleDeleteInstitute = async (insti: Instituto) => {
-    if (insti.isActive) {
-      const result = await deactivateInstitute(insti.id);
+    if (insti.isActive === 1) {
+      const result = await activateDesactive(insti);
       if (result !== 0) {
         console.log('Institute deactivated successfully.');
         setInstitutos(prevInstitutes => prevInstitutes.map(inst => 
@@ -146,7 +144,7 @@ const AdministracionInstitutos = () => {
         console.error('Failed to deactivate institute.');
       }
     } else {
-      const result = await activateInstitute(insti.id);
+      const result = await activateDesactive(insti);
       if (result !== 0) {
         console.log('Institute activated successfully.');
         setInstitutos(prevInstitutes => prevInstitutes.map(inst => 

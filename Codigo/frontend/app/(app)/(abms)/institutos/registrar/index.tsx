@@ -10,7 +10,7 @@ import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
 import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistroInstituto = () => {
-  const placesDB =useGetPlaces();
+  const {places} =useGetPlaces();
   const insertInstitute = useInsertInstitute();
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()
@@ -19,9 +19,14 @@ const RegistroInstituto = () => {
   const [lugares, setLugares] = useState<Lugar[]>([])
   const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
 
+  useEffect(() => {
+    if (places) {
+      setLugares(places);
+    }   
+  }, [places])
+
   const handleTerminar = async () => {
-    if (lugaresSeleccionados.length > 0) {
-      console.log('lugaresSeleccionados', lugaresSeleccionados);
+    if (nombre && lugaresSeleccionados.length > 0) {
       const response =await insertInstitute(nombre, lugaresSeleccionados);
       if(response === 0){
         await insertLogAdmFail("ALTA","instituto") 
@@ -49,17 +54,6 @@ const RegistroInstituto = () => {
         : [...prevSeleccionados, id]
     );
   };
-
-  useEffect(() => {
-    const fetchLugares = async () => {
-      const {places}=placesDB
-      if (places) {
-        setLugares(places);
-      }
-    };
-
-    fetchLugares();    
-  }, [])
   
   return (
     <View style={styles.container}>

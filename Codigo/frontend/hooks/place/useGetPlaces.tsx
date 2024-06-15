@@ -17,6 +17,8 @@ const useGetPlaces = () => {
     console.log('places data: ', placesQuery.data);
 
 
+    console.log('places data: ', placesQuery.data);
+
     return {
         places: placesQuery.data,
         isLoading: placesQuery.isLoading,
