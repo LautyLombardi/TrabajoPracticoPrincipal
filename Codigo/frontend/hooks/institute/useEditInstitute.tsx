@@ -6,7 +6,7 @@ const useEditInstitute = () => {
     const db = useSQLiteContext();
     const queryClient = useQueryClient();
 
-    const editInstitute = useCallback(async (id : number, name: string) => {
+    const editInstitute = useCallback(async (id : number, name: string, placeIds: number[]) => {
         try {
             await db.execAsync('BEGIN TRANSACTION;');
 
@@ -15,6 +15,22 @@ const useEditInstitute = () => {
                 [ name, id]
             )
 
+            await db.runAsync(
+                `DELETE FROM institute_place WHERE institute_id = ?;`,
+                [id]
+            );
+
+            // Insertar nuevas relaciones en category_place
+            for (const placeId of placeIds) {
+                await db.runAsync(
+                    `INSERT INTO institute_place (institute_id, place_id)
+                        SELECT ?, ?
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM institute_place WHERE institute_id = ? AND place_id = ?
+                    );`,
+                    [id, placeId, id, placeId]
+                );
+            }
             console.log('Update result:', resultUpdate);
 
             await db.execAsync('COMMIT;');

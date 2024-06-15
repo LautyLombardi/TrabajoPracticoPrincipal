@@ -10,7 +10,7 @@ const useGetInstitutes = () => {
     const institutesQuery = useQuery<Instituto[]>({
         queryKey: ['institutes'],
         queryFn: async (): Promise<Instituto[]> => {
-            return db.getAllAsync('SELECT * FROM institute ORDER BY createDate');
+            return db.getAllAsync('SELECT * FROM institute ORDER BY createDate DESC');
         },
         refetchOnWindowFocus: true, // Refetch al volver al foco
         refetchOnMount: true, // Refetch al montar el componente
