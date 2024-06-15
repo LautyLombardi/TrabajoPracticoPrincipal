@@ -4,10 +4,12 @@ import { Link } from 'expo-router';
 import { LogBox } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import useInsertOpenCloseAutom from '@/hooks/logs/useInsertOpenCloseAutom';
 
 LogBox.ignoreAllLogs(true);
 
 const Welcome = () => {
+    const insertOpenCloseAutom = useInsertOpenCloseAutom()
     const [institutionalImage, setInstitutionalImage] = useState<string | null>(null);
 
     const loadInstitutionalImage = async () => {
@@ -21,26 +23,57 @@ const Welcome = () => {
 
     const setDayStatus = async () => {
         try {
-        const openHour = await AsyncStorage.getItem('openHour');
-        const closeHour = await AsyncStorage.getItem('closeHour');
-        
-        if (openHour && closeHour) {
-            const [openHourHours, openHourMinutes] = openHour.split(':').map(Number);
-            const [closeHourHours, closeHourMinutes] = closeHour.split(':').map(Number);
-            
-            const now = new Date();
-            const currentHours = now.getHours();
-            const currentMinutes = now.getMinutes();
+            const openHour = await AsyncStorage.getItem('openHour');
+            const closeHour = await AsyncStorage.getItem('closeHour');
+            const lastExecutionDate = await AsyncStorage.getItem('lastExecutionDate');
 
-            const isOpen = (currentHours > openHourHours || (currentHours === openHourHours && currentMinutes >= openHourMinutes)) &&
-                            (currentHours < closeHourHours || (currentHours === closeHourHours && currentMinutes < closeHourMinutes));
-            
-            await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
-        } else {
-            await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
-        }
+            const now = new Date();
+            const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+
+            // Reset flags daily
+            if (lastExecutionDate !== today) {
+                await AsyncStorage.removeItem('aperturaRealizada');
+                await AsyncStorage.removeItem('cierreRealizada');
+                await AsyncStorage.setItem('lastExecutionDate', today);
+            }
+
+            if (openHour && closeHour) {
+                const [openHourHours, openHourMinutes] = openHour.split(':').map(Number);
+                const [closeHourHours, closeHourMinutes] = closeHour.split(':').map(Number);
+                
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+
+                const isOpen = 
+                        (currentHours > openHourHours || (currentHours === openHourHours && currentMinutes >= openHourMinutes)) ||
+                        (currentHours < closeHourHours || (currentHours === closeHourHours && currentMinutes < closeHourMinutes));
+
+                const aperturaRealizada = await AsyncStorage.getItem('aperturaRealizada') === 'true';
+                const cierreRealizada = await AsyncStorage.getItem('cierreRealizada') === 'true';
+
+                console.log('openHour', openHour)
+                console.log('closeHour', closeHour)
+                console.log('lastExecutionDate', lastExecutionDate)
+                console.log('aperturaRealizada', aperturaRealizada)
+                console.log('cierreRealizada', cierreRealizada)
+                console.log('isOpen', isOpen)
+
+                if (!aperturaRealizada) {
+                    await insertOpenCloseAutom(openHour, closeHour, true);
+                    await AsyncStorage.setItem('aperturaRealizada', 'true');
+                }
+
+                if (!cierreRealizada) {
+                    await insertOpenCloseAutom(openHour, closeHour, false);
+                    await AsyncStorage.setItem('cierreRealizada', 'true');
+                }
+
+                await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
+            } else {
+                await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+            }
         } catch (error) {
-        console.error('Error al establecer el estado del día:', error);
+            console.error('Error al establecer el estado del día:', error);
         }
     };
 
