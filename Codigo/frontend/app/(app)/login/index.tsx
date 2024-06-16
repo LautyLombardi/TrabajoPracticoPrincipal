@@ -8,6 +8,10 @@ import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
 import AdmUserModal from "@/components/Modal/AdmUserModal";
+import useInsertFaceRecognitionLogs from "@/hooks/logs/useInsertFaceRecognitionLogs";
+import useInsertFaceRecognitionLogsFail from "@/hooks/logs/useInsertFaceRecognitionLogsFail";
+import { getAdmDni } from "@/api/services/storage";
+
 
 const Login = () => {
   const navigator = useRouter()
@@ -18,6 +22,8 @@ const Login = () => {
   const [imagen, setImagen] = useState(null);
   const [usuario, setUsuario] = useState<Usuario>();
   const [showUser, setShowUser] = useState(false);
+  const useFaceRecognitionLogs = useInsertFaceRecognitionLogs()
+  const useFaceRecognitionLogsFail = useInsertFaceRecognitionLogsFail()
 
   useEffect(() => {
     setUsuario(user)
@@ -62,10 +68,10 @@ const Login = () => {
             ];                      
             await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
             setShowUser(true);
-            //------------------------------------
+            useFaceRecognitionLogs(null,adm_data[0].adm_dni,'usuario')
             // TODO: log            
           }else{
-            // TODO: log
+            useFaceRecognitionLogsFail(null,'usuario')
             Alert.alert( "Falló la autenticación de la imagen del usuario")
           }
         })

@@ -11,6 +11,8 @@ import PlaceModal from '@/components/Modal/PlaceModal';
 import useGetPlaces from '@/hooks/place/useGetPlaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useActivateDesactive from '@/hooks/useActivateDesactive';
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 type PropsCol = {
   text?: string,
@@ -138,6 +140,8 @@ const AdministracionLugares = () => {
   const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
 
   const activateDesactive = useActivateDesactive();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const handleOpenUserModal = (place: Lugar) => {
     setSelectedLugar(place);
@@ -157,7 +161,9 @@ const AdministracionLugares = () => {
         setLugares(prevPlaces => prevPlaces.map(pla => 
           pla.id === place.id ? { ...pla, isActive: 0 } : pla
         ))
+        insertLogAdm("desactivacion","lugar")
       } else {
+        insertLogAdmFail("desactivacion","lugar")
         console.error('Failed to deactivate place.');
       }
     } else {
@@ -167,11 +173,13 @@ const AdministracionLugares = () => {
         setLugares(prevPlaces => prevPlaces.map(pla => 
           pla.id === place.id ? { ...pla, isActive: 1 } : pla
         ))
-      } else {
+        insertLogAdm("activacion","lugar")
+      } else 
+      insertLogAdmFail("activacion","lugar")
         console.error('Failed to activate place.');
       }
     }
-  }
+  
 
   // Cambio de iconos
   function handleToggleIco(icon: string) {
