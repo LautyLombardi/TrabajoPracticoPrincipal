@@ -8,9 +8,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import CategoryModal from '@/components/Modal/CategoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetCategories from '@/hooks/category/useGetCategories';
-import useActivateCategory from '@/hooks/category/useActivateCategory';
-import useDeactivateCategory from '@/hooks/category/useDeactivateCategory';
-
+import useActivateDesactive from '@/hooks/useActivateDesactive';
 type PropsCol = {
   text?: string,
   flexWidth?: number,
@@ -136,8 +134,7 @@ const AdministracionCategorias = () => {
   const [showCategory, setShowCategory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Categoria | null>(null);
 
-  const desactiveCategory = useDeactivateCategory();
-  const activateCategory  = useActivateCategory();
+  const activateDesactive = useActivateDesactive();
 
   const handleOpenUserModal = (categoria: Categoria) => {
     setSelectedCategory(categoria);
@@ -152,7 +149,7 @@ const AdministracionCategorias = () => {
   // HandleDeleteCategoria 
   const handleDeleteCategoria = async (categori : Categoria) => {
     if (categori.isActive) {
-      const result = await desactiveCategory(categori.id)
+      const result =  await activateDesactive(categori.id,'category',1);
       if (result !== 0) {
         console.log('Category deactivated successfully.');
         setCategorias(prevCategory => prevCategory.map(cat => 
@@ -162,7 +159,7 @@ const AdministracionCategorias = () => {
         console.error('Failed to deactivate category.');
       }
     } else {
-      const result = await activateCategory(categori.id);
+      const result = await activateDesactive(categori.id,'category',0);
       if (result !== 0) {
         console.log('Category activated successfully.');
         setCategorias(prevCategory => prevCategory.map(cat => 

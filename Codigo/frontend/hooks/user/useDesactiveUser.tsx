@@ -1,37 +1,39 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { useCallback } from 'react';
+import { getCurrentCreateDate } from '@/util/getCreateDate';
 
-const useActivateEnterprice = () => {
+const useDeactivateUser = () => {
     const db = useSQLiteContext();
 
-    const activateEnterprice = useCallback(async (EnterpriceID: number) => {
+    const deactivateUser = useCallback(async (userId: number) => {
+        const finishDate=getCurrentCreateDate();
         try {
             await db.execAsync('BEGIN TRANSACTION;');
             // Update query
             const result = await db.runAsync(
-                `UPDATE enterprice SET isActive = 1 WHERE id = ?;`,
-                [EnterpriceID]
+                `UPDATE user SET isActive = 0, finishDate = ? WHERE dni = ?;`,
+                [finishDate, userId]
             );
 
             console.log('Update result:', result.changes);
             await db.execAsync('COMMIT;');
 
             if (result.changes > 0) {
-                console.log('Enterprice activated with ID:', EnterpriceID);
-                return EnterpriceID;
+                console.log('User Deactivated with ID:', userId);
+                return userId;
             } else {
-                console.warn('No Enterprice found with ID:', EnterpriceID);
+                console.warn('No User found with ID:', userId);
                 return 0;
             }
         } catch (error) {
             await db.execAsync('ROLLBACK;');
-            console.error('Error activating Enterprice:', error);
+            console.error('Error Deactivating User:', error);
             return 0;
         }
     }, [db]);
 
-    return activateEnterprice;
+    return deactivateUser;
 };
 
-export default useActivateEnterprice;
+export default useDeactivateUser;

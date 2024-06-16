@@ -6,8 +6,18 @@ import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
 import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 import useGetCategoryById from "@/hooks/category/useGetCategoryById";
 import useEditCategory from "@/hooks/category/useEditCategory";
+import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
+import useGetPlaces from "@/hooks/place/useGetPlaces";
+import { Lugar } from "@/api/model/interfaces";
+import Checkbox from "expo-checkbox";
 
-const RegistroCategoria = () => {
+
+
+const EditarCategoria = () => {
+  const institutesDB = useGetInstitutes();
+  const { places } = useGetPlaces();;
+  
+
   const { id } = useLocalSearchParams();
   const [nombre, setNombre] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
@@ -15,22 +25,53 @@ const RegistroCategoria = () => {
   const editCategory = useEditCategory();
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()
+  const [lugares, setLugares] = useState<Lugar[]>([])
+  const [lugaresSeleccionados, setLugaresSeleccionados] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchCategory = async () => {
-      const category = await getCategory(Number(id));
-      if (category && category.name !== nombre) {
-        setNombre(category.name);
-        setDescripcion(category.description)
+      const result = await getCategory(Number(id));
+      console.log('Fetched Category:', result);
+      if (result) {
+        const { category, placeIds } = result;
+        if (category && category.name !== nombre) {
+          setNombre(category.name);
+          setDescripcion(category.description)
+        }
+        if (places) {
+          setLugares(places);
+        }
+        if (placeIds) {
+          setLugaresSeleccionados(placeIds);
+        }
       }
-    };    
+    };
     fetchCategory();
-  }, [id, getCategory]);
+  }, [id, getCategory, places]);
   
+
+
+  const handleLugarSeleccionado = (id: number) => {
+    setLugaresSeleccionados((prevSeleccionados) =>
+      prevSeleccionados.includes(id)
+        ? prevSeleccionados.filter((lugarId) => lugarId !== id)
+        : [...prevSeleccionados, id]
+    );
+  };
+  
+
+  useEffect(() => {
+    const fetchLugares = async () => {
+      if (places) {
+        setLugares(places);
+      }
+    };
+    fetchLugares();    
+  }, [places])
 
   const handleTerminar = async () => {
     if(nombre){
-      const edit = await editCategory(Number(id), nombre, descripcion);
+      const edit = await editCategory(Number(id), nombre, descripcion,lugaresSeleccionados);
       if(edit === 0){
         await insertLogAdmFail("MODIFICACIÓN","Categoria") 
         Alert.alert("Error al modificar categoria");
@@ -74,10 +115,24 @@ const RegistroCategoria = () => {
             value={descripcion} 
             style={styles.input}
           />
+        </View>   
+        <View style={styles.campo}>
+          <Text style={[styles.campoText]}>Lugares a los que se asigna la Categoria:</Text>
+          <View style={styles.lugaresContainer}>
+            {lugares.map((lugar) => (
+              <View key={lugar.id} style={styles.checkboxContainer}>
+                <Checkbox
+                  value={lugaresSeleccionados.includes(lugar.id)}
+                  onValueChange={() => handleLugarSeleccionado(lugar.id)}
+                />
+                <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
       <Pressable onPress={handleTerminar} style={styles.button}>
-        <Text style={styles.buttonText}>Registrar</Text>
+        <Text style={styles.buttonText}>Editar</Text>
       </Pressable>
     </View>
   );
@@ -157,4 +212,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default RegistroCategoria;
+export default EditarCategoria;

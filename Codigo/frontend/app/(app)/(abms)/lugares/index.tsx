@@ -10,8 +10,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import PlaceModal from '@/components/Modal/PlaceModal';
 import useGetPlaces from '@/hooks/place/useGetPlaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useDeactivatePlace from '@/hooks/place/useDeactivatePlace';
-import useActivatePlace from '@/hooks/place/useActivatePlace';
+import useActivateDesactive from '@/hooks/useActivateDesactive';
 
 type PropsCol = {
   text?: string,
@@ -138,8 +137,7 @@ const AdministracionLugares = () => {
   const [showUser, setShowUser] = useState(false);
   const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
 
-  const deactivatePlace = useDeactivatePlace();
-  const activatePlace  = useActivatePlace();
+  const activateDesactive = useActivateDesactive();
 
   const handleOpenUserModal = (place: Lugar) => {
     setSelectedLugar(place);
@@ -153,7 +151,7 @@ const AdministracionLugares = () => {
 
   const handleDeletePlace = async (place: Lugar) => {
     if (place.isActive) {
-      const result = await deactivatePlace(place.id)
+      const result = await activateDesactive(place.id,'place',1);
       if (result !== 0) {
         console.log('place deactivated successfully.');
         setLugares(prevPlaces => prevPlaces.map(pla => 
@@ -163,7 +161,7 @@ const AdministracionLugares = () => {
         console.error('Failed to deactivate place.');
       }
     } else {
-      const result = await activatePlace(place.id)
+      const result = await activateDesactive(place.id,'place',0);
       if (result !== 0) {
         console.log('place activated successfully.');
         setLugares(prevPlaces => prevPlaces.map(pla => 

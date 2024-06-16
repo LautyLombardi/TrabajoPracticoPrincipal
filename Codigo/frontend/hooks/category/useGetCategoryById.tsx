@@ -14,9 +14,22 @@ const useGetCategoryById = () => {
                 'SELECT * FROM category WHERE id = ?',
                 [id]
             );
+
+            const placeCategory = await db.getAllAsync<{ place_id: number }>(
+                `SELECT place_id FROM category_place WHERE category_id = ?`,
+                [id]
+            );
+
+            const placeIds = placeCategory.map(place => place.place_id);
+
+
+
             console.log('categoryDB by id', categoryDB);
             if (categoryDB && categoryDB !== null) {
-                return categoryDB;
+                return {
+                    category :categoryDB,
+                    placeIds: placeIds,
+                }
             } else {
                 return undefined;
             }

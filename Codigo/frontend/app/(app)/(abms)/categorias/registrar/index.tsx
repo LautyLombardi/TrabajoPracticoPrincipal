@@ -5,14 +5,13 @@ import SelectItem from "@/components/seleccionar/SelectItem";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useInsertCategory from "@/hooks/category/useInsertCategory";
 import { Lugar } from "@/api/model/interfaces";
-import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 import useGetPlaces from "@/hooks/place/useGetPlaces";
 import Checkbox from "expo-checkbox";
 import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
 import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistroCategoria = () => {
-  const institutesDB = useGetInstitutes();
+
   const placesDB = useGetPlaces();
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()

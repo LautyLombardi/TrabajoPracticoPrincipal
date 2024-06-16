@@ -8,8 +8,7 @@ import { Empresa, Rol } from '@/api/model/interfaces';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetEnterprices from '@/hooks/enterprice/useGetEnterprices';
-import useDeactivateEnterprice from '@/hooks/enterprice/useDeactivateEnterprice';
-import useActivateEnterprice from '@/hooks/enterprice/useActivateEnterprice';
+import useActivateDesactive from '@/hooks/useActivateDesactive';
 
 type PropsCol = {
   text?: string,
@@ -134,8 +133,7 @@ const AdministracionEmpresas = () => {
   const [showEnterprice, setShowEnterprice] = useState(false);
   const [selectedEnterprice, setSelectedEnterprice] = useState<Empresa | null>(null);
 
-  const deactivateEnterprice = useDeactivateEnterprice();
-  const activateEnterprice = useActivateEnterprice();
+  const activateDesactive = useActivateDesactive();
 
   const handleOpenUserModal = (empresa: Empresa) => {
     setSelectedEnterprice(empresa);
@@ -149,7 +147,7 @@ const AdministracionEmpresas = () => {
 
   const handleDeleteEnterprice = async (enterprice: Empresa) => {
     if (enterprice.isActive) {
-      const result = await deactivateEnterprice(enterprice.id)
+      const result = await activateDesactive(enterprice.id,'enterprice',1);
       if (result !== 0) {
         console.log('enterprice deactivated successfully.');
         setEmpresas(prevEnterprice => prevEnterprice.map(enter => 
@@ -159,7 +157,7 @@ const AdministracionEmpresas = () => {
         console.error('Failed to deactivate enterprice.');
       }
     } else {
-      const result = await activateEnterprice(enterprice.id)
+      const result =await activateDesactive(enterprice.id,'enterprice',0);
       if (result !== 0) {
         console.log('enterprice activated successfully.');
         setEmpresas(prevEnterprice => prevEnterprice.map(enter => 
