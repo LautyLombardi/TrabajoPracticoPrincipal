@@ -10,6 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetUsers from "@/hooks/user/useGetUsers";
 import useDesactivateUser from '@/hooks/user/useDesactiveUser';
 import useActivateUser from '@/hooks/user/useActivateUser';
+import { Switch } from 'react-native-elements';
+import useActivateDesactiveDNI from '@/hooks/useActiveDesactiveDni';
 
 type PropsCol = {
   text?: string,
@@ -66,8 +68,15 @@ const TablaUsuarios: React.FC<PropsTable> = ({ viewState, editState, deleteState
   };
 
   const deleteIcon = (usuario: Usuario) => {
+    const isEnabled = usuario.isActive === 1;
+  
     return (
-      <Ionicons name='trash' style={{fontSize: 20, padding: 7, borderRadius: 100}} color={"red"} onPress={() => handleDelete(usuario)} />
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(usuario)}
+        value={isEnabled}
+      />
     );
   };
 
@@ -121,7 +130,7 @@ const AdministracionUsuarios = () => {
   const [showUser, setShowUser] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
-  const desactivateUser = useDesactivateUser();
+  const activateDesactiveDNI = useActivateDesactiveDNI();
   const activateUser = useActivateUser();
 
   const handleOpenUserModal = (user: Usuario) => {
@@ -135,31 +144,23 @@ const AdministracionUsuarios = () => {
   };
 
   const handleDeleteUser = async (user: Usuario) => {
-    if (user.isActive) {
-      const result = await desactivateUser(user.dni);
+    if (user.isActive === 1) {
+      const result = await activateDesactiveDNI(user.dni, 'user', 1);
       if (result !== 0) {
         console.log('User deactivated successfully.');
-        const handleInsts = usuarios
-        handleInsts.forEach(usua =>{
-          if (usua.dni === user.dni) {
-            usua.isActive = 0
-          }
-        })
-        setUsuarios(handleInsts)
+        setUsuarios(prevUsers => prevUsers.map(u => 
+          u.dni === user.dni ? { ...u, isActive: 0 } : u
+        ));
       } else {
         console.error('Failed to deactivate user.');
       }
     } else {
-      const result = await activateUser(user.dni);
+      const result = await activateDesactiveDNI(user.dni, 'user', 0);
       if (result !== 0) {
         console.log('User activated successfully.');
-        const handleInsts = usuarios
-        handleInsts.forEach(usua =>{
-          if (usua.dni === user.dni) {
-            usua.isActive = 1
-          }
-        })
-        setUsuarios(handleInsts)
+        setUsuarios(prevUsers => prevUsers.map(u => 
+          u.dni === user.dni ? { ...u, isActive: 1 } : u
+        ));
       } else {
         console.error('Failed to activate user.');
       }
@@ -187,24 +188,22 @@ const AdministracionUsuarios = () => {
     setStatusDay(isDayOpen);
   };
 
-  const usersDB = useGetUsers();
+  const {users, refetch} = useGetUsers();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const { users } = usersDB;
-      if (users) {
-        setUsuarios(users);
-      }      
-    }, [usersDB])
+      setEdit(false)
+      setTrash(false)
+      refetch();
+    }, [refetch])
   );
 
   useEffect(() => {
-    const { users } = usersDB;
     if (users) {
       setUsuarios(users);
     } 
-  }, [usersDB]);
+  }, [users]);
   
   useEffect(() => {
     handlerDay();

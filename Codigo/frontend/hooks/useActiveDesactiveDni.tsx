@@ -9,6 +9,18 @@ const useActivateDesactiveDNI = () => {
     const db = useSQLiteContext();
     const queryClient = useQueryClient();
 
+    const getQueryKey = (tableName: string) => {
+        switch (tableName) {
+            case 'user':
+                return ['usuarios'];
+            case 'visitor':
+                return ['visitors'];
+            default:
+                return [tableName]; // Por defecto, devolver un array con el nombre de la tabla
+        }
+    };
+
+
     const activateDesactiveDNI = useCallback(async (objectDNI: number, tableName: string, statusObject : number) => {
         if (!ALLOWED_TABLES.includes(tableName)) {
             console.error('Table name not allowed:', tableName);
@@ -32,7 +44,7 @@ const useActivateDesactiveDNI = () => {
 
             if (result.changes > 0) {
                 console.log(`Object ${newStatus === 1 ? 'activated' : 'deactivated'} with DNI:`, objectDNI);
-                queryClient.invalidateQueries({ queryKey: [tableName] });
+                queryClient.invalidateQueries({ queryKey: getQueryKey(tableName) });
                 return objectDNI;
             } else {
                 console.warn('No object found with DNI:', objectDNI);
