@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Alert, ActivityIndicator } from 'rea
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ConfigurarHorarios = () => {
   const [openingTime, setOpeningTime] = useState<string>("");
@@ -36,6 +37,9 @@ const ConfigurarHorarios = () => {
     // Hide the spinner
     setLoading(false);
 
+    await AsyncStorage.setItem('openHour', openingTime);
+    await AsyncStorage.setItem('closeHour', closingTime);
+
     Alert.alert(
       "Horarios guardados",
       "",
@@ -52,7 +56,7 @@ const ConfigurarHorarios = () => {
 
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Configurar Horarios' route='dashboard' />
+      <HandleGoBackReg title='Configurar Horarios' route='menu' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
