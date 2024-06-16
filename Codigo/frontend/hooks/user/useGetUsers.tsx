@@ -6,7 +6,7 @@ const useGetUsers = () => {
     const db = useSQLiteContext();
 
     const usersQuery = useQuery<Usuario[]>({
-        queryKey: ['Usuarios'],
+        queryKey: ['usuarios'],
         queryFn: async (): Promise<Usuario[]> => {
             const results = await db.getAllAsync(`
                 SELECT User.*, Role.name AS roleName
@@ -30,6 +30,8 @@ const useGetUsers = () => {
 
             return users;
         },
+        refetchOnWindowFocus: true, // Refetch al volver al foco
+        refetchOnMount: true, // Refetch al montar el componente
     });
 
     console.log('users data: ', usersQuery.data);
