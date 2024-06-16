@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native'
-import React, { useEffect, useState, useCallback } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput , TouchableOpacity,Switch } from 'react-native'
+import React, { useEffect, useState, useCallback} from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -8,7 +8,7 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import CategoryModal from '@/components/Modal/CategoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetCategories from '@/hooks/category/useGetCategories';
-
+import useActivateDesactive from '@/hooks/useActivateDesactive';
 type PropsCol = {
   text?: string,
   flexWidth?: number,
@@ -52,50 +52,52 @@ const Row: React.FC<PropsRow> = ({ children }) => {
 
 type PropsTable = {
   categorias: Categoria[];
-
   viewState: boolean,
   editState: boolean,
   deleteState: boolean,
 
   handleView: (categoria: Categoria) => void;
   handleEdit: (id: number) => void;
-  handleDelete: (id: number) => void;
+  handleDelete: (category: Categoria) => void;
 };
 
-const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, categorias, handleView }) => {
+const Tablacategorias: React.FC<PropsTable> = ({ viewState, editState, deleteState, categorias, handleView,handleDelete }) => {
 
-  const handleDesactivarCategoria = async (id: number) => {
-    try {
-      //await desactivarCategoria(id);
-      // Realizar cualquier otra acción necesaria después de desactivar la categoría
-    } catch (error) {
-      console.error('Error al desactivar la categoría:', error);
-    }
-  };
 
   const iconVerMas = (categoria: Categoria) => {
     return (
-      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(categoria)} />
+      <Ionicons name='eye-outline' style={{ fontSize: 32, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(categoria)} />
     )
   }
 
-  const deleteIcon = (id: any) => {
+  const deleteIcon = (categoria: Categoria) => {
+    const isEnabled = categoria.isActive === 1;
+    
+    
     return (
-
-      <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} onPress={() => handleDesactivarCategoria(id)} />
-    )
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(categoria)}
+        value={isEnabled}
+      />
+    );
   }
 
-  const modifyIcon = (id: any) => {
+  const modifyIcon = (id: number) => {
     return (
-      <Ionicons name='pencil-sharp' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"orange"} />
+      <Ionicons name='pencil-sharp'
+      style={{fontSize: 32, padding: 7, borderRadius: 100}} 
+      color={"orange"} 
+      onPress={() => router.push(`/categorias/editar?id=${id}`)}
+      />
     )
   }
   const handleToggleIcon = (categoria: Categoria): JSX.Element => {
     if (editState) {
       return modifyIcon(categoria.id);
     } else if (deleteState) {
-      return deleteIcon(categoria.id);
+      return deleteIcon(categoria);
     } else {
       return iconVerMas(categoria);
     }
@@ -132,6 +134,8 @@ const AdministracionCategorias = () => {
   const [showCategory, setShowCategory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Categoria | null>(null);
 
+  const activateDesactive = useActivateDesactive();
+
   const handleOpenUserModal = (categoria: Categoria) => {
     setSelectedCategory(categoria);
     setShowCategory(true);
@@ -143,7 +147,29 @@ const AdministracionCategorias = () => {
   };
 
   // HandleDeleteCategoria 
-  const handleDeleteCategoria = () => {
+  const handleDeleteCategoria = async (categori : Categoria) => {
+    if (categori.isActive) {
+      const result =  await activateDesactive(categori.id,'category',1);
+      if (result !== 0) {
+        console.log('Category deactivated successfully.');
+        setCategorias(prevCategory => prevCategory.map(cat => 
+          cat.id === categori.id ? { ...cat, isActive: 0 } : cat
+        ))
+      } else {
+        console.error('Failed to deactivate category.');
+      }
+    } else {
+      const result = await activateDesactive(categori.id,'category',0);
+      if (result !== 0) {
+        console.log('Category activated successfully.');
+        setCategorias(prevCategory => prevCategory.map(cat => 
+          cat.id === categori.id ? { ...cat, isActive: 1 } : cat
+        ))
+      } else {
+        console.error('Failed to activate category.');
+      }
+    }
+
 
   }
 
@@ -169,24 +195,21 @@ const AdministracionCategorias = () => {
   }
 
   // Listado de categorias
-  const categoriesDB = useGetCategories()
+  const {categories, refetch} = useGetCategories()
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const { categories } = categoriesDB;
-      if (categories) {
-        setCategorias(categories);
-      }
-    }, [categoriesDB])
+      setEdit(false)
+      setTrash(false)
+      refetch();
+    }, [refetch])
   );
 
   useEffect(() => {
-    const { categories } = categoriesDB;
-    if (categories) {
-      setCategorias(categories);
-    }
-  }, [categoriesDB]);
+    if(categories){
+      setCategorias(categories);}
+  }, [categories]);
 
   useEffect(() => {
     handlerDay();

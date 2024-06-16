@@ -38,6 +38,7 @@ const useGetUsers = () => {
         users: usersQuery.data,
         isLoading: usersQuery.isLoading,
         isError: usersQuery.isError,
+        refetch: usersQuery.refetch
     };
 }
 

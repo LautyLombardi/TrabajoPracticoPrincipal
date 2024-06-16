@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity, Switch } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -8,8 +8,7 @@ import { Empresa, Rol } from '@/api/model/interfaces';
 import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetEnterprices from '@/hooks/enterprice/useGetEnterprices';
-import useDeactivateEnterprice from '@/hooks/enterprice/useDeactivateEnterprice';
-import useActivateEnterprice from '@/hooks/enterprice/useActivateEnterprice';
+import useActivateDesactive from '@/hooks/useActivateDesactive';
 
 type PropsCol = {
   text?: string,
@@ -67,22 +66,26 @@ const TablaEmpresa: React.FC<PropsTable> = ({ viewState, editState, deleteState,
 
   const iconVerMas = (empresa: Empresa) => {
     return (
-      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(empresa)} />
+      <Ionicons name='eye-outline' style={{ fontSize: 32, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(empresa)} />
     )
   }
 
   const deleteIcon = (enterprice: Empresa) => {
+    const isEnabled = enterprice.isActive === 1;
     return (
-      <TouchableOpacity onPress={() => handleDelete(enterprice)}>
-        <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
-      </TouchableOpacity>
-    )
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(enterprice)}
+        value={isEnabled}
+      />
+    );
   }
 
   const modifyIcon = (id : number) => {
     return (
       <Ionicons name='pencil-sharp'  
-      style={{fontSize: 20, padding: 7, borderRadius: 100}} 
+      style={{fontSize: 32, padding: 7, borderRadius: 100}} 
       color={"orange"} 
       onPress={() => router.push(`/empresas/editar?id=${id}`)}
       />
@@ -130,8 +133,7 @@ const AdministracionEmpresas = () => {
   const [showEnterprice, setShowEnterprice] = useState(false);
   const [selectedEnterprice, setSelectedEnterprice] = useState<Empresa | null>(null);
 
-  const deactivateEnterprice = useDeactivateEnterprice();
-  const activateEnterprice = useActivateEnterprice();
+  const activateDesactive = useActivateDesactive();
 
   const handleOpenUserModal = (empresa: Empresa) => {
     setSelectedEnterprice(empresa);
@@ -145,30 +147,22 @@ const AdministracionEmpresas = () => {
 
   const handleDeleteEnterprice = async (enterprice: Empresa) => {
     if (enterprice.isActive) {
-      const result = await deactivateEnterprice(enterprice.id)
+      const result = await activateDesactive(enterprice.id,'enterprice',1);
       if (result !== 0) {
-        console.log('Enterprice deactivated successfully.');
-        const handleInsts = empresas
-        handleInsts.forEach(emp =>{
-          if (emp.id === enterprice.id) {
-            emp.isActive = 0
-          }
-        })
-        setEmpresas(handleInsts)
+        console.log('enterprice deactivated successfully.');
+        setEmpresas(prevEnterprice => prevEnterprice.map(enter => 
+          enter.id === enterprice.id ? { ...enter, isActive: 0 } : enter
+        ))
       } else {
         console.error('Failed to deactivate enterprice.');
       }
     } else {
-      const result = await activateEnterprice(enterprice.id);
+      const result =await activateDesactive(enterprice.id,'enterprice',0);
       if (result !== 0) {
-        console.log('Enterprice activated successfully.');
-        const handleInsts = empresas
-        handleInsts.forEach(emp =>{
-          if (emp.id === enterprice.id) {
-            emp.isActive = 1
-          }
-        })
-        setEmpresas(handleInsts)
+        console.log('enterprice activated successfully.');
+        setEmpresas(prevEnterprice => prevEnterprice.map(enter => 
+          enter.id === enterprice.id ? { ...enter, isActive: 1 } : enter
+        ))
       } else {
         console.error('Failed to activate enterprice.');
       }
@@ -203,6 +197,8 @@ const AdministracionEmpresas = () => {
   
   useFocusEffect(
     useCallback(() => {
+      setEdit(false)
+      setTrash(false)
       refetch();
     }, [refetch])
   );

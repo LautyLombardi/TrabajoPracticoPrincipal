@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, TouchableOpacity, Switch } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,8 +10,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import PlaceModal from '@/components/Modal/PlaceModal';
 import useGetPlaces from '@/hooks/place/useGetPlaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useDeactivatePlace from '@/hooks/place/useDeactivatePlace';
-import useActivatePlace from '@/hooks/place/useActivatePlace';
+import useActivateDesactive from '@/hooks/useActivateDesactive';
 
 type PropsCol = {
   text?: string,
@@ -58,44 +57,52 @@ type PropsTable = {
   lugares: Lugar[];
   viewState: boolean,
   editState: boolean,
-  deleteState: boolean,
+  deleteState: boolean
 
   handleView: (lugar: Lugar) => void;
-  handleDelete: (lug: Lugar) => void;
+  handleEdit: (id: number) => void;
+  handleDelete: (place: Lugar) => void;
 };
 
-const TablaLugares: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView, handleDelete }) => {
+const TablaLugares: React.FC<PropsTable> = ({ viewState, editState, deleteState, lugares, handleView, handleEdit, handleDelete }) => {
 
   const iconVerMas = (lugar: Lugar) => {
     return (
-      <Ionicons name='eye-outline' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
-    );
-  };
+      <Ionicons name='eye-outline' style={{ fontSize: 32, padding: 7, borderRadius: 100 }} color={"white"} onPress={() => handleView(lugar)} />
+    )
+  }
 
-  const deleteIcon = (lug: Lugar) => {
+  const deleteIcon = (place: Lugar) => {
+    const isEnabled = place.isActive === 1;
+    
+    
     return (
-      <TouchableOpacity onPress={() => handleDelete(lug)}>
-        <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
-      </TouchableOpacity>
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(place)}
+        value={isEnabled}
+      />
     );
-  };
+  }
 
-  const modifyIcon = (id: number) => {
+  const modifyIcon = (id : number) => {
     return (
-      <Ionicons name='pencil-sharp'
-        style={{ fontSize: 20, padding: 7, borderRadius: 100 }}
-        color={"orange"}
-        onPress={() => router.push(`/lugares/editar?id=${id}`)} />
-    );
-  };
+      <Ionicons name='pencil-sharp'  
+      style={{fontSize: 32, padding: 7, borderRadius: 100}} 
+      color={"orange"} 
+      onPress={() => router.push(`/lugares/editar?id=${id}`)}
+      />
+    )
+  }
 
-  const handleToggleIcon = (lugar: Lugar): JSX.Element => {
+  const handleToggleIcon = (place: Lugar): JSX.Element => {
     if (editState) {
-      return modifyIcon(lugar.id);
+      return modifyIcon(place.id);
     } else if (deleteState) {
-      return deleteIcon(lugar);
+      return deleteIcon(place);
     } else {
-      return iconVerMas(lugar);
+      return iconVerMas(place);
     }
   };
 
@@ -104,40 +111,36 @@ const TablaLugares: React.FC<PropsTable> = ({ viewState, editState, deleteState,
       <Row>
         <Col text='ID' flexWidth={0.8} />
         <Col text='Nombre' flexWidth={3} />
-        <Col text='Abreviación' flexWidth={3} />
-        <Col text='openTime' flexWidth={3} />
-        <Col text='closeTime' flexWidth={3} />
+        <Col text='Cuit' flexWidth={3} />
         <Col text='' flexWidth={1.5} />
       </Row>
-      {lugares.map((lugar) => (
-        <Row key={lugar.id}>
-          <Col text={lugar.id?.toString() || ''} flexWidth={0.8} />
-          <Col text={lugar.name} flexWidth={3} />
-          <Col text={lugar.abbreviation} flexWidth={3} />
-          <Col text={lugar.openTime} flexWidth={3} />
-          <Col text={lugar.closeTime} flexWidth={3} />
-          <Col flexWidth={1.5} icon={handleToggleIcon(lugar)} />
-        </Row>
-      ))}
+      {
+        lugares && Array.isArray(lugares) && lugares.map(place => (
+          <Row key={place.id}>
+            <Col text={place.id?.toString() || ''} flexWidth={0.8} />
+            <Col text={place.name} flexWidth={3} />
+            <Col text={place.abbreviation.toString()} flexWidth={3} />
+            <Col flexWidth={1.5} icon={handleToggleIcon(place)} />
+          </Row>
+        ))
+      }
     </View>
   );
 };
 
 const AdministracionLugares = () => {
   const [status, setStatusDay] = useState<boolean>(true);
-  const [permition, setPermition] = useState<Rol | null>(null);
+  const [permition, setPermition] = useState<Rol>();
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [selectedLugar, setSelectedLugar] = useState<Lugar | null>(null);
 
+  const activateDesactive = useActivateDesactive();
 
-  const deactivatePlace = useDeactivatePlace();
-  const activatePlace = useActivatePlace();
-
-  const handleOpenUserModal = (lugar: Lugar) => {
-    setSelectedLugar(lugar);
+  const handleOpenUserModal = (place: Lugar) => {
+    setSelectedLugar(place);
     setShowUser(true);
   };
 
@@ -146,33 +149,38 @@ const AdministracionLugares = () => {
     setShowUser(false);
   };
 
-  const handleDeletePlace = async (lug: Lugar) => {
-    if (lug.isActive) {
-      const result = await deactivatePlace(lug.id);
+  const handleDeletePlace = async (place: Lugar) => {
+    if (place.isActive) {
+      const result = await activateDesactive(place.id,'place',1);
       if (result !== 0) {
         console.log('place deactivated successfully.');
-        setLugares(prevPlace => prevPlace.filter(inst => inst.id !== lug.id));
+        setLugares(prevPlaces => prevPlaces.map(pla => 
+          pla.id === place.id ? { ...pla, isActive: 0 } : pla
+        ))
       } else {
         console.error('Failed to deactivate place.');
       }
     } else {
-      const result = await activatePlace(lug.id);
+      const result = await activateDesactive(place.id,'place',0);
       if (result !== 0) {
         console.log('place activated successfully.');
-        setLugares(prevPlace => prevPlace.filter(inst => inst.id !== lug.id));
+        setLugares(prevPlaces => prevPlaces.map(pla => 
+          pla.id === place.id ? { ...pla, isActive: 1 } : pla
+        ))
       } else {
         console.error('Failed to activate place.');
       }
     }
-  };
+  }
 
+  // Cambio de iconos
   function handleToggleIco(icon: string) {
-    if (icon === "edit" && edit || icon === "delete" && trash) {
-      setEdit(false);
-      setTrash(false);
+    if (icon == "edit" && edit || icon == "delete" && trash) {
+      setEdit(false)
+      setTrash(false)
     } else {
-      setEdit(icon === "edit");
-      setTrash(icon === "delete");
+      setEdit(icon == "edit")
+      setTrash(icon == "delete")
     }
   };
 
@@ -183,28 +191,31 @@ const AdministracionLugares = () => {
     }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
-    setStatusDay(isDayOpen);
-  };
+    setStatusDay(isDayOpen)
+  }
 
-  const { places, refetch } = useGetPlaces();
 
-  const [lugares, setLugares] = useState<Lugar[]>([]);
-
+  // Conexion con DB
+  const {places, refetch} = useGetPlaces();
+  const [lugares, setLugares] = useState<Lugar[]>([])
+  
   useFocusEffect(
     useCallback(() => {
+      setEdit(false)
+      setTrash(false)
       refetch();
-    }, [refetch]))
+    }, [refetch])
+  );
+
 
   useEffect(() => {
-    if (places) {
-      setLugares(places);
-    }
+    if(places){
+      setLugares(places);}
   }, [places]);
 
   useEffect(() => {
     handlerDay();
-  }, []);
-
+  }, [])
   return (
     <View style={styles.container}>
       <HandleGoBack title='Administración de Lugares' route='menu' />
@@ -241,6 +252,7 @@ const AdministracionLugares = () => {
           deleteState={trash}
           lugares={lugares}
           handleView={handleOpenUserModal}
+          handleEdit={(id) => console.log("editar", id)}
           handleDelete={handleDeletePlace} />
       </ScrollView>
       {showUser && selectedLugar && <PlaceModal place={selectedLugar} handleCloseModal={handleCloseUserModal} />}

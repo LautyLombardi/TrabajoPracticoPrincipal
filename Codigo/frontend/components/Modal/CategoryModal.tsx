@@ -18,6 +18,7 @@ const CategoryModal: React.FC<ModalProps> = ({ categoria, handleCloseModal }) =>
         { label: 'Lugares', value: categoria.places?.join(', ') || '' },
         { label: 'Institutos', value: categoria.institutes?.join(', ') || '' },
         { label: 'Fecha de Creación', value: categoria.createDate },
+        { label: 'Activa', value: categoria.isActive === 1 ? 'SI' : 'NO' },
         ];
 
         return fields.map((field, index) => (

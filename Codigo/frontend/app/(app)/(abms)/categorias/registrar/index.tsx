@@ -5,14 +5,13 @@ import SelectItem from "@/components/seleccionar/SelectItem";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useInsertCategory from "@/hooks/category/useInsertCategory";
 import { Lugar } from "@/api/model/interfaces";
-import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 import useGetPlaces from "@/hooks/place/useGetPlaces";
 import Checkbox from "expo-checkbox";
 import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
 import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 const RegistroCategoria = () => {
-  const institutesDB = useGetInstitutes();
+
   const placesDB = useGetPlaces();
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()
@@ -109,23 +108,23 @@ const RegistroCategoria = () => {
         >
           <SelectItem value={categoria} onValueChange={handleSetCategoria} fieldName="Categoria:" values={["interno", "Externo"]} />
         </View>
-      </View>
 
-      <View style={styles.campo}>
-        <Text style={[styles.campoText]}>Lugares a los que se asigna la Categoria:</Text>
-        <View style={styles.lugaresContainer}>
-          {lugares.map((lugar, index) => (
-            <View key={lugar.id} style={styles.checkboxContainer}>
-              <Checkbox
-                value={lugaresSeleccionados.includes(lugar.id)}
-                onValueChange={() => handleLugarSeleccionado(lugar.id)}
-              />
-              <Text style={styles.checkboxLabel}>{lugar.name}</Text>
-            </View>
-          ))}
+
+        <View style={styles.campo}>
+          <Text style={[styles.campoText]}>Lugares a los que se asigna la Categoria:</Text>
+          <View style={styles.lugaresContainer}>
+            {lugares.map((lugar, index) => (
+              <View key={lugar.id} style={styles.checkboxContainer}>
+                <Checkbox
+                  value={lugaresSeleccionados.includes(lugar.id)}
+                  onValueChange={() => handleLugarSeleccionado(lugar.id)}
+                />
+                <Text style={styles.checkboxLabel}>{lugar.name}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
-
       <Pressable onPress={handleTerminar} style={styles.button}>
         <Text style={styles.buttonText}>Registrar</Text>
       </Pressable>

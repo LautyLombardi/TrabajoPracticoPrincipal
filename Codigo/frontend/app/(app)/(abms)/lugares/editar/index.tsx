@@ -1,6 +1,7 @@
 import CampoFecha from "@/components/CampoFecha/CampoFecha";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 import useEditPlace from "@/hooks/place/useEditPlaces";
 import useGetPlace from "@/hooks/place/useGetPlace";
@@ -18,6 +19,8 @@ const EditPlace = () => {
     const [description, setDescription] = useState("");
     const [openTime, setOpenTime] = useState("");
     const [closeTime, setCloseTime] = useState("");
+    const [isOpenPickerVisible, setIsOpenPickerVisible] = useState<boolean>(false);
+    const [isClosePickerVisible, setIsClosePickerVisible] = useState<boolean>(false);
     const insertLogAdm=useInsertLogAdm();
     const insertLogAdmFail=useInsertLogAdmFail();
 
@@ -33,7 +36,21 @@ const EditPlace = () => {
 
     const editPlace = useEditPlace();
 
+    const handleConfirmOpenTime = (date: any) => {
+        setOpenTime(date.toTimeString().slice(0, 5));
+        setIsOpenPickerVisible(false);
+    };
+
+    const handleConfirmCloseTime = (date: any) => {
+        setCloseTime(date.toTimeString().slice(0, 5));
+        setIsClosePickerVisible(false);
+    };
     const handleTerminar = async () => {
+        if (!isValidTime(openTime) || !isValidTime(closeTime)) {
+            Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
+            return;
+          }
+        
         if (place) {
             const response = await editPlace(Number(id), name, abbreviation, description, openTime, closeTime);
             if (response !== 0) {
@@ -58,6 +75,12 @@ const EditPlace = () => {
     if (isError) {
         return <Text>Error: {isError}</Text>;
     }
+
+    const isValidTime = (time: any) => {
+        const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+        return regex.test(time);
+      };
+
 
     return (
         <View style={styles.container}>
@@ -95,30 +118,40 @@ const EditPlace = () => {
                     />
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text style={styles.labelText}>Hora de apertura:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="10:10"
-                        placeholderTextColor="gray"
-                        onChangeText={setOpenTime}
-                        value={openTime}
-                    />
+                    <Text style={styles.labelText}>Hora de Apertura:</Text>
+                    <Pressable onPress={() => setIsOpenPickerVisible(true)} style={styles.input}>
+                        <Text style={{ color: 'black' }}>{openTime || '08:00'}</Text>
+                    </Pressable>
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text style={styles.labelText}>Hora de cierre:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="20:10"
-                        placeholderTextColor="gray"
-                        onChangeText={setCloseTime}
-                        value={closeTime}
-                    />
+                    <Text style={styles.labelText}>Hora de Cierre:</Text>
+                    <Pressable onPress={() => setIsClosePickerVisible(true)} style={styles.input}>
+                        <Text style={{ color: 'black' }}>{closeTime || '18:00'}</Text>
+                    </Pressable>
                 </View>
+                   
+                
             </View>
 
             <Pressable onPress={handleTerminar} style={styles.button}>
                 <Text style={styles.buttonText}>Editar</Text>
             </Pressable>
+
+            <DateTimePickerModal
+                isVisible={isOpenPickerVisible}
+                mode="time"
+                onConfirm={handleConfirmOpenTime}
+                onCancel={() => setIsOpenPickerVisible(false)}
+                is24Hour={true}
+             />
+
+            <DateTimePickerModal
+                isVisible={isClosePickerVisible}
+                mode="time"
+                onConfirm={handleConfirmCloseTime}
+                onCancel={() => setIsClosePickerVisible(false)}
+                is24Hour={true}
+            />
         </View>
     );
 };

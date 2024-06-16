@@ -8,7 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import UserModal from '@/components/Modal/UserModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetUsers from "@/hooks/user/useGetUsers";
-import useDeactivateUser from '@/hooks/user/useDeactivateUser';
+import useDesactivateUser from '@/hooks/user/useDesactiveUser';
 import useActivateUser from '@/hooks/user/useActivateUser';
 
 type PropsCol = {
@@ -121,7 +121,7 @@ const AdministracionUsuarios = () => {
   const [showUser, setShowUser] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Usuario | null>(null);
 
-  const deactivateUser = useDeactivateUser();
+  const desactivateUser = useDesactivateUser();
   const activateUser = useActivateUser();
 
   const handleOpenUserModal = (user: Usuario) => {
@@ -136,7 +136,7 @@ const AdministracionUsuarios = () => {
 
   const handleDeleteUser = async (user: Usuario) => {
     if (user.isActive) {
-      const result = await deactivateUser(user.dni);
+      const result = await desactivateUser(user.dni);
       if (result !== 0) {
         console.log('User deactivated successfully.');
         const handleInsts = usuarios
