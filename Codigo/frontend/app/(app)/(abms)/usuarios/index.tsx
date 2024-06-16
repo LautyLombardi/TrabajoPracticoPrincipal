@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -10,7 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetUsers from "@/hooks/user/useGetUsers";
 import useDesactivateUser from '@/hooks/user/useDesactiveUser';
 import useActivateUser from '@/hooks/user/useActivateUser';
-import { Switch } from 'react-native-elements';
 import useActivateDesactiveDNI from '@/hooks/useActiveDesactiveDni';
 
 type PropsCol = {
