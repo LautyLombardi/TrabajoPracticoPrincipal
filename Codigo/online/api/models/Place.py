@@ -8,4 +8,5 @@ class Place(db.Model):
     description = db.Column(db.Text)
     openTime = db.Column(db.Text)
     closeTime = db.Column(db.Text)
+    isActive = db.Column(db.Integer)
     createDate = db.Column(db.Text)

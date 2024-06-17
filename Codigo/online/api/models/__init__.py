@@ -1,6 +1,8 @@
 __all__ = [
-    'User', 
-    'Visitor', 
+    'User',
+    'User_history', 
+    'Visitor',
+    'Visitor_history', 
     'Image', 
     'Place', 
     'Category', 

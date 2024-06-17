@@ -5,7 +5,7 @@ from services.imageService import saveVisitorImage
 
 def saveVisitor(data):
     try:
-        visitor = Visitor(dni=data.get('dni'), enterprice_id=data.get('enterprice_id'), name=data.get('name'), lastname=data.get('lastname'), email=data.get('email'), startDate=data.get('startDate'), finishDate=data.get('finishDate'), createDate=createDate())
+        visitor = Visitor(dni=data.get('dni'), enterprice_id=data.get('enterprice_id'), name=data.get('name'), lastname=data.get('lastname'), email=data.get('email'), startDate=data.get('startDate'), finishDate=data.get('finishDate'),isActive=data.get('isActive'), createDate=createDate())
         if data.get("image") is not None:
             image = data.get("image")
             visitor_dni = data.get("dni")

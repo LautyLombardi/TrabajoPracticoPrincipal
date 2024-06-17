@@ -3,7 +3,6 @@ from db.db import db
 # Modelo para la tabla 'exception'
 class Exception(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.dni'))
     name = db.Column(db.Text)
     description = db.Column(db.Text)  
     duration = db.Column(db.Text)
