@@ -1,7 +1,7 @@
 //cantidad de usuarios AUTENTICADOS por el usuario logueado pero pudiendo establecer una fecha desde hasta separando ingresos de egresos 
 //-hecho
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { StackedBarChart } from 'react-native-chart-kit';
 import useGetLogsForAdmDni from '@/hooks/logs/useGetLogsForAdmDni';
@@ -131,7 +131,7 @@ const ReportesHistoricos: React.FC = () => {
         onCancel={() => setDatePickerVisibilityHasta(false)}
       />
       <View style={styles.chartContainer}>
-        <Text style={styles.title}>Cantidad de usuarios AUTENTICADOS por el usuario logueado</Text>
+        <Text style={styles.title}>Cantidad de visitantes AUTENTICADOS por el usuario logueado</Text>
         {filtroAplicado && (
           <StackedBarChart
             style={styles.chart}
