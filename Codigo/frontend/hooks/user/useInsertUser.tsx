@@ -16,7 +16,7 @@ const useInsertUser = () => {
             await db.execAsync('BEGIN TRANSACTION;');
             // Insert query
             const result = await db.runAsync(
-                `INSERT INTO user (dni, role_id, name, lastname, password, isActive , motive, activeDate,createDate) VALUES (?, ?, ?, ?, ?, 1, " ", ?, ?);`,
+                `INSERT INTO user (dni, role_id, name, lastname, password, isActive , activeDate,createDate) VALUES (?, ?, ?, ?, ?, 1, ?, ?);`,
                 [dni, role_id, name, lastname, password, activeDatee,createDate]
             );
 
