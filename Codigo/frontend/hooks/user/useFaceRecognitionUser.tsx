@@ -17,7 +17,7 @@ function useFaceRecognitionUser() {
             console.log('user in hook', user)
             return user;
         } catch (error) {
-            console.error('Error getting logs:', error);
+            console.error('Error getting user data by admiDni:', error);
             return;
         }
     }, [db]);
