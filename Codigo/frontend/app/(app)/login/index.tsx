@@ -21,6 +21,7 @@ const Login = () => {
   const [loading, setLoading] = useState<boolean>(false);
   
   const takePicture = async () => {
+    setLoading(true);
     if (cameraRef.current) {
       const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
       const photo = await cameraRef.current.takePictureAsync(options);
@@ -39,7 +40,6 @@ const Login = () => {
     console.log("autenticando.....")
     try{
       const foto = await takePicture();
-      setLoading(true);
       const formData = new FormData();
       formData.append("image", {
         uri: foto,
