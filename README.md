@@ -1,6 +1,6 @@
-# TrabajoPracticoPrincipal
+# TrabajoPracticoPrincipal: "Master Security System"
 Trabajo practico principal de laboratorio de construccion de software
-
+# Equipo de trabajo "6+1 Software"
 # Integrantes
   - Fallatti Franco franckfallatti@gmail.com 
   - Castillo Patricio patriciojcastillo@gmail.com
