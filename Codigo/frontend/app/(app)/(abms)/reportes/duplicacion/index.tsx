@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import useGetLogsDuplicacion from '@/hooks/logs/useGetLogsDuplicacion';
+import useGetLogsForReport from '@/hooks/logs/useGetLogsForReport';
 import { Logs } from '@/api/model/interfaces';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 
@@ -10,17 +10,17 @@ import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 // ESTE ES EL ÚNICO REPORTE QUE SE MANDA POR EL MAIL CONFIGURADO    
 const Duplicacion = () => {
   const [logsTable, setLogsTable] = useState<Logs[]>([]);
-  const getLogsForDuplicacion = useGetLogsDuplicacion();
+  const getLogsForReport = useGetLogsForReport();
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const { logs } = await getLogsForDuplicacion();
+      const { logs } = await getLogsForReport();
       if (logs) {
         setLogsTable(logs)
       }
     }
     fetchLogs()
-  }, [getLogsForDuplicacion])
+  }, [getLogsForReport])
 
   const renderTableRows = () => {
     return logsTable.map((log, index) => (
@@ -31,6 +31,7 @@ const Duplicacion = () => {
         <Text style={styles.tableCell}>{log.abm}</Text>
         <Text style={styles.tableCell}>{log.abmType}</Text>
         <Text style={styles.tableCell}>{log.description}</Text>
+        <Text style={styles.tableCell}>{log.isError === 1 ? 'Si' : 'No'}</Text>
         <Text style={styles.tableCell}>{log.createDate}</Text>
       </View>
     ));
@@ -47,6 +48,7 @@ const Duplicacion = () => {
             <Text style={styles.tableHeaderCell}>ABM</Text>
             <Text style={styles.tableHeaderCell}>Tipo de ABM</Text>
             <Text style={styles.tableHeaderCell}>Descripción</Text>
+            <Text style={styles.tableHeaderCell}>Es error</Text>
             <Text style={styles.tableHeaderCell}>Fecha de creación</Text>
           </View>
           {renderTableRows()}
