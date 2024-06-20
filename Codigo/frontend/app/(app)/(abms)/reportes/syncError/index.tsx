@@ -1,35 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import useGetLogsDuplicacion from '@/hooks/logs/useGetLogsDuplicacion';
+import useGetLogSyncError from '@/hooks/logs/useGetLogSyncError';
 import { Logs } from '@/api/model/interfaces';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 
-// Reporte Confidencial 1: cambios realizados por la funcionalidad de duplicación 
-// de visitantes o usuarios (básicamente un reporte que muestra los logs  
-// referentes a cambios hechos por los de RR. HH. con esa funcionalidad) 
-// ESTE ES EL ÚNICO REPORTE QUE SE MANDA POR EL MAIL CONFIGURADO    
-const Duplicacion = () => {
+// Reporte Confidencial 2: reporte de errores de sincronización donde se muestra la
+// información detallada de que paso al querer sincronizar (formato tabla)  
+const SyncError = () => {
   const [logsTable, setLogsTable] = useState<Logs[]>([]);
-  const getLogsForDuplicacion = useGetLogsDuplicacion();
+  const getLogSyncError = useGetLogSyncError();
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const { logs } = await getLogsForDuplicacion();
+      const { logs } = await getLogSyncError();
       if (logs) {
         setLogsTable(logs)
       }
     }
     fetchLogs()
-  }, [getLogsForDuplicacion])
+  }, [getLogSyncError])
 
   const renderTableRows = () => {
     return logsTable.map((log, index) => (
       <View key={index} style={styles.tableRow}>
         <Text style={styles.tableCell}>{log.id}</Text>
-        <Text style={styles.tableCell}>{log.admDni}</Text>
-        <Text style={styles.tableCell}>{log.visitorId || log.userId}</Text>
-        <Text style={styles.tableCell}>{log.abm}</Text>
-        <Text style={styles.tableCell}>{log.abmType}</Text>
         <Text style={styles.tableCell}>{log.description}</Text>
         <Text style={styles.tableCell}>{log.createDate}</Text>
       </View>
@@ -42,12 +36,8 @@ const Duplicacion = () => {
         <ScrollView style={styles.tableContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderCell}>ID</Text>
-            <Text style={styles.tableHeaderCell}>ADM DNI</Text>
-            <Text style={styles.tableHeaderCell}>DNI</Text>
-            <Text style={styles.tableHeaderCell}>ABM</Text>
-            <Text style={styles.tableHeaderCell}>Tipo de ABM</Text>
             <Text style={styles.tableHeaderCell}>Descripción</Text>
-            <Text style={styles.tableHeaderCell}>Fecha de creación</Text>
+            <Text style={styles.tableHeaderCell}>Fecha de creación</Text>            
           </View>
           {renderTableRows()}
         </ScrollView> 
@@ -86,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Duplicacion;
+export default SyncError;
