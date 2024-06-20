@@ -70,6 +70,7 @@ const EditarInstituto = () => {
       await insertLogAdmFail("MODIFICACIÓN", "instituto");
       Alert.alert("Error al modificar instituto","Se debe ingresar un nombre para el instituto");
     } else {
+      await insertLogAdmFail("MODIFICACIÓN", "instituto");
       Alert.alert("Error al modificar instituto","Se debe seleccionar al menos un lugar para el instituto");
     }
   };
@@ -126,7 +127,7 @@ const EditarInstituto = () => {
       </View>
 
       <Pressable onPress={handleTerminar} style={styles.button}>
-        <Text style={styles.buttonText}>Registrar</Text>
+        <Text style={styles.buttonText}>Editar</Text>
       </Pressable>
     </View>
   );

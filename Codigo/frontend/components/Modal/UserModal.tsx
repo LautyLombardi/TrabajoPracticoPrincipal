@@ -17,7 +17,6 @@ const UserModal: React.FC<ModalProps> = ({ user, handleCloseModal }) => {
             { label: 'ID rol', value: user.role_id },
             { label: 'Nombre Rol', value: user.rolName },
             { label: 'Activo', value: user.isActive === 1 ? 'SI' : 'NO' },
-            { label: 'Motivo', value: user.lastname },
             { label: 'Fecha de Creación', value: user.createDate },
         ];
 
