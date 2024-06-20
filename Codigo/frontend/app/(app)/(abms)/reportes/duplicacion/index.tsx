@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import useGetLogsForReport from '@/hooks/logs/useGetLogsForReport';
+import useGetLogsDuplicacion from '@/hooks/logs/useGetLogsDuplicacion';
 import { Logs } from '@/api/model/interfaces';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 
@@ -10,17 +10,17 @@ import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 // ESTE ES EL ÚNICO REPORTE QUE SE MANDA POR EL MAIL CONFIGURADO    
 const Duplicacion = () => {
   const [logsTable, setLogsTable] = useState<Logs[]>([]);
-  const getLogsForReport = useGetLogsForReport();
+  const getLogsForDuplicacion = useGetLogsDuplicacion();
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const { logs } = await getLogsForReport();
+      const { logs } = await getLogsForDuplicacion();
       if (logs) {
         setLogsTable(logs)
       }
     }
     fetchLogs()
-  }, [getLogsForReport])
+  }, [getLogsForDuplicacion])
 
   const renderTableRows = () => {
     return logsTable.map((log, index) => (
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tableContainer: {
+    marginTop: 20,
     width: '90%',
   },
   tableHeader: {
