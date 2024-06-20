@@ -36,12 +36,17 @@ export const Reportes = () => {
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/duplicacion")}>
-              <Text style={styles.textBtnMenu}>Duplicacíon de visitantes y usuarios</Text>
+              <Text style={styles.textBtnMenu}>Duplicacíon de Visitantes y Usuarios</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/syncError")}>
+              <Text style={styles.textBtnMenu}>Detalles de Errores de Sincronización</Text>
           </Pressable>
         </View>      
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/erroresPorHora")}>
-              <Text style={styles.textBtnMenu}>Errores</Text>
+              <Text style={styles.textBtnMenu}>Errores de Sincronización por Hora</Text>
           </Pressable>
         </View>    
       </View>
