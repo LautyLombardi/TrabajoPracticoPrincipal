@@ -7,6 +7,3 @@ class Exception(db.Model):
     description = db.Column(db.Text)  
     duration = db.Column(db.Text)
     createDate = db.Column(db.Text)
-    
-    # Relación con tabla User
-    user = db.relationship('User', backref=db.backref('exceptions', lazy=True))
