@@ -8,7 +8,7 @@ const useGetLogSyncError = () => {
         try {
             const logsData = await db.getAllAsync<Logs>('SELECT * FROM logs WHERE abm = "sync" AND isError = 1');
             
-            console.log('logs data by duplicación: ', logsData);
+            console.log('logs data by sync: ', logsData);
             if(logsData){
                 return {
                     logs: logsData
@@ -19,7 +19,7 @@ const useGetLogSyncError = () => {
                 };
             }
         } catch (error) {
-            console.error('Error getting logs by duplicación:', error);
+            console.error('Error getting logs by sync:', error);
             return {
                 logs: undefined,
                 isLoading: false,

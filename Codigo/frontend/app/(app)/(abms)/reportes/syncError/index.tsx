@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tableContainer: {
+    marginTop: 20,
     width: '90%',
   },
   tableHeader: {
