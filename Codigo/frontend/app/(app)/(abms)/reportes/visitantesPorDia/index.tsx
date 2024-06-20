@@ -1,5 +1,3 @@
-//cantidad de usuarios AUTENTICADOS por el usuario logueado pero pudiendo establecer una fecha desde hasta separando ingresos de egresos 
-//-hecho
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -13,31 +11,31 @@ interface vxd {
     ingresos: number;
     egresos: number;
   };
-} 
-const ReportesHistoricos: React.FC = () => {
+}
+// Reporte Operativo 2: cantidad de visitantes AUTENTICADOS por el usuario
+// logueado pero pudiendo establecer una fecha desde hasta separando ingresos de egresos
+const ReporteVisitantesPorDia = () => {
   const [fechas, setFechas] = useState<string[]>([]);
   const [ingresos, setIngresos] = useState<number[]>([]);
   const [egresos, setEgresos] = useState<number[]>([]);
   const [fechaDesde, setFechaDesde] = useState<string>('');
   const [fechaHasta, setFechaHasta] = useState<string>('');
   const [filtroAplicado, setFiltroAplicado] = useState<boolean>(false);
-  
   const [isDatePickerVisibleDesde, setDatePickerVisibilityDesde] = useState(false);
   const [isDatePickerVisibleHasta, setDatePickerVisibilityHasta] = useState(false);
+  const [logsInfo, setLogsInfo] = useState<Logs[]>([]);
 
-  const [logsInfo, setLogsInfo] = useState<Logs[]>([])
-  
-  const getLogsForAdmDni = useGetLogsForAdmDni()
+  const getLogsForAdmDni = useGetLogsForAdmDni();
 
   useEffect(() => {
     const fetchLogs = async () => {
-        const {logs} = await getLogsForAdmDni()
-        if (logs) {
-            setLogsInfo(logs)
-        }
-    }
-    fetchLogs()
-  }, [getLogsForAdmDni])
+      const { logs } = await getLogsForAdmDni();
+      if (logs) {
+        setLogsInfo(logs);
+      }
+    };
+    fetchLogs();
+  }, [getLogsForAdmDni]);
 
   const handleConfirmDesde = (date: Date) => {
     setFechaDesde(formatDate(date));
@@ -58,7 +56,7 @@ const ReportesHistoricos: React.FC = () => {
 
   const handleFiltrar = () => {
     if (logsInfo && logsInfo.length > 0) {
-      const visitantesPorDia : vxd = {};
+      const visitantesPorDia: vxd = {};
 
       logsInfo.forEach(log => {
         const fecha = log.createDate.split(' ')[0];
@@ -100,9 +98,10 @@ const ReportesHistoricos: React.FC = () => {
   const filteredIngresos = filteredDates.map(fecha => ingresos[fechas.indexOf(fecha)]);
   const filteredEgresos = filteredDates.map(fecha => egresos[fechas.indexOf(fecha)]);
 
+  const validData = filteredDates.length > 0 && (filteredIngresos.length > 0 || filteredEgresos.length > 0);
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Reportes' route='reportes' />
+      <HandleGoBackReg title="Reportes" route="reportes" />
 
       <View style={styles.formContainer}>
         <View style={styles.dateFilterContainer}>
@@ -117,7 +116,7 @@ const ReportesHistoricos: React.FC = () => {
           <Text style={styles.buttonText}>Aplicar Filtro</Text>
         </Pressable>
       </View>
-      
+
       <DateTimePickerModal
         isVisible={isDatePickerVisibleDesde}
         mode="date"
@@ -132,7 +131,7 @@ const ReportesHistoricos: React.FC = () => {
       />
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Cantidad de visitantes AUTENTICADOS por el usuario logueado</Text>
-        {filtroAplicado && (
+        {filtroAplicado && validData ? (
           <StackedBarChart
             style={styles.chart}
             data={{
@@ -162,6 +161,8 @@ const ReportesHistoricos: React.FC = () => {
               },
             }}
           />
+        ) : (
+          <Text style={styles.title}>No hay datos disponibles</Text>
         )}
       </View>
     </View>
@@ -192,37 +193,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   dateFilterContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
+    marginBottom: 10,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 8,
     backgroundColor: 'white',
+    padding: 15,
     borderRadius: 5,
-    justifyContent: 'center',
-    width: '100%',
+    alignItems: 'center',
+    width: '48%',
   },
   inputText: {
-    color: 'black',
+    color: '#000051',
   },
   chartContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  chart: {
-    marginVertical: 10,
+    marginTop: 20,
+    width: '90%',
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 16,
+    color: '#ffffff',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  chart: {
+    borderRadius: 16,
   },
 });
 
-export default ReportesHistoricos;
+export default ReporteVisitantesPorDia;

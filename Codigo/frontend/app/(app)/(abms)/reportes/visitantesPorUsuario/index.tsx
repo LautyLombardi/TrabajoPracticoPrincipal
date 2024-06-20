@@ -10,8 +10,9 @@ interface vxd {
     egresos: number;
   };
 } 
-
-const ReportesHistoricos: React.FC = () => {
+// Reporte Operativo 1: cantidad de visitantes AUTENTICADOS por el usuario
+// logueado (ya sea ingreso o egreso) historico separando ingresos de egresos
+const VisitantesPorUsuario = () => {
   const [fechas, setFechas] = useState<string[]>([]);
   const [ingresos, setIngresos] = useState<number[]>([]);
   const [egresos, setEgresos] = useState<number[]>([]);
@@ -93,7 +94,7 @@ const ReportesHistoricos: React.FC = () => {
             }}
           />
         ) : (
-          <Text>No hay datos disponibles</Text>
+          <Text style={styles.title}>No hay datos disponibles</Text>
         )}
       </View>
     </View>
@@ -116,10 +117,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 16,
+    color: '#ffffff',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
-export default ReportesHistoricos;
+export default VisitantesPorUsuario;
