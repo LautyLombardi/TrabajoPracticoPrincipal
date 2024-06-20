@@ -33,7 +33,6 @@ const LogueoUsuarioManual = () => {
         const user=await loginHook(Number(dni),password);
         console.log("user es ",user)
         if (user === 1) {
-          // TODO: log await logLoginManual(dni.toString(),"usuario")
           insertLoginLog(admDni,Number(dni),"Usuario")
           Alert.alert(
             "Usuario autenticado",

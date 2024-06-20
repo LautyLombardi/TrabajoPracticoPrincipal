@@ -8,6 +8,9 @@ import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFaceRecognition from "@/hooks/user/useFaceRecognition";
 import AdmUserModal from "@/components/Modal/AdmUserModal";
+import { getAdmDni } from "@/api/services/storage";
+import useInsertFaceRecognitionLogs from "@/hooks/logs/useInsertFaceRecognitionLogs";
+import useInsertFaceRecognitionLogsFail from "@/hooks/logs/useInsertFaceRecognitionLogsFail";
 
 
 const UserFaceRecognition = () => {
@@ -19,6 +22,8 @@ const UserFaceRecognition = () => {
   const [imagen, setImagen] = useState<File | null>(null);
   const [usuario, setUsuario] = useState<Usuario>();
   const [showUser, setShowUser] = useState(false);
+  const useFaceRecognitionLogs = useInsertFaceRecognitionLogs()
+  const useFaceRecognitionLogsFail = useInsertFaceRecognitionLogsFail()
 
   useEffect(() => {
     setUsuario(user)
@@ -32,6 +37,7 @@ const UserFaceRecognition = () => {
 
   const handleAutenticacion = async () => {
     try {
+      const admDni=await getAdmDni();
       takePicture().then((foto) => {
         const formData = new FormData();
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
@@ -53,10 +59,13 @@ const UserFaceRecognition = () => {
             ];                      
             await AsyncStorage.setItem('user_data', JSON.stringify(user_data));
             setShowUser(true);
-            //------------------------------------
-            // TODO log
+            if(admDni){
+              useFaceRecognitionLogs(user_data[0].user_dni,admDni,'usuario')
+            }
           } else {
-            // TODO log
+            if(admDni){
+              useFaceRecognitionLogsFail(admDni,'usuario')
+            }
             Alert.alert(
               "Falló la autenticación de la imagen del usuario",
               "",

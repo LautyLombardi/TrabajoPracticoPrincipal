@@ -9,6 +9,10 @@ import CategoryModal from '@/components/Modal/CategoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetCategories from '@/hooks/category/useGetCategories';
 import useActivateDesactive from '@/hooks/useActivateDesactive';
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
+
+
 type PropsCol = {
   text?: string,
   flexWidth?: number,
@@ -135,6 +139,8 @@ const AdministracionCategorias = () => {
   const [selectedCategory, setSelectedCategory] = useState<Categoria | null>(null);
 
   const activateDesactive = useActivateDesactive();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const handleOpenUserModal = (categoria: Categoria) => {
     setSelectedCategory(categoria);
@@ -155,8 +161,10 @@ const AdministracionCategorias = () => {
         setCategorias(prevCategory => prevCategory.map(cat => 
           cat.id === categori.id ? { ...cat, isActive: 0 } : cat
         ))
+        insertLogAdm("desactivacion","categoria")
       } else {
         console.error('Failed to deactivate category.');
+        insertLogAdmFail("desactivacion","Categoria") 
       }
     } else {
       const result = await activateDesactive(categori.id,'category',0);
@@ -165,7 +173,9 @@ const AdministracionCategorias = () => {
         setCategorias(prevCategory => prevCategory.map(cat => 
           cat.id === categori.id ? { ...cat, isActive: 1 } : cat
         ))
+        insertLogAdm("activacion","categoria")
       } else {
+        insertLogAdmFail("activacion","categoria") 
         console.error('Failed to activate category.');
       }
     }

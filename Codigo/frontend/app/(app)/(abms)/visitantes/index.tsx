@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Switch, ScrollView, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import useGetVisitors from '@/hooks/visitor/useGetVisitors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useDeactivateVisitor from '@/hooks/visitor/useDeactivateVisitor';
 import useActivateVisitor from '@/hooks/visitor/useActivateVisitor';
+import useActivateDesactiveDNI from '@/hooks/useActiveDesactiveDni';
 
 type PropsCol = {
   text?: string,
@@ -71,10 +72,15 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
   };
 
   const deleteIcon = (visitor: Visitante) => {
+    const isEnabled = visitor.isActive === 1;
+  
     return (
-      <TouchableOpacity onPress={() => handleDelete(visitor)}>
-        <Ionicons name='trash' style={{ fontSize: 20, padding: 7, borderRadius: 100 }} color={"red"} />
-      </TouchableOpacity>
+      <Switch
+        trackColor={{ false: '#F34C4C', true: '#27A418' }}
+        thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
+        onValueChange={() => handleDelete(visitor)}
+        value={isEnabled}
+      />
     );
   };
 
@@ -129,8 +135,7 @@ const AdministracionVisitantes = () => {
   const [showVisitor, setShowVisitor] = useState(false);
   const [selectedVisitor, setSelectedVisitor] = useState<Visitante | null>(null);
 
-  const deactivateVisitor = useDeactivateVisitor();
-  const activateVisitor = useActivateVisitor();
+  const activateDesactiveDNI = useActivateDesactiveDNI();
 
   const handleOpenUserModal = (visitante: Visitante) => {
     setSelectedVisitor(visitante);
@@ -144,30 +149,22 @@ const AdministracionVisitantes = () => {
 
   const handleDeleteVisitor = async (visitor: Visitante) => {
     if (visitor.isActive) {
-      const result = await deactivateVisitor(visitor.dni);
+      const result = await activateDesactiveDNI(visitor.dni, 'visitor', 1);
       if (result !== 0) {
         console.log('visitor deactivated successfully.');
-        const handleInsts = visitantes
-        handleInsts.forEach(vist =>{
-          if (vist.dni === visitor.dni) {
-            vist.isActive = 0
-          }
-        })
-        setVisitantes(handleInsts)
+        setVisitantes(prevVisitor => prevVisitor.map(v => 
+          v.dni === visitor.dni ? { ...v, isActive: 0 } : v
+        ));
       } else {
         console.error('Failed to deactivate visitor.');
       }
     } else {
-      const result = await activateVisitor(visitor.dni);
+      const result = await activateDesactiveDNI(visitor.dni, 'visitor', 0);
       if (result !== 0) {
         console.log('visitor activated successfully.');
-        const handleInsts = visitantes
-        handleInsts.forEach(vist =>{
-          if (vist.dni === visitor.dni) {
-            vist.isActive = 1
-          }
-        })
-        setVisitantes(handleInsts)
+        setVisitantes(prevVisitor => prevVisitor.map(v => 
+          v.dni === visitor.dni ? { ...v, isActive: 1 } : v
+        ));
       } else {
         console.error('Failed to activate visitor.');
       }
@@ -196,6 +193,8 @@ const AdministracionVisitantes = () => {
 
   useFocusEffect(
     useCallback(() => {
+      setEdit(false)
+      setTrash(false)
       refetch();
     }, [refetch])
   );

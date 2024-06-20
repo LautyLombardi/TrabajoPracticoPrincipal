@@ -9,6 +9,8 @@ import EnterpriceModal from '@/components/Modal/EnterpriceModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetEnterprices from '@/hooks/enterprice/useGetEnterprices';
 import useActivateDesactive from '@/hooks/useActivateDesactive';
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 type PropsCol = {
   text?: string,
@@ -134,6 +136,8 @@ const AdministracionEmpresas = () => {
   const [selectedEnterprice, setSelectedEnterprice] = useState<Empresa | null>(null);
 
   const activateDesactive = useActivateDesactive();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const handleOpenUserModal = (empresa: Empresa) => {
     setSelectedEnterprice(empresa);
@@ -153,7 +157,9 @@ const AdministracionEmpresas = () => {
         setEmpresas(prevEnterprice => prevEnterprice.map(enter => 
           enter.id === enterprice.id ? { ...enter, isActive: 0 } : enter
         ))
+        insertLogAdm("desactivacion","empresa")
       } else {
+        insertLogAdmFail("desactivacion","empresa")
         console.error('Failed to deactivate enterprice.');
       }
     } else {
@@ -163,7 +169,9 @@ const AdministracionEmpresas = () => {
         setEmpresas(prevEnterprice => prevEnterprice.map(enter => 
           enter.id === enterprice.id ? { ...enter, isActive: 1 } : enter
         ))
+        insertLogAdm("activacion","empresa")
       } else {
+        insertLogAdmFail("activacion","empresa")
         console.error('Failed to activate enterprice.');
       }
     }

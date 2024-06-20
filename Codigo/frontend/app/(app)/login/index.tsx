@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { View, StyleSheet, Pressable, Text, Alert, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
@@ -8,6 +8,8 @@ import { Usuario } from "@/api/model/interfaces";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
 import AdmUserModal from "@/components/Modal/AdmUserModal";
+import useInsertFaceRecognitionLogs from "@/hooks/logs/useInsertFaceRecognitionLogs";
+import useInsertFaceRecognitionLogsFail from "@/hooks/logs/useInsertFaceRecognitionLogsFail";
 
 const Login = () => {
   const navigator = useRouter()
@@ -19,10 +21,13 @@ const Login = () => {
   const [usuario, setUsuario] = useState<Usuario>();
   const [showUser, setShowUser] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const useFaceRecognitionLogs = useInsertFaceRecognitionLogs()
+  const useFaceRecognitionLogsFail = useInsertFaceRecognitionLogsFail()
   
   const takePicture = async () => {
     setLoading(true);
     if (cameraRef.current) {
+      setLoading(true);
       const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
       const photo = await cameraRef.current.takePictureAsync(options);
       setImagen(photo.uri);
@@ -63,9 +68,11 @@ const Login = () => {
           setUsuario(user);
           setLoading(false);
           setShowUser(true);
+          useFaceRecognitionLogs(null,data.dni,'usuario')
         }
         //------------------------------------           
       }else{
+        useFaceRecognitionLogsFail(null,'usuario')
         setLoading(false);
         Alert.alert( "Falló la autenticación de la imagen del usuario")
       }
