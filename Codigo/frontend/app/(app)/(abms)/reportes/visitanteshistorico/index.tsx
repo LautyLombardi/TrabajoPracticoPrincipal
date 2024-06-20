@@ -1,87 +1,99 @@
-//Cantidad de usuarios AUTENTICADOS por el usuario logueado 
-//--hecho
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import useGetLogs from '@/hooks/logs/useGetLogs'; // Asegúrate de importar correctamente
-import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { getAdmDni } from '@/api/services/storage';
 import { StackedBarChart } from 'react-native-chart-kit';
+import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import useGetLogsForReport from '@/hooks/logs/useGetLogsForReport';
+
+interface vxd {
+  [key: string]: {
+    ingresos: number;
+    egresos: number;
+  };
+} 
 
 const ReportesHistoricos: React.FC = () => {
   const [fechas, setFechas] = useState<string[]>([]);
   const [ingresos, setIngresos] = useState<number[]>([]);
   const [egresos, setEgresos] = useState<number[]>([]);
-  const { logs, isLoading, isError } = useGetLogs(); // Utiliza el custom hook
+  
+  const getLogsForReport = useGetLogsForReport();
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!isLoading && !isError && logs) {
-        const visitantesPorDia = {};
-        const admDni = await getAdmDni();
-
-        logs.forEach(visitante => {
-          const fecha = visitante.createDate.split(' ')[0];
-          if (visitante.visitorId != null && visitante.admDni == admDni) {
-            if (!visitantesPorDia[fecha]) {
-              visitantesPorDia[fecha] = { ingresos: 0, egresos: 0 };
+    const fetchLogs = async () => {
+        const { logs } = await getLogsForReport();
+        if (logs) {
+          const visitantesPorDia: vxd = {};
+          logs.forEach(log => {
+            const fecha = log.createDate.split(' ')[0];
+            if (log.visitorId != null) {
+              if (!visitantesPorDia[fecha]) {
+                visitantesPorDia[fecha] = { ingresos: 0, egresos: 0 };
+              }
+              if (log.hasAccess === 1 && log.isEnter === 1) {
+                visitantesPorDia[fecha].ingresos++;
+              } else if (log.hasAccess === 1 && log.isEnter === 0) {
+                visitantesPorDia[fecha].egresos++;
+              }
             }
-            if (visitante.hasAccess === 1 && visitante.isEnter == 1) {
-              visitantesPorDia[fecha].ingresos++;
-            } else if (visitante.hasAccess === 1 && visitante.isEnter == 0) {
-              visitantesPorDia[fecha].egresos++;
-            }
-          }
-        });
+          });
 
-        const fechasArray = Object.keys(visitantesPorDia).sort((a, b) => {
-          const dateA = new Date(a);
-          const dateB = new Date(b);
-          return dateA.getTime() - dateB.getTime();
-        });
+          const fechasArray = Object.keys(visitantesPorDia).sort((a, b) => {
+            const dateA = new Date(a);
+            const dateB = new Date(b);
+            return dateA.getTime() - dateB.getTime();
+          });
 
-        const ingresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].ingresos);
-        const egresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].egresos);
- 
-        setFechas(fechasArray);
-        setIngresos(ingresosArray);
-        setEgresos(egresosArray);
-        console.log("fechas",fechas)
-        console.log("ingresos",ingresos)
-        console.log("egresos",egresos)
-      }
-    };
+          const ingresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].ingresos);
+          const egresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].egresos);
+        
+          setFechas(fechasArray);
+          setIngresos(ingresosArray);
+          setEgresos(egresosArray);
+        }
+    }
+    fetchLogs()
+  }, [getLogsForReport])
 
-    fetchData();
-  }, [logs, isLoading, isError]);
+  // Verifica que no haya valores NaN en los datos
+  const validData = fechas.length > 0 && ingresos.length > 0 && egresos.length > 0;
 
   return (
     <View style={styles.container}>
-      <HandleGoBack title='Reportes' route='reportes' />
+      <HandleGoBackReg title='Reportes' route='reportes' />
       <View style={styles.chartContainer}>
-        <Text style={styles.title}>Cantidad de usuarios AUTENTICADOS por el usuario logueado</Text>
-        {fechas.length > 0 && (
+        <Text style={styles.title}>Total de visitantes AUTENTICADOS por todos los usuarios</Text>
+        {validData ? (
           <StackedBarChart
             style={styles.chart}
             data={{
               labels: fechas,
               legend: ['Ingresos', 'Egresos'],
-              data: [ingresos, egresos],
+              data: fechas.map((_, index) => [ingresos[index], egresos[index]]),
               barColors: ['#00FF00', '#0000FF'],
             }}
             width={300}
             height={200}
-            yAxisLabel="Cantidad"
+            yAxisLabel=""
+            yLabelsOffset={5}
+            hideLegend={false}
             chartConfig={{
               backgroundGradientFrom: '#ffffff',
               backgroundGradientTo: '#ffffff',
               decimalPlaces: 0,
               color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              propsForBackgroundLines: {
+                strokeDasharray: '', // solid background lines with no dashes
+              },
+              barPercentage: 0.5,
+              useShadowColorFromDataset: false,
               style: {
                 borderRadius: 16,
               },
             }}
           />
+        ) : (
+          <Text>No hay datos disponibles</Text>
         )}
       </View>
     </View>
@@ -90,9 +102,10 @@ const ReportesHistoricos: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#00759c',
     flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
+    paddingVertical: 30,
+    alignItems: 'center',
   },
   chartContainer: {
     flex: 1,
@@ -105,10 +118,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
 export default ReportesHistoricos;
-
-
-

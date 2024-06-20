@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Pressable, Text, Alert } from "react-native";
+import { View, StyleSheet, Pressable, Text, Alert, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
@@ -15,20 +15,16 @@ import { getAdmDni } from "@/api/services/storage";
 
 const Login = () => {
   const navigator = useRouter()
-  const { user, isLoading, isError } = useFaceRecognitionUser();
+  const getFaceRecognitionUser = useFaceRecognitionUser();
   const [cameraPermission, setCameraPermission] = useCameraPermissions();
   const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState(null);
   const [usuario, setUsuario] = useState<Usuario>();
   const [showUser, setShowUser] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const useFaceRecognitionLogs = useInsertFaceRecognitionLogs()
   const useFaceRecognitionLogsFail = useInsertFaceRecognitionLogsFail()
-
-  useEffect(() => {
-    setUsuario(user)
-    console.log('user login', user)
-  }, [user])
   
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -45,66 +41,78 @@ const Login = () => {
   };
 
   const handleAuterizar = async () => {
+    await AsyncStorage.removeItem('adm_data');
+    console.log("autenticando.....")
     try{
-      takePicture().then((foto) => {
-        const formData= new FormData()
-        formData.append("image", { // Ignora el error de append esta alpedo jodiendo
-          uri: foto,
-          name: "photo.jpg",
-          type: "image/jpeg",
-        })
-          fetch(`${ONLINE}/faceRecognition/user`,{
-          method : 'POST',
-          body: formData
-        }).then(async (respuesta) => {
-          console.log(respuesta + "respuesta autenticacion ")
-          if(respuesta.status == 200) {
-            //----------------------storage--------------
-            const data = await respuesta.json();
-            const adm_data = [
-              {
-                adm_dni: data.dni
-              },
-            ];                      
-            await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
-            setShowUser(true);
-            useFaceRecognitionLogs(null,adm_data[0].adm_dni,'usuario')
-            // TODO: log            
-          }else{
-            useFaceRecognitionLogsFail(null,'usuario')
-            Alert.alert( "Falló la autenticación de la imagen del usuario")
-          }
-        })
-      })
+      const foto = await takePicture();
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("image", {
+        uri: foto,
+        name: "photo.jpg",
+        type: "image/jpeg",
+      });
+      const respuesta = await fetch(`${ONLINE}/faceRecognition/user`, {
+        method: 'POST',
+        body: formData,
+      });
+      console.log("respuesta status", respuesta.status);
+      if(respuesta.status === 200) {
+        //----------------------storage--------------
+        const data = await respuesta.json();
+        console.log("data", data)
+        const adm_data = [{ adm_dni: data.dni }];                      
+        await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+        const user = await getFaceRecognitionUser(data.dni);
+        console.log("user es ",user)
+        if(user){
+          setUsuario(user);
+          setLoading(false);
+          setShowUser(true);
+          useFaceRecognitionLogs(null,adm_data[0].adm_dni,'usuario')
+        }
+        //------------------------------------           
+      }else{
+        useFaceRecognitionLogsFail(null,'usuario')
+        setLoading(false);
+        Alert.alert( "Falló la autenticación de la imagen del usuario")
+      }
     }catch(error){
+      setLoading(false);
       console.error("No se pudo sacar la foto", error)
       Alert.alert("No se pudo sacar la foto")
     }
   }
 
+  return (
+  <View style={styles.container}>
+    <CameraView style={{flex: 1}} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front}  ref={cameraRef}/>      
+      <View
+      style={{
+          position: "absolute",
+          bottom: 0,
+          flex: 1,
+          marginBottom: 20,
+          width: "100%",
+          alignSelf: "center",
+          alignItems: "center",
+      }}
+      >
+    
+        <Pressable disabled={loading} onPress={handleAuterizar} style={[styles.button, loading && styles.buttonDisabled]}>
+          <Text style={styles.buttonText}>Autenticar</Text>
+        </Pressable>
+      </View>
 
-    return (
-    <View style={styles.container}>
-      <CameraView style={{flex: 1}} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front}  ref={cameraRef}/>      
-        <View
-        style={{
-            position: "absolute",
-            bottom: 0,
-            flex: 1,
-            marginBottom: 20,
-            width: "100%",
-            alignSelf: "center",
-            alignItems: "center",
-        }}
-        >
-          <Pressable onPress={handleAuterizar} style={styles.button}>
-            <Text style={styles.buttonText}>Autenticar</Text>
-          </Pressable>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
         </View>
+      )}
 
-        {showUser && usuario && <AdmUserModal user={usuario} handleCloseModal={handleCloseUserModal} />}
-    </View>
-    );
+      {showUser && usuario && <AdmUserModal user={usuario} handleCloseModal={handleCloseUserModal} />}
+  </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -129,6 +137,19 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#000051',
     fontSize: 16,
+  },
+  buttonDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

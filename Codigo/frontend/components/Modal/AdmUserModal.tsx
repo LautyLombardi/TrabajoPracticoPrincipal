@@ -8,7 +8,7 @@ interface ModalProps {
     handleCloseModal: () => void;
 }
 
-const rolName = ['seguridad', 'Administrador tecnico', 'RRHH', 'Procesos automaticos', 'Personal jerarquico']
+const rolName = ['seguridad', 'Administrador tecnico', 'RRHH', 'Procesos automaticos', 'Personal jerarquico', 'Developer']
 
 const AdmUserModal: React.FC<ModalProps> = ({ user, handleCloseModal }) => {
     const renderFields = () => {
@@ -48,7 +48,7 @@ const AdmUserModal: React.FC<ModalProps> = ({ user, handleCloseModal }) => {
                     <Ionicons
                     style={{ margin: 10}}
                     name="close"
-                    size={20}
+                    size={30}
                     onPress={handleCloseModal}
                     color={"white"}
                     />
