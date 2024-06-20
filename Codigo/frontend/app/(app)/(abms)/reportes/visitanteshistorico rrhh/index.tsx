@@ -193,7 +193,7 @@ const ReportesHistoricos = () => {
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderCell}>ID</Text>
             <Text style={styles.tableHeaderCell}>ADM DNI</Text>
-            <Text style={styles.tableHeaderCell}>Visitor ID</Text>
+            <Text style={styles.tableHeaderCell}>Visitor DNI</Text>
             <Text style={styles.tableHeaderCell}>Ingreso/Egreso</Text>
           </View>
           {renderTableRows()}
@@ -238,9 +238,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     width: "30%",
     marginRight: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
   },
   input: {
     backgroundColor: "white",

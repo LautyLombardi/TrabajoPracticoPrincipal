@@ -35,10 +35,15 @@ export const Reportes = () => {
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
+          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/duplicacion")}>
+              <Text style={styles.textBtnMenu}>Duplicacíon de visitantes y usuarios</Text>
+          </Pressable>
+        </View>      
+        <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/erroresPorHora")}>
               <Text style={styles.textBtnMenu}>Errores</Text>
           </Pressable>
-        </View>         
+        </View>    
       </View>
       <StatusBar style='light' />
     </SafeAreaView>
