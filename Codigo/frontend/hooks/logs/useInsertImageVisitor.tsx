@@ -14,7 +14,7 @@ const useInsertImageVisitor = () => {
             await db.execAsync('BEGIN TRANSACTION;');
             // Insert query
             const result = await db.runAsync(
-                `INSERT INTO logs (visitorId, admDni, abm, abmType, description, createDate, isAutomatic) VALUES (?, ?, 'ABM Imagen', 'ALTA', 'se asocia una imagen a un visitante', ?, 0);`,
+                `INSERT INTO logs (visitorId, admDni, abm, abmType, description, createDate) VALUES (?, ?, 'ABM Imagen', 'ALTA', 'se asocia una imagen a un visitante', ?);`,
                 [visitorId, admDni, createDate]
             );
 

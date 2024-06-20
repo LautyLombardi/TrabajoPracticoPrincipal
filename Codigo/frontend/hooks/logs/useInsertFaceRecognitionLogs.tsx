@@ -15,7 +15,7 @@ const useInsertFaceRecognitionLogs = () => {
             // Insert query
             if(type_adm=== 'usuario'){
                 const result = await db.runAsync(
-                    `INSERT INTO logs (userId, admDni, hasAccess, isFaceRecognition,description, createDate, isAutomatic) VALUES (?, ?, 1, 1, 'se realizo una autenticacion con reconocimiento facial exitosa ', ?, 0);`,
+                    `INSERT INTO logs (userId, admDni, hasAccess, isFaceRecognition,description, createDate) VALUES (?, ?, 1, 1, 'se realizo una autenticacion con reconocimiento facial exitosa ', ?);`,
                     [client_Id, admDni, createDate]
                 );
 
@@ -24,7 +24,7 @@ const useInsertFaceRecognitionLogs = () => {
 
             }else{
                 const result = await db.runAsync(
-                    `INSERT INTO logs (visitorId, admDni, hasAccess, isFaceRecognition,description, createDate, isAutomatic) VALUES (?, ?, 1, 1, 'se realizo una autenticacion con reconocimiento facial exitosa ', ?, 0);`,
+                    `INSERT INTO logs (visitorId, admDni, hasAccess, isFaceRecognition,description, createDate) VALUES (?, ?, 1, 1, 'se realizo una autenticacion con reconocimiento facial exitosa ', ?;`,
                     [client_Id, admDni, createDate]
                 );
                 number = result.lastInsertRowId

@@ -15,7 +15,7 @@ const useInsertFaceRecognitionLogsFail = () => {
             // Insert query
             if(type_adm=== 'usuario'){
                 const result = await db.runAsync(
-                    `INSERT INTO logs ( admDni, hasAccess, isFaceRecognition,description, createDate, isAutomatic) VALUES ( ?, 0, 1, 'Error al realizar un reconocimento facial a un usuario ', ?, 0);`,
+                    `INSERT INTO logs ( admDni, hasAccess, isFaceRecognition,description, createDate) VALUES ( ?, 0, 1, 'Error al realizar un reconocimento facial a un usuario ', ?);`,
                     [ admDni, createDate]
                 );
 
@@ -24,7 +24,7 @@ const useInsertFaceRecognitionLogsFail = () => {
 
             }else{
                 const result = await db.runAsync(
-                    `INSERT INTO logs ( admDni, hasAccess, isFaceRecognition,description, createDate, isAutomatic) VALUES ( ?, 0, 1, 'Error al realizar un reconocimento facial a un visitante ', ?, 0);`,
+                    `INSERT INTO logs ( admDni, hasAccess, isFaceRecognition,description, createDate) VALUES ( ?, 0, 1, 'Error al realizar un reconocimento facial a un visitante ', ?);`,
                     [ admDni, createDate]
                 );
                 number = result.lastInsertRowId

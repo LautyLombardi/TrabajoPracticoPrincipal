@@ -19,7 +19,7 @@ const useInsertLogAdm = () => {
                 const abm = type_adm + " de " + table_adm 
                 const description = "Se realiza " + type_adm +  " de "  + table_adm
                 const result = await db.runAsync(
-                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isAutomatic) VALUES (?, ?, ?, ?, ?, 0);`,
+                    `INSERT INTO logs (admDni, abm, abmType, description, createDate) VALUES (?, ?, ?, ?, ?);`,
                     [admDni,abm, type_adm , description, createDate]
                 );
 
@@ -31,7 +31,7 @@ const useInsertLogAdm = () => {
                 const abm = type_adm + " de " + table_adm 
                 const description = "Se desactiva "  + table_adm
                 const result = await db.runAsync(
-                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isAutomatic) VALUES (?, ?, ?, ?, ?, 0);`,
+                    `INSERT INTO logs (admDni, abm, abmType, description, createDate) VALUES (?, ?, ?, ?, ?);`,
                     [admDni,abm, type_adm , description, createDate]
                 );
                 number = result.lastInsertRowId
@@ -45,7 +45,7 @@ const useInsertLogAdm = () => {
             return number;
         } catch (error) {
             await db.execAsync('ROLLBACK;');
-            console.error('Error inserting place:', error);
+            console.error('Error inserting Logs:', error);
             return 0;
         }
     }, [db]);

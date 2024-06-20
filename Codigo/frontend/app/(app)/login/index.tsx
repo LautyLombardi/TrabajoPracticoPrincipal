@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { View, StyleSheet, Pressable, Text, Alert, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
@@ -10,8 +10,6 @@ import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
 import AdmUserModal from "@/components/Modal/AdmUserModal";
 import useInsertFaceRecognitionLogs from "@/hooks/logs/useInsertFaceRecognitionLogs";
 import useInsertFaceRecognitionLogsFail from "@/hooks/logs/useInsertFaceRecognitionLogsFail";
-import { getAdmDni } from "@/api/services/storage";
-
 
 const Login = () => {
   const navigator = useRouter()
@@ -28,6 +26,7 @@ const Login = () => {
   
   const takePicture = async () => {
     if (cameraRef.current) {
+      setLoading(true);
       const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
       const photo = await cameraRef.current.takePictureAsync(options);
       setImagen(photo.uri);
@@ -45,7 +44,6 @@ const Login = () => {
     console.log("autenticando.....")
     try{
       const foto = await takePicture();
-      setLoading(true);
       const formData = new FormData();
       formData.append("image", {
         uri: foto,
@@ -69,7 +67,7 @@ const Login = () => {
           setUsuario(user);
           setLoading(false);
           setShowUser(true);
-          useFaceRecognitionLogs(null,adm_data[0].adm_dni,'usuario')
+          useFaceRecognitionLogs(null,data.dni,'usuario')
         }
         //------------------------------------           
       }else{

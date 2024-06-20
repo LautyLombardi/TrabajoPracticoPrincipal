@@ -14,7 +14,7 @@ const useInsertImageUserFail = () => {
             await db.execAsync('BEGIN TRANSACTION;');
             // Insert query
             const result = await db.runAsync(
-                `INSERT INTO logs (userId, admDni, abm, abmType, description, createDate, isAutomatic) VALUES (?, ?, 'ABM Imagen', 'ALTA', 'no se pudo asociar una imagen a un usuario', ?, 0);`,
+                `INSERT INTO logs (userId, admDni, abm, abmType, description, createDate) VALUES (?, ?, 'ABM Imagen', 'ALTA', 'no se pudo asociar una imagen a un usuario', ?);`,
                 [userId, admDni, createDate]
             );
 
