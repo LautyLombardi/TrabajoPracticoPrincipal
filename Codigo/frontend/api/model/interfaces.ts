@@ -4,7 +4,6 @@ export interface Usuario{
     name: string,
     lastname: string,
     isActive:number,
-    motive: string,
     activeData: string,
     createDate:string,
     rolName: string,

@@ -83,12 +83,12 @@ const RegistroVisitante = () => {
   }, [visitorRigisterDataDB, categorias, institutos, empresas]);
 
   useEffect(() => {
-    const selectedCategory = categorias.find(categoria => categoria.name === categoriaSeleccionadaName);
+    const selectedCategory = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName);
     if (selectedCategory) {
       setIsExtern(selectedCategory.isExtern);
-    }
-  }, [categoriaSeleccionadaName, categorias]);
-
+    } 
+  }, [categoriaSeleccionadaName, categorias , isExtern]);
+  
   return (
     <View style={styles.container}>
       {<HandleGoBackReg title='Registro Visitante' route='visitantes' />}

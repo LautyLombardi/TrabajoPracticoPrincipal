@@ -113,7 +113,7 @@ const TablaLugares: React.FC<PropsTable> = ({ viewState, editState, deleteState,
       <Row>
         <Col text='ID' flexWidth={0.8} />
         <Col text='Nombre' flexWidth={3} />
-        <Col text='Cuit' flexWidth={3} />
+        <Col text='Abreviación' flexWidth={3} />
         <Col text='' flexWidth={1.5} />
       </Row>
       {
