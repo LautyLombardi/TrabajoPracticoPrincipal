@@ -4,7 +4,9 @@ from flask_cors import CORS
 from db.db import init_db
 from controllers import *
 from flask_cors import CORS
+from apscheduler.schedulers.background import BackgroundScheduler
 from db.Populate import populate_places, populate_institutes,populate_institute_places
+from mailjet_rest import Client
 
 app = Flask(__name__)
 
@@ -17,10 +19,47 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(current_direct
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 init_db(app)
 
+MAILJET_API_KEY = 'bfa74c164b8e20a2badb24a231aaf15e'
+MAILJET_API_SECRET = 'ccc1ff1f0c967eb2618f220b01dfd38e'
+MAIL= ''
+
+def send_email_via_mailjet():
+    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3.1')
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": "patriciojcastillo@gmail.com",
+                    "Name": "Patricio"
+                },
+                "To": [
+                    {
+                        "Email": MAIL,
+                        "Name": "MESSI"
+                    }
+                ],
+                "Subject": "Infrome de duplicacion"
+                "TextPart": "Prueba"
+                "CustomID": "AppGettingStartedTest"
+            }
+        ]
+    }
+
+    result = mailjet.send.create(data=data)
+    print(result.status_code)
+    print(result.json())
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(send_email_via_mailjet(), 'cron', hour=14)  # Configura la hora y minuto deseado
+scheduler.start()
+
+
 
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({'message':'listening online...'}),200
+
+
 
 #--------------------------------------------------------------------------------------------
 # Controllers blueprints
