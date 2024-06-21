@@ -1,35 +1,49 @@
-// App.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { CheckBox } from 'react-native-elements';
-import useGetLogs from '@/hooks/logs/useGetLogs'; // Asegúrate de importar correctamente
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { getAdmDni } from '@/api/services/storage';
 import { BarChart } from 'react-native-chart-kit';
+import { Logs } from '@/api/model/interfaces';
+import useGetLogSyncError from '@/hooks/logs/useGetLogSyncError';
 
+// Reporte Confidencial 3: reporte de cantidad errores de sincronización por día y hora 
+// con el gráfico de calor que nos indicó el profe (osea es un coso de barras o calor o
+// parecido q te dice cuántos errores de sincro hay en cada día de la semana y en cada hora)
 const ReportesHistoricos: React.FC = () => {
   const [fechas, setFechas] = useState<string[]>([]);
   const [errores, setErrores] = useState<number[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<number | null>(null);
-  const { logs, isLoading, isError } = useGetLogs(); // Utiliza el custom hook
+  const [selectedFilter, setSelectedFilter] = useState<number>(0);
+  const [logsInfo, setLogsInfo] = useState<Logs[]>([]);
+  const getLogSyncError = useGetLogSyncError();
 
-  const filterLogs = (logs: any) => {
+  useEffect(() => {
+    const fetchLogs = async () => {
+      const { logs } = await getLogSyncError();
+      if (logs) {
+        setLogsInfo(logs)
+      }
+    }
+    fetchLogs()
+  }, [getLogSyncError])
+
+  const filterLogs = (filter: number) => {
+    setSelectedFilter(filter);
     const erroresPorDia: any = {};
 
-    logs.forEach(visitante => {
-      const [date, time] = visitante.createDate.split(' ');
+    logsInfo.forEach(log => {
+      const [date, time] = log.createDate.split(' ');
       const hour = parseInt(time.split(':')[0], 10);
 
       let shouldInclude = false;
-      if (selectedFilter === 1 && hour >= 0 && hour < 8) {
+      if (filter === 1 && hour >= 0 && hour < 8) {
         shouldInclude = true;
-      } else if (selectedFilter === 2 && hour >= 8 && hour < 16) {
+      } else if (filter === 2 && hour >= 8 && hour < 16) {
         shouldInclude = true;
-      } else if (selectedFilter === 3 && (hour >= 16 || hour < 8)) {
+      } else if (filter === 3 && (hour >= 16 || hour < 8)) {
         shouldInclude = true;
       }
 
-      if (visitante.isError === 1 && shouldInclude) {
+      if (log.isError === 1 && shouldInclude) {
         if (!erroresPorDia[date]) {
           erroresPorDia[date] = 0;
         }
@@ -49,16 +63,6 @@ const ReportesHistoricos: React.FC = () => {
     setErrores(erroresArray);
   };
 
-  useEffect(() => {
-    if (!isLoading && !isError && logs) {
-      filterLogs(logs);
-    }
-  }, [logs, isLoading, isError, selectedFilter]);
-
-  const handleFilterChange = (filter: any) => {
-    setSelectedFilter(filter);
-  };
-
   return (
     <View style={styles.container}>
       <HandleGoBack title='Reportes' route='reportes' />
@@ -67,22 +71,22 @@ const ReportesHistoricos: React.FC = () => {
         <CheckBox
           title="00:00 - 08:00"
           checked={selectedFilter === 1}
-          onPress={() => handleFilterChange(1)}
+          onPress={() => filterLogs(1)}
         />
         <CheckBox
           title="08:00 - 16:00"
           checked={selectedFilter === 2}
-          onPress={() => handleFilterChange(2)}
+          onPress={() => filterLogs(2)}
         />
         <CheckBox
           title="16:00 - 00:00"
           checked={selectedFilter === 3}
-          onPress={() => handleFilterChange(3)}
+          onPress={() => filterLogs(3)}
         />
       </View>
       <View style={styles.chartContainer}>
-        <Text style={styles.title}>Cantidad de Errores por Día</Text>
-        {fechas.length > 0 && (
+        <Text style={styles.title}>Cantidad de Errores de Sincronización por Día y Hora</Text>
+        {fechas.length > 0 ? (
           <BarChart
             style={styles.chart}
             data={{
@@ -93,9 +97,10 @@ const ReportesHistoricos: React.FC = () => {
                 },
               ],
             }}
-            width={Dimensions.get('window').width - 16} // from react-native
-            height={220}
+            width={Dimensions.get('window').width - 16}
+            height={300}
             yAxisLabel=""
+            yAxisSuffix=""
             chartConfig={{
               backgroundGradientFrom: '#ffffff',
               backgroundGradientTo: '#ffffff',
@@ -107,6 +112,8 @@ const ReportesHistoricos: React.FC = () => {
               },
             }}
           />
+        ) : (
+          <Text style={styles.title}>No hay datos disponibles</Text>
         )}
       </View>
     </View>
@@ -115,9 +122,10 @@ const ReportesHistoricos: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#00759c',
     flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
+    paddingVertical: 30,
+    alignItems: 'center',
   },
   filtersContainer: {
     marginVertical: 20,
