@@ -24,10 +24,10 @@ const LectorQr: React.FC<LectorQrProps> = ({ onQRCodeScanned }) => {
     const match = datos.match(regex);
 
     if (match) {
-      Alert.alert('QR escaneado correctamente', `Scanned data: ${match[0]}`);
+      Alert.alert('QR escaneado correctamente', `Informacion escaneada : ${match[0]}`);
       onQRCodeScanned(match[0]);
     } else {
-      Alert.alert('Problemas al escanear el QR  ', 'No QR code data found');
+      Alert.alert('Problemas al escanear el QR  ', 'No se encontro informacion en el QR');
     }
   };
 
