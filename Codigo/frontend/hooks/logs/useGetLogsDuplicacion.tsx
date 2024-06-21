@@ -1,13 +1,12 @@
 import { useCallback } from 'react';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Logs } from '@/api/model/interfaces';
-import { getAdmDni } from '@/api/services/storage';
 
 const useGetLogsDuplicacion = () => {
     const db = useSQLiteContext();
     const getLogsForDuplicacion = useCallback(async () => {
         try {
-            const logsData = await db.getAllAsync<Logs>('SELECT * FROM logs WHERE abm = "MODIFICACIÓN de visitante" OR abm = "MODIFICACIÓN de usuario"');
+            const logsData = await db.getAllAsync<Logs>('SELECT * FROM logs WHERE abm = "Modificacion de visitante" OR abm = "Modificacion de usuario"');
             
             console.log('logs data by duplicación: ', logsData);
             if(logsData){
