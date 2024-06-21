@@ -32,7 +32,7 @@ const RegistroUsuario = () => {
         rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase()
       );
       console.log( "ROL BUSCANDO" , rol)
-      if (rol) {
+      if (rol && apellido && password && nombre && dni) {
         const response = await insertUser(
           parseInt(dni),
           rol.id,
@@ -56,10 +56,24 @@ const RegistroUsuario = () => {
           
           Alert.alert("Error al guardar usuario");
         }
+      } else if (!apellido) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un apellido para el usuario")
+      } else if (!password) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un password para el usuario");
+      } else if (!nombre) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un nombre para el usuario");
+      } else if (!dni) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un dni para el usuario");  
       } else {
-        Alert.alert("Rol no encontrado.");
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Rol no encontrado"); 
       }
     } catch (error) {
+      await insertLogAdmFail("ALTA", "usuario");
       console.error("Error en createUsuario:", error);
     }
   };
@@ -71,6 +85,7 @@ const RegistroUsuario = () => {
       setRolesData(roles);
       setRol(roles)
       const nombresRoles = roles.map(role => role.name);
+      setRolSeleccionadoName(nombresRoles[0])
       setRolesName(nombresRoles);
     }
   }, [rolesDB, rolesData]);

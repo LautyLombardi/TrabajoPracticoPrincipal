@@ -27,7 +27,6 @@ const Login = () => {
   const takePicture = async () => {
     setLoading(true);
     if (cameraRef.current) {
-      setLoading(true);
       const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
       const photo = await cameraRef.current.takePictureAsync(options);
       setImagen(photo.uri);
