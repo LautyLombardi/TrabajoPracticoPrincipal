@@ -17,7 +17,7 @@ const useInsertLogAdmFail = () => {
             if(type_adm !== "desactivar"){
                  
                 const abm = type_adm + " de " + table_adm 
-                const description = "Error al dar de  " + type_adm +" "+ table_adm
+                const description = "Error en " + type_adm +" "+ table_adm
                 const result = await db.runAsync(
                     `INSERT INTO logs (admDni, abm, abmType, description, createDate, isError) VALUES (?, ?, ?, ?, ?, 1);`,
                     [admDni,abm, type_adm , description, createDate]

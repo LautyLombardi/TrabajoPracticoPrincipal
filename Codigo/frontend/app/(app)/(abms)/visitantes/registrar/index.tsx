@@ -43,7 +43,7 @@ const RegistroVisitante = () => {
         const insert = await insertVisitor(nombre, apellido, parseInt(dni), email, dateIngreso.toISOString(), categoria, empresa?.id || 0, instituto?.id || 0)
         if (insert === 0) {
           const log= await insertLogAdmFail("ALTA","visitante")
-          Alert.alert("Error al guardar visitante");
+          Alert.alert("Error al guardar visitante o visitante ya existente");
         } else {
           const log= await insertLogAdm("ALTA","visitante")
           Alert.alert(
