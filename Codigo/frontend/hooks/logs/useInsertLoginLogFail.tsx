@@ -14,7 +14,7 @@ const useInsertLoginLogFail = () => {
                 await db.execAsync('BEGIN TRANSACTION;');
                 let description="fallo logeo manualmente de un "+table_login
                 const result = await db.runAsync(
-                    `INSERT INTO logs (admDni, visitorId, description, createDate, isEnter, isError) VALUES (?, ?, ?, ?, 1, 1);`,
+                    `INSERT INTO logs (admDni, visitorId, description, createDate, isError) VALUES (?, ?, ?, ?, 1);`,
                     [admDni, dniCliente, description, createDate]
                 );
 
