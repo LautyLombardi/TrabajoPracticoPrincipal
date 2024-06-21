@@ -8,7 +8,6 @@ const useProcessEntryLogs = () => {
 
     const processEntryLogs = useCallback(async () => {
         try {
-            // Obtener todos los logs de ingreso de usuarios con isEnter = 1 y userId no nulo
             const userEntryLogsQuery = `
                 SELECT * FROM logs
                 WHERE userId IS NOT NULL
@@ -16,7 +15,6 @@ const useProcessEntryLogs = () => {
             `;
             const userEntryLogs = await db.getAllAsync<Logs>(userEntryLogsQuery, []);
 
-            // Obtener todos los logs de ingreso de visitantes con isEnter = 1 y visitorId no nulo
             const visitorEntryLogsQuery = `
                 SELECT * FROM logs
                 WHERE visitorId IS NOT NULL
@@ -26,10 +24,9 @@ const useProcessEntryLogs = () => {
 
             let processedLogsCount = 0;
 
-            // Función para procesar logs de ingreso y crear logs de salida si es necesario
+
             const processEntryLogsForType = async (logs: Logs[], entityType: 'user' | 'visitor') => {
                 for (const log of logs) {
-                    // Verificar si ya existe un log de salida para el mismo usuario/visitante con isEnter = 0
                     const entityId = entityType === 'user' ? log.userId : log.visitorId;
                     const checkExitLogQuery = `
                         SELECT * FROM logs
@@ -41,7 +38,6 @@ const useProcessEntryLogs = () => {
                     const existingExitLog = await db.getFirstAsync<Logs>(checkExitLogQuery, [entityId]);
 
                     if (!existingExitLog || new Date(existingExitLog.createDate) < new Date(log.createDate)) {
-                        // No existe un log de salida o el último log de salida es anterior al ingreso actual, crear uno nuevo
                         const createDate = getCurrentCreateDate();
                         const newExitLogResult = await db.runAsync(
                             `INSERT INTO logs (${entityType === 'user' ? 'userId' : 'visitorId'}, admDni, hasAccess, isFaceRecognition, description, createDate, isEnter) VALUES (?, ?, ?, ?, ?, ?, ?);`,
@@ -56,10 +52,8 @@ const useProcessEntryLogs = () => {
                 }
             };
 
-            // Procesar logs de ingreso para usuarios
             await processEntryLogsForType(userEntryLogs, 'user');
             
-            // Procesar logs de ingreso para visitantes
             await processEntryLogsForType(visitorEntryLogs, 'visitor');
 
             console.log(`Processed ${processedLogsCount} entry logs.`);
