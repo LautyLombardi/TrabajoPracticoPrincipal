@@ -49,7 +49,7 @@ const UserModal: React.FC<ModalProps> = ({ user, handleCloseModal }) => {
                 <Ionicons
                 style={{ margin: 10, marginBottom: 20 }}
                 name="close"
-                size={20}
+                size={30}
                 onPress={handleCloseModal}
                 color={"white"}
                 />

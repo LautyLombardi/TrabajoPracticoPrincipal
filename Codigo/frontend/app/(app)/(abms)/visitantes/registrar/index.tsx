@@ -39,7 +39,7 @@ const RegistroVisitante = () => {
       const categoria = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase());
       const instituto = institutos.find(instituto => instituto.name.trim().toLowerCase() === institutoSeleccionadoName.trim().toLowerCase());
 
-      if(categoria){
+      if(categoria && nombre && apellido && dni && email && dateIngreso ){
         const insert = await insertVisitor(nombre, apellido, parseInt(dni), email, dateIngreso.toISOString(), categoria, empresa?.id || 0, instituto?.id || 0)
         if (insert === 0) {
           const log= await insertLogAdmFail("ALTA","visitante")
@@ -55,6 +55,25 @@ const RegistroVisitante = () => {
           );
         }
       }
+      else if (!apellido) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un apellido para el usuario")
+      } else if (!email) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un email para el usuario");
+      } else if (!nombre) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un nombre para el usuario");
+      } else if (!dni) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar un dni para el usuario");
+      } else if (!dateIngreso) {
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Se debe ingresar una fecha de ingreso para el usuario");    
+      } else {
+        Alert.alert("Categoria  no encontrada.");
+      }
+
     } catch (error) {
       console.error("Error en createVisitante:", error);
     }
