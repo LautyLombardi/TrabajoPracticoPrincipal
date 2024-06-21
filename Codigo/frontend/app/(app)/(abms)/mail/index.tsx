@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert, Modal, FlatList, T
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import sendEmail from '@/api/services/mailService';
 
 const ConfigurarReporte = () => {
   const [email, setEmail] = useState<string>("");
@@ -30,22 +31,33 @@ const ConfigurarReporte = () => {
       return;
     }
 
+    if (!reportDay) {
+      Alert.alert("Día no seleccionado", "Por favor seleccione un día");
+      return;
+    }
+
     // Show the spinner
     setLoading(true);
-
+    
+    if(email && reportDay && reportTime){
+      const response : number = await sendEmail(email, reportDay, reportTime);
+      if(response === 200){
+        Alert.alert(
+          "Configuración guardada",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/menu") }
+          ]
+        );
+      } else {
+        Alert.alert("Error al enviar correo");
+      }
+    }
     // SLEEP for 2 seconds
     await new Promise<void>(resolve => setTimeout(resolve, 1000));
 
     // Hide the spinner
     setLoading(false);
-
-    Alert.alert(
-      "Configuración guardada",
-      "",
-      [
-        { text: "OK", onPress: () => router.navigate("/menu") }
-      ]
-    );
   };
 
   const isValidTime = (time: any) => {
