@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const ConfigurarHorarios = () => {
   const [openingTime, setOpeningTime] = useState<string>("");
   const [closingTime, setClosingTime] = useState<string>("");
@@ -20,6 +21,8 @@ const ConfigurarHorarios = () => {
   const handleConfirmClosingTime = (date: any) => {
     setClosingTime(date.toTimeString().slice(0, 5));
     setIsClosingTimePickerVisible(false);
+
+
   };
 
   const handleTerminar = async () => {

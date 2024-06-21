@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Logs } from '@/api/model/interfaces';
+import { getCurrentCreateDate } from '@/util/getCreateDate';
 
 const useProcessEntryLogs = () => {
     const db = useSQLiteContext();
@@ -41,7 +42,7 @@ const useProcessEntryLogs = () => {
 
                     if (!existingExitLog || new Date(existingExitLog.createDate) < new Date(log.createDate)) {
                         // No existe un log de salida o el último log de salida es anterior al ingreso actual, crear uno nuevo
-                        const createDate = new Date().toISOString();
+                        const createDate = getCurrentCreateDate();
                         const newExitLogResult = await db.runAsync(
                             `INSERT INTO logs (${entityType === 'user' ? 'userId' : 'visitorId'}, admDni, hasAccess, isFaceRecognition, description, createDate, isEnter) VALUES (?, ?, ?, ?, ?, ?, ?);`,
                             [entityId, log.admDni, log.hasAccess, log.isFaceRecognition, `Nuevo log de salida creado automáticamente para ${entityType}`, createDate, 0]
