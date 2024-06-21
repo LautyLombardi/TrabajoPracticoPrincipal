@@ -57,24 +57,25 @@ const RegistroVisitante = () => {
       }
       else if (!apellido) {
         await insertLogAdmFail("ALTA", "visitante");
-        Alert.alert("Error al crear visitante","Se debe ingresar un apellido para el visitante")
+        Alert.alert("Error al crear visitante","Se debe ingresar un apellido para el usuario")
       } else if (!email) {
         await insertLogAdmFail("ALTA", "visitante");
-        Alert.alert("Error al crear visitante","Se debe ingresar un email para el visitante");
+        Alert.alert("Error al crear visitante","Se debe ingresar un email para el usuario");
       } else if (!nombre) {
         await insertLogAdmFail("ALTA", "visitante");
-        Alert.alert("Error al crear visitante","Se debe ingresar un nombre para el visitante");
+        Alert.alert("Error al crear visitante","Se debe ingresar un nombre para el usuario");
       } else if (!dni) {
         await insertLogAdmFail("ALTA", "visitante");
-        Alert.alert("Error al crear visitante","Se debe ingresar un dni para el visitante");
+        Alert.alert("Error al crear visitante","Se debe ingresar un dni para el usuario");
       } else if (!dateIngreso) {
         await insertLogAdmFail("ALTA", "visitante");
-        Alert.alert("Error al crear visitante","Se debe ingresar una fecha de ingreso para el visitante");    
+        Alert.alert("Error al crear visitante","Se debe ingresar una fecha de ingreso para el usuario");    
       } else {
-        Alert.alert("Categoria  no encontrada.");
+        await insertLogAdmFail("ALTA", "visitante");
+        Alert.alert("Error al crear visitante","Categoria no encontrada"); 
       }
-
     } catch (error) {
+      await insertLogAdmFail("ALTA", "visitante");
       console.error("Error en createVisitante:", error);
     }
   };

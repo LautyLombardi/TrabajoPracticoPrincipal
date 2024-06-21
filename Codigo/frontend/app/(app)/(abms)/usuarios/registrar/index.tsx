@@ -69,9 +69,11 @@ const RegistroUsuario = () => {
         await insertLogAdmFail("ALTA", "usuario");
         Alert.alert("Error al crear usuario","Se debe ingresar un dni para el usuario");  
       } else {
-        Alert.alert("Rol no encontrado.");
+        await insertLogAdmFail("ALTA", "usuario");
+        Alert.alert("Error al crear usuario","Rol no encontrado"); 
       }
     } catch (error) {
+      await insertLogAdmFail("ALTA", "usuario");
       console.error("Error en createUsuario:", error);
     }
   };
