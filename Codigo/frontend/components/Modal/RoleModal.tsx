@@ -15,7 +15,7 @@ const RoleModal: React.FC<ModalProps> = ({ role, handleCloseModal }) => {
         { label: 'ID', value: role.id },
         { label: 'Nombre', value: role.name },
         { label: 'Descripción', value: role.description },
-        { label: 'Consfiguraciones del Sistema', value: role.routingConnection === 1 ? 'SI' : 'NO' },
+        { label: 'Configuraciones del Sistema', value: role.routingConnection === 1 ? 'SI' : 'NO' },
         { label: 'Login Online', value: role.onlineLogin === 1 ? 'SI' : 'NO' },
         { label: 'Login Offline', value: role.offlineLogin === 1 ? 'SI' : 'NO' },
         { label: 'Apertura y Cierre del Día', value: role.dayStartEnd === 1 ? 'SI' : 'NO' },
@@ -58,7 +58,7 @@ const RoleModal: React.FC<ModalProps> = ({ role, handleCloseModal }) => {
                 <Ionicons
                 style={{ margin: 10, marginBottom: 20 }}
                 name="close"
-                size={20}
+                size={30}
                 onPress={handleCloseModal}
                 color={"white"}
                 />

@@ -21,7 +21,7 @@ const VisitorModal: React.FC<ModalProps> = ({ visitor, handleCloseModal }) => {
       { label: 'Externo', value: visitor.isExtern === 1 ? 'SI' : 'NO' },
       { label: 'Empresa Id', value: visitor.enterprice_id?.toString() || '' },
       { label: 'Empresa', value: visitor.empresa || '' },
-      { label: 'Fecha Incio en la UNGS', value: visitor.startDate},
+      { label: 'Fecha Inicio en la UNGS', value: visitor.startDate},
       { label: 'Fecha Fin en la UNGS', value: visitor.finishDate || '' },
       { label: 'Activo', value: visitor.isActive === 1 ? 'SI' : 'NO' },
       { label: 'Fecha de Creación', value: visitor.createDate},
