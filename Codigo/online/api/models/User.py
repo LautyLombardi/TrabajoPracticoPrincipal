@@ -8,10 +8,8 @@ class User(db.Model):
     lastname = db.Column(db.Text)
     password = db.Column(db.Text)
     isActive = db.Column(db.Integer)
-    motive = db.Column(db.Text)
     activeDate = db.Column(db.Text)
     createDate = db.Column(db.Text)
 
-    
     # Relación con tabla Role
     role = db.relationship('Role', backref=db.backref('users', lazy=True))
