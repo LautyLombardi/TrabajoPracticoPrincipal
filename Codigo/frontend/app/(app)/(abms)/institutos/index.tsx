@@ -9,6 +9,8 @@ import InstituteModal from '@/components/Modal/InstituteModal';
 import useGetInstitutes from "@/hooks/institute/useGetInstitutes";
 import useActivateDesactive from '@/hooks/useActivateDesactive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
 
 type PropsCol = {
   text?: string,
@@ -131,6 +133,8 @@ const AdministracionInstitutos = () => {
   const [selectedInstitute, setSelectedInstitute] = useState<Instituto | null>(null);
 
   const activateDesactive = useActivateDesactive();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const handleDeleteInstitute = async (insti: Instituto) => {
     if (insti.isActive === 1) {
@@ -140,7 +144,9 @@ const AdministracionInstitutos = () => {
         setInstitutos(prevInstitutes => prevInstitutes.map(inst => 
           inst.id === insti.id ? { ...inst, isActive: 0 } : inst
         ));
+        insertLogAdm("desactivacion","instituto")
       } else {
+        insertLogAdmFail("desactivacion","instituto")
         console.error('Failed to deactivate institute.');
       }
     } else {
@@ -150,7 +156,9 @@ const AdministracionInstitutos = () => {
         setInstitutos(prevInstitutes => prevInstitutes.map(inst => 
           inst.id === insti.id ? { ...inst, isActive: 1 } : inst
         ));
+        insertLogAdm("activacion","instituto")
       } else {
+        insertLogAdmFail("activacion","instituto")
         console.error('Failed to activate institute.');
       }
     }

@@ -31,7 +31,7 @@ const useInsertLogAdmFail = () => {
                 const abm = type_adm + " de " + table_adm 
                 const description = "Error al  desactivar un"  + table_adm
                 const result = await db.runAsync(
-                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isError) VALUES (?, ?, ?, ?, ?,1);`,
+                    `INSERT INTO logs (admDni, abm, abmType, description, createDate, isError) VALUES (?, ?, ?, ?, ?, 1);`,
                     [admDni,abm, type_adm , description, createDate]
                 );
                 number = result.lastInsertRowId

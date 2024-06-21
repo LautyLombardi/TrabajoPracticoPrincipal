@@ -39,7 +39,7 @@ const useInsertOpenCloseAutom = () => {
             await db.execAsync('BEGIN TRANSACTION;');
 
             const result = await db.runAsync(
-                `INSERT INTO logs (aperturaCierre, description, createDate) VALUES (?, ?, ?);`,
+                `INSERT INTO logs (aperturaCierre, description, createDate, isAutomatic) VALUES (?, ?, ?,1);`,
                 [
                     isOpen ? 'Apertura' : 'Cierre',
                     isOpen ? 'Registro de apertura del día automatico' : 'Registro del cierre del día automatico',

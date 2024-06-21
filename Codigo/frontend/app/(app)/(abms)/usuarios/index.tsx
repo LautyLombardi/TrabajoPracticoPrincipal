@@ -11,6 +11,9 @@ import useGetUsers from "@/hooks/user/useGetUsers";
 import useDesactivateUser from '@/hooks/user/useDesactiveUser';
 import useActivateUser from '@/hooks/user/useActivateUser';
 import useActivateDesactiveDNI from '@/hooks/useActiveDesactiveDni';
+import useInsertLogAdm from '@/hooks/logs/userInsertLogAdm';
+import useInsertLogAdmFail from '@/hooks/logs/userInsertLogAdmFail';
+
 
 type PropsCol = {
   text?: string,
@@ -131,6 +134,8 @@ const AdministracionUsuarios = () => {
 
   const activateDesactiveDNI = useActivateDesactiveDNI();
   const activateUser = useActivateUser();
+  const insertLogAdm= useInsertLogAdm()
+  const insertLogAdmFail= useInsertLogAdmFail()
 
   const handleOpenUserModal = (user: Usuario) => {
     setSelectedUser(user);
@@ -150,7 +155,9 @@ const AdministracionUsuarios = () => {
         setUsuarios(prevUsers => prevUsers.map(u => 
           u.dni === user.dni ? { ...u, isActive: 0 } : u
         ));
+        insertLogAdm("desactivacion","usuario")
       } else {
+        insertLogAdmFail("desactivacion","usuario")
         console.error('Failed to deactivate user.');
       }
     } else {
@@ -160,7 +167,9 @@ const AdministracionUsuarios = () => {
         setUsuarios(prevUsers => prevUsers.map(u => 
           u.dni === user.dni ? { ...u, isActive: 1 } : u
         ));
+        insertLogAdm("activacion","usuario")
       } else {
+        insertLogAdmFail("activacion","usuario")
         console.error('Failed to activate user.');
       }
     }

@@ -42,8 +42,12 @@ const RegistroInstituto = () => {
           ]
         );
       }
+    } else if (!nombre) {
+      await insertLogAdmFail("ALTA", "instituto");
+      Alert.alert("Error al crear instituto","Se debe ingresar un nombre para el instituto");
     } else {
-      console.error("Debe seleccionar al menos un lugar");
+      await insertLogAdmFail("ALTA", "instituto");
+      Alert.alert("Error al crear instituto","Se debe seleccionar al menos un lugar para el instituto");
     }
   };
 

@@ -8,6 +8,9 @@ import { Visitante } from "@/api/model/interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useFaceRecognition from "@/hooks/visitor/useFaceRecognition";
 import FRVisitorModel from "@/components/Modal/FRVisitorModel";
+import useInsertFaceRecognitionLogs from "@/hooks/logs/useInsertFaceRecognitionLogs";
+import useInsertFaceRecognitionLogsFail from "@/hooks/logs/useInsertFaceRecognitionLogsFail";
+import { getAdmDni } from "@/api/services/storage";
 
 const VisitorFaceRecognition = () => {
   const navigator = useRouter();
@@ -19,6 +22,9 @@ const VisitorFaceRecognition = () => {
 
   const [visitante, setVisitante] = useState<Visitante>();
   const [showUser, setShowUser] = useState(false);
+
+  const useFaceRecognitionLogs = useInsertFaceRecognitionLogs()
+  const useFaceRecognitionLogsFail = useInsertFaceRecognitionLogsFail()
 
   useEffect(() => {
     setVisitante(visitor)
@@ -32,6 +38,7 @@ const VisitorFaceRecognition = () => {
 
   const handleAutenticacion = async () => {
     try {
+      const admDni=await getAdmDni();
       takePicture().then((foto) => {
         const formData = new FormData();
         formData.append("image", { // Ignora el error de append esta alpedo jodiendo
@@ -53,9 +60,13 @@ const VisitorFaceRecognition = () => {
             ];                      
             await AsyncStorage.setItem('visitor_data', JSON.stringify(visitor_data));
             setShowUser(true);
-            // TODO log
+            if(admDni){
+              useFaceRecognitionLogs(visitor_data[0].visitor_dni,admDni,'usuario')
+            }
           } else {
-            // TODO log
+            if(admDni){
+              useFaceRecognitionLogsFail(admDni,'usuario')
+            }
             Alert.alert("Falló la autenticación de la imagen del visitante")
           }
         });

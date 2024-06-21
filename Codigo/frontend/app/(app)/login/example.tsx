@@ -7,7 +7,7 @@ export default function App() {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const cam = useRef<any>()
-    
+
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
