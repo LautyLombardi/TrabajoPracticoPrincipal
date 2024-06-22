@@ -18,7 +18,7 @@ const useInsertEnterprice = () => {
 
             if (existingEnterprice) {
                 console.log('CUIT already exists:', existingEnterprice);
-                return 1;
+                return -1;
             }
 
             await db.execAsync('BEGIN TRANSACTION;');
