@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Pressable, Alert, Modal, FlatList, TouchableOpa
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 
 const ConfigurarHorarioEntrenamiento = () => {
   const [trainingDay, setTrainingDay] = useState<string>("Lunes");
@@ -10,6 +12,8 @@ const ConfigurarHorarioEntrenamiento = () => {
   const [isTrainingTimePickerVisible, setIsTrainingTimePickerVisible] = useState<boolean>(false);
   const [isDayPickerVisible, setIsDayPickerVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const insertLogAdm = useInsertLogAdm();
+  const insertLogAdmFail = useInsertLogAdmFail();
 
   const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -20,6 +24,7 @@ const ConfigurarHorarioEntrenamiento = () => {
 
   const handleTerminar = async () => {
     if (!isValidTime(trainingTime)) {
+      await insertLogAdmFail("CONFIGURACION", "Entrenamiento de Ia")      
       Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
       return;
     }
@@ -32,7 +37,7 @@ const ConfigurarHorarioEntrenamiento = () => {
 
     // Hide the spinner
     setLoading(false);
-
+    await insertLogAdm("CONFIGURACION", "Entrenamiento de Ia")
     Alert.alert(
       "Horario de entrenamiento guardado",
       "",

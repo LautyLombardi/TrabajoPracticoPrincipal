@@ -54,7 +54,7 @@ const RegistroUsuario = () => {
         } else {
           await insertLogAdmFail("ALTA","usuario")
           
-          Alert.alert("Error al guardar usuario");
+          Alert.alert("Error al guardar usuario o usuario ya existente");
         }
       } else if (!apellido) {
         await insertLogAdmFail("ALTA", "usuario");

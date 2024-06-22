@@ -67,6 +67,7 @@ const useGetExceptions = () => {
         exceptions: exceptionsQuery.data,
         isLoading: exceptionsQuery.isLoading,
         isError: exceptionsQuery.isError,
+        refetch: exceptionsQuery.refetch, 
     };
 };
 

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert, Modal, FlatList, T
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 
 const ConfigurarReporte = () => {
   const [email, setEmail] = useState<string>("");
@@ -11,6 +13,8 @@ const ConfigurarReporte = () => {
   const [isReportTimePickerVisible, setIsReportTimePickerVisible] = useState<boolean>(false);
   const [isDayPickerVisible, setIsDayPickerVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const insertLogAdm = useInsertLogAdm();
+  const insertLogAdmFail = useInsertLogAdmFail();
 
   const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -21,11 +25,13 @@ const ConfigurarReporte = () => {
 
   const handleTerminar = async () =>  {
     if (!isValidTime(reportTime)) {
+      await insertLogAdmFail("CONFIGURACION", "mail")
       Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
       return;
     }
 
     if (!isValidEmail(email)) {
+      await insertLogAdmFail("CONFIGURACION", "mail")
       Alert.alert("Correo no válido", "Por favor ingresa un correo electrónico válido");
       return;
     }
@@ -38,7 +44,7 @@ const ConfigurarReporte = () => {
 
     // Hide the spinner
     setLoading(false);
-
+    await insertLogAdm("CONFIGURACION", "mail")
     Alert.alert(
       "Configuración guardada",
       "",
@@ -66,7 +72,7 @@ const ConfigurarReporte = () => {
 
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Configurar Reporte' route='dashboard' />
+      <HandleGoBackReg title='Configurar de mail' route='menu' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
