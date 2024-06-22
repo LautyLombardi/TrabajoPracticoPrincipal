@@ -47,8 +47,6 @@ const EditarVisitante = () => {
     const [dniN, setDniN] = useState("");
     const [emailN, setEmailN] = useState("");
     const [dateActive, setDateActive] = useState(new Date());
-    const [password, setPassword] = useState<string>("");
-    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
     const [categoria, setCategory] = useState<Categoria[]>([]);
     const [categoryName, setCategoryName] = useState<string[]>([]);
     const [CategorySeleccionadoName, setCategorySeleccionadoName] = useState<string>("");

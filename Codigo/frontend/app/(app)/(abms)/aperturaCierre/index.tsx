@@ -4,6 +4,9 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
+
 
 
 const ConfigurarHorarios = () => {
@@ -12,6 +15,8 @@ const ConfigurarHorarios = () => {
   const [isOpeningTimePickerVisible, setIsOpeningTimePickerVisible] = useState<boolean>(false);
   const [isClosingTimePickerVisible, setIsClosingTimePickerVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const insertLogAdm = useInsertLogAdm();
+  const insertLogAdmFail = useInsertLogAdmFail();
 
   const handleConfirmOpeningTime = (date: any) => {
     setOpeningTime(date.toTimeString().slice(0, 5));
@@ -27,6 +32,7 @@ const ConfigurarHorarios = () => {
 
   const handleTerminar = async () => {
     if (!isValidTime(openingTime) || !isValidTime(closingTime)) {
+      await insertLogAdmFail("CONFIGURACION", "cambio apertura/cierre del dia automatico")  
       Alert.alert("Formato de hora no válido", "El formato debe ser hh:mm");
       return;
     }
@@ -42,7 +48,7 @@ const ConfigurarHorarios = () => {
 
     await AsyncStorage.setItem('openHour', openingTime);
     await AsyncStorage.setItem('closeHour', closingTime);
-
+    await insertLogAdm("CONFIGURACION", "cambio apertura/cierre del dia automatico")
     Alert.alert(
       "Horarios guardados",
       "",

@@ -41,16 +41,19 @@ const LogueoUsuarioManual = () => {
               { text: "OK", onPress: () => router.navigate('/menu') }
             ]
           );
+          setStatusBoton(false);
         } else if (user === 0) {
           await insertLoginLogFail(admDni,Number(dni),"Usuario")
           Alert.alert("Usuario no autenticado",
             "DNI o contraseña incorrectos"
           );
+          setStatusBoton(false);
         }
       } else {
         await insertLoginLogFail(admDni,Number(dni),"Usuario")
         Alert.alert("Error al cargar datos"
         );
+        setStatusBoton(false);
       }
     }
     else{
@@ -60,7 +63,8 @@ const LogueoUsuarioManual = () => {
 
 
   const handleQRCodeScanned = (data: string) => {
-    if (dni == data) {
+    if (dni == data && password != null) {
+      setDni(data)
       setStatusBoton(true);
     } else {
       setStatusBoton(false);
@@ -106,8 +110,7 @@ const LogueoUsuarioManual = () => {
         </TouchableOpacity>
       </View>
 
-      {/* <Pressable disabled={!status || isLoading} style={[styles.button, (!status || isLoading) && styles.buttonMenuDisabled]} onPress={handleTerminar}> */}
-      <Pressable  style={styles.button} onPress={handleTerminar}>
+     <Pressable disabled={!status} style={[styles.button, (!status) && styles.buttonMenuDisabled]} onPress={handleTerminar}> 
         <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
 
