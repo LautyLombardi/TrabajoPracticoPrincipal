@@ -5,8 +5,8 @@ import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Categoria, Rol, Visitante } from "@/api/model/interfaces";
-import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
-import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
+import useEditLogUserVisitorFail from "@/hooks/logs/useInsertEditLogAdmUserVisitoFail";
+import useInsertEditUserVisitor from "@/hooks/logs/useInsertEditLogAdmUserVisitor";
 import useGetCategories from "@/hooks/category/useGetCategories";
 import useGetVisitor from "@/hooks/visitor/useGetVisitor";
 import useEditVisitor from "@/hooks/visitor/useEditVisitor";
@@ -30,6 +30,7 @@ const EditarVisitante = () => {
         // setCategorySeleccionadoName(visitor.category);
           setEmailN(visitor.email)
           setVisitorByid(visitor)
+          setDniN(visitor.dni.toString())
         }
       }
         fetchVisitor();
@@ -39,8 +40,8 @@ const EditarVisitante = () => {
   
     const categoryDB = useGetCategories();
     const editVisitor = useEditVisitor();
-    const insertLogAdm = useInsertLogAdm();
-    const insertLogAdmFail = useInsertLogAdmFail();
+    const insertLogEditVisitor = useInsertEditUserVisitor();
+    const insertLogAdmEditVisitorFail = useEditLogUserVisitorFail();;
     const [nombreN, setNombreN] = useState("");
     const [apellidoN, setApellidoN] = useState("");
     const [dniN, setDniN] = useState("");
@@ -64,7 +65,7 @@ const EditarVisitante = () => {
       if (visitorByid) {
         const edit = await editVisitor(visitorByid, parseInt(dniN), nombreN, apellidoN, emailN);
         if (edit !== 0) {
-          await insertLogAdm("MODIFICACIÓN", "visitante");
+          await insertLogEditVisitor( "visitante",parseInt(dniN));
           Alert.alert(
             "visitante modificado",
             "",
@@ -73,16 +74,16 @@ const EditarVisitante = () => {
             ]
           );
         } else {
-          await insertLogAdmFail("MODIFICACIÓN", "visitante");
+          await insertLogAdmEditVisitorFail( "visitante", parseInt(dniN));
           Alert.alert("Error al guardar visitante");
         }
       } else {
-        await insertLogAdmFail("MODIFICACIÓN", "visitante");
+        await insertLogAdmEditVisitorFail( "visitante", parseInt(dniN));
         Alert.alert("Error al guardar visitante");
       }
   
     };
-  /*
+/*
     useEffect(() => {
       const { categories } = categoryDB;
   
