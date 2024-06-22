@@ -5,12 +5,13 @@ import SelectItem from "@/components/seleccionar/SelectItem";
 import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Rol } from "@/api/model/interfaces";
-import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
-import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
+import useEditLogUserVisitorFail from "@/hooks/logs/useInsertEditLogAdmUserVisitoFail";
+import useInsertEditUserVisitor from "@/hooks/logs/useInsertEditLogAdmUserVisitor";
 import useGetRoles from "@/hooks/roles/useGetRoles";
 import useGetUser from "@/hooks/user/useGetUser";
 import useEditUser from "@/hooks/user/useEditUser";
 import CampoFecha from "@/components/CampoFecha/CampoFecha";
+import { parse } from "react-native-svg";
 
 const EditarUsuario = () => {
   const { dni } = useLocalSearchParams();
@@ -32,8 +33,8 @@ const EditarUsuario = () => {
 
   const rolesDB = useGetRoles();
   const editUser = useEditUser();
-  const insertLogAdm = useInsertLogAdm();
-  const insertLogAdmFail = useInsertLogAdmFail();
+  const insertLogEditUser = useInsertEditUserVisitor();
+  const insertLogAdmEditUserFail = useEditLogUserVisitorFail();;
   const [nombreN, setNombreN] = useState("");
   const [apellidoN, setApellidoN] = useState("");
   const [dniN, setDniN] = useState("");
@@ -59,7 +60,7 @@ const EditarUsuario = () => {
     if (user) {
       const response = await editUser(user, parseInt(dniN), nombreN, apellidoN, roleID, password, dateActive.toISOString(), motivo);
       if (response !== 0) {
-        await insertLogAdm("MODIFICACIÓN", "usuario");
+        await insertLogEditUser( "usuario", parseInt(dniN));
         Alert.alert(
           "Usuario modificado",
           "",
@@ -68,11 +69,11 @@ const EditarUsuario = () => {
           ]
         );
       } else {
-        await insertLogAdmFail("MODIFICACIÓN", "usuario");
+        await insertLogAdmEditUserFail("usuario", parseInt(dniN));
         Alert.alert("Error al guardar usuario");
       }
     } else {
-      await insertLogAdmFail("MODIFICACIÓN", "usuario");
+      await insertLogAdmEditUserFail("usuario", parseInt(dniN));
       Alert.alert("Error al guardar usuario");
     }
   };
