@@ -97,10 +97,11 @@ const UserImage = () => {
         onChangeText={setDni}
         keyboardType="numeric"
       />
-      <Pressable disabled={loading} onPress={handleRegistrar} style={[styles.button, loading && styles.buttonDisabled]}>
-        <Text style={styles.buttonText}>Registrar visitante</Text>
-      </Pressable>
-
+      <View style={styles.buttonContainer}>
+        <Pressable disabled={loading} onPress={handleRegistrar} style={[styles.button, loading && styles.buttonDisabled]}>
+          <Text style={styles.buttonText}>Registrar visitante</Text>
+        </Pressable>
+      </View>
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#ffffff" />
