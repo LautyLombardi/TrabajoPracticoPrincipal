@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { View, StyleSheet, TextInput, Alert, Pressable, Text } from "react-native";
-import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
+import { View, StyleSheet, TextInput, Alert, Pressable, Text, ActivityIndicator } from "react-native";
+import { CameraView} from "expo-camera";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
 import { ONLINE } from '@/api/constantes'
@@ -10,15 +10,15 @@ import useInsertImageUserFail from "@/hooks/logs/useInsertImageUserFail";
 
 const UserImage = async () => {
   const navigator = useRouter();
-  const [cameraPermission, setCameraPermission] = useCameraPermissions();
-  const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
   const [dni, setDni] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const insertImageUser = useInsertImageUser();
   const insertImageUserFail=useInsertImageUserFail();
 
   const takePicture = async () => {
+    setLoading(true);
     if (cameraRef.current) {
       const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
       const photo = await cameraRef.current.takePictureAsync(options);
@@ -30,6 +30,7 @@ const UserImage = async () => {
 
   const handleRegistrar = async () => {
     if (!dni) {
+      setLoading(false);
       Alert.alert("Error", "Por favor, ingrese el DNI del usuario");
       return;
     }
@@ -54,6 +55,7 @@ const UserImage = async () => {
 
           if (response.status === 200) {
             insertImageUser(admDni, Number(dni))
+            setLoading(false);
             Alert.alert(
               "Registro de imagen de usuario exitoso",
               "",
@@ -64,20 +66,24 @@ const UserImage = async () => {
 
           } else {
             insertImageUserFail(admDni,Number(dni))
+            setLoading(false);
             const errorData = await response.json();
             console.log(`Fallo el registro de imagen de usuario: ${errorData.message}`);
             Alert.alert("Fallo el registro de imagen de usuario")
           }
         } else {
           insertImageUserFail(admDni,Number(dni))
+          setLoading(false);
           Alert.alert("Error", "No se pudo tomar la foto");
         }
       } catch (error) {
+        setLoading(false);
         insertImageUserFail(admDni,Number(dni))
         Alert.alert("Error", "No se pudo registrar el usuario");
         console.error("Error:", error);
       }
     }else{
+      setLoading(false);
       console.log("no se pudo fetchear admDni")
     }
   };
@@ -92,9 +98,15 @@ const UserImage = async () => {
         onChangeText={setDni}
         keyboardType="numeric"
       />
-      <Pressable onPress={handleRegistrar} style={styles.button}>
+      <Pressable disabled={loading} onPress={handleRegistrar} style={[styles.button, loading && styles.buttonDisabled]}>
         <Text style={styles.buttonText}>Registrar usuario</Text>
       </Pressable>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -136,6 +148,19 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#000051',
     fontSize: 16,
+  },
+  buttonDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
