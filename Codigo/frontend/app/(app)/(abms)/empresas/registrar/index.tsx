@@ -24,7 +24,11 @@ const RegistrarEmpresa = () => {
       if(response === 0){
         await insertLogAdmFail("ALTA","empresa")
         Alert.alert("Error al guardar empresa");
-      } else {
+      }  else if (response === 1) {
+        await insertLogAdmFail("ALTA", "categoria");
+        Alert.alert("la empresa ya existe");
+      }
+      else {
         Alert.alert(
           "Empresa guardada",
           "",
