@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { getCurrentCreateDate } from '@/util/getCreateDate';
 import { useCallback } from 'react';
@@ -13,6 +12,15 @@ const useInsertPlace = () => {
         
         try {
             await db.execAsync('BEGIN TRANSACTION;');
+
+            const isExist = await db.runAsync(`SELECT * FROM place WHERE name = ?;`, [name]);
+
+            if (isExist) {
+                await db.execAsync('ROLLBACK;');
+                console.log('Place already exist');
+                return -1;
+            } 
+
             // Insert query
             const result = await db.runAsync(
                 `INSERT INTO place (name, abbreviation, description, openTime, closeTime, isActive, createDate) VALUES (?, ?, ?, ?, ?, 1, ?);`,

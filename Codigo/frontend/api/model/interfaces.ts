@@ -23,6 +23,7 @@ export interface Lugar{
 export interface Visitante{
     dni:number,
     enterprice_id:number,
+    enterprice_cuit:number,
     name: string,
     lastname: string,
     email: string,

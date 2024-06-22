@@ -1,5 +1,5 @@
 from db.db import db
-from models import User, Visitor, Place, Category, Enterprice, Institute, Logs, User_history, Visitor_history
+from models import User, Visitor, Place, Category, Enterprice, Institute, Logs, User_history, Visitor_history, CategoryVisitor, InstitutePlace, CategoryPlace, CategoryInstitute, CategoryException, PlaceException
 
 def syncLogs(log):
     try:
@@ -45,21 +45,48 @@ def syncUser(user):
 
 def syncVisitors(visitor):
     try:
+        # Verificar si el visitante con el mismo dni ya existe
+        existing_visitor = db.session.query(Visitor).filter_by(dni=visitor.get('dni')).first()
+        if existing_visitor:
+            return True
+
+        # Buscar el id de la categoría correspondiente al nombre
+        category_name = visitor.get('category')
+        category = db.session.query(Category).filter_by(name=category_name).first()
+        if not category:
+            return f"Category {category_name} does not exist."
+
+        # Buscar el id de la empresa correspondiente al cuit
+        enterprice_ciut = visitor.get('enterprice_cuit')
+        enterprice = db.session.query(Enterprice).filter_by(cuit=enterprice_ciut).first()
+        if not enterprice:
+            return f"Enterprice {enterprice_ciut} does not exist."
+        
+        # Crear el nuevo visitante
         visitorSync = Visitor(
             dni=visitor.get('dni'),
-            enterprice_id=visitor.get('enterprice_id'),
+            enterprice_id=enterprice.id,
             name=visitor.get('name'),
             lastname=visitor.get('lastname'),
             email=visitor.get('email'),
             startDate=visitor.get('startDate'),
             finishDate=visitor.get('finishDate'),
             isActive=visitor.get('isActive'),
-            createDate=visitor.get('createDate')
+            createDate=visitor.get('createDate'),
         )
         db.session.add(visitorSync)
         db.session.commit()
+        
+        category_visitor = CategoryVisitor(
+            category_id=category.id,
+            visitor_id=visitorSync.dni
+        )
+        db.session.add(category_visitor)
+        db.session.commit()
+        
         return True
     except Exception as e:
+        db.session.rollback()  # En caso de error, hacer rollback de la sesión
         return str(e)
     
 def syncPlaces(place):
@@ -81,6 +108,18 @@ def syncPlaces(place):
 
 def syncCategories(category):
     try:
+        # Verificar si la categoría ya existe
+        existing_category = db.session.query(Category).filter_by(
+            name=category.get('name'),
+            description=category.get('description'),
+            isExtern=category.get('isExtern'),
+            isActive=category.get('isActive')
+        ).first()
+        
+        if existing_category:
+            return f"Category {category.get('name')} already exists."
+
+        # Crear la nueva categoría
         categorySync = Category(
             name=category.get('name'),
             description=category.get('description'),
@@ -90,12 +129,66 @@ def syncCategories(category):
         )
         db.session.add(categorySync)
         db.session.commit()
+
+        places = category.get('places')
+        for plc in places:
+            place = db.session.query(Place).filter_by(name=plc).first()
+            if not place:
+                continue
+
+            # Verificar si la relación con InstitutePlace ya existe
+            existing_place_relation = db.session.query(CategoryPlace).filter_by(
+                category_id=categorySync.id,
+                place_id=place.id
+            ).first()
+            
+            if not existing_place_relation:
+                place_category = CategoryPlace(
+                    category_id=categorySync.id,
+                    place_id=place.id
+                )
+                db.session.add(place_category)
+
+        # Obtener los institutos y crear las relaciones en CategoryInstitute
+        institutes = category.get('institutes')
+        for inst in institutes:
+            institute = db.session.query(Institute).filter_by(name=inst).first()
+            if not institute:
+                continue
+
+            # Verificar si la relación con CategoryInstitute ya existe
+            existing_institute_relation = db.session.query(CategoryInstitute).filter_by(
+                category_id=categorySync.id,
+                institute_id=institute.id
+            ).first()
+            
+            if not existing_institute_relation:
+                category_institute = CategoryInstitute(
+                    category_id=categorySync.id,
+                    institute_id=institute.id
+                )
+                db.session.add(category_institute)
+
+        db.session.commit()  # Hacer commit de las relaciones
         return True
     except Exception as e:
+        db.session.rollback()  # En caso de error, hacer rollback de la sesión
         return str(e)
-    
+
 def syncExceptions(exception):
     try:
+        # Verificar si la excepción ya existe
+        existing_exception = db.session.query(Exception).filter_by(
+            name=exception.get('name'),
+            description=exception.get('description'),
+            duration=exception.get('duration'),
+            createDate=exception.get('createDate')
+        ).first()
+        
+        if existing_exception:
+            return f"Exception {exception.get('name')} already exists."
+
+        # Crear la nueva excepción
         exceptionSync = Exception(
             name=exception.get('name'),
             description=exception.get('description'),
@@ -104,8 +197,49 @@ def syncExceptions(exception):
         )
         db.session.add(exceptionSync)
         db.session.commit()
+
+        # Obtener los nombres de los lugares y crear las relaciones en PlaceException
+        place_names = exception.get('place_names', [])
+        for plc_name in place_names:
+            place = db.session.query(Place).filter_by(name=plc_name).first()
+            if not place:
+                continue
+
+            # Verificar si la relación ya existe
+            existing_place_relation = db.session.query(PlaceException).filter_by(
+                place_id=place.id,
+                exception_id=exceptionSync.id
+            ).first()
+            
+            if not existing_place_relation:
+                place_exception = PlaceException(
+                    place_id=place.id,
+                    exception_id=exceptionSync.id
+                )
+                db.session.add(place_exception)
+
+        # Obtener el nombre de la categoría y crear la relación en CategoryException
+        category_name = exception.get('category_name')
+        if category_name:
+            category = db.session.query(Category).filter_by(name=category_name).first()
+            if category:
+                # Verificar si la relación ya existe
+                existing_category_relation = db.session.query(CategoryException).filter_by(
+                    category_id=category.id,
+                    exception_id=exceptionSync.id
+                ).first()
+                
+                if not existing_category_relation:
+                    category_exception = CategoryException(
+                        category_id=category.id,
+                        exception_id=exceptionSync.id
+                    )
+                    db.session.add(category_exception)
+
+        db.session.commit()  # Hacer commit de las relaciones
         return True
     except Exception as e:
+        db.session.rollback()  # En caso de error, hacer rollback de la sesión
         return str(e)
 
 def syncEnterprices(enterprice):
@@ -124,6 +258,10 @@ def syncEnterprices(enterprice):
 
 def syncInstitutes(institute):
     try:
+        # Iniciar una transacción
+        db.session.begin(subtransactions=True)
+
+        # Crear el nuevo instituto
         instituteSync = Institute(
             name=institute.get('name'),
             isActive=institute.get('isActive'),
@@ -131,10 +269,26 @@ def syncInstitutes(institute):
         )
         db.session.add(instituteSync)
         db.session.commit()
+
+        # Obtener las places y crear las relaciones en InstitutePlace
+        places = institute.get('places')
+        for plc in places:
+            place = db.session.query(Place).filter_by(name=plc).first()
+            if not place:
+                continue 
+            
+            place_institute = InstitutePlace(
+                institute_id=instituteSync.id,
+                place_id=place.id
+            )
+            db.session.add(place_institute)
+
+        db.session.commit()  # Hacer commit de las relaciones
         return True
     except Exception as e:
+        db.session.rollback()  # En caso de error, hacer rollback de la sesión
         return str(e)
-    
+
 def syncUserHistories(user_history):
     try:
         userHistorySync = User_history(

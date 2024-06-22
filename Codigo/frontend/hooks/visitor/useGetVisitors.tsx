@@ -13,7 +13,7 @@ const useGetVisitors = () => {
         queryFn: async (): Promise<Visitante[]> =>{
            return db.getAllAsync('SELECT * FROM visitor ORDER BY createDate DESC');
         },
-           
+        
         refetchOnWindowFocus: true, // Refetch al volver al foco
         refetchOnMount: true, // Refetch al montar el componente
     
@@ -41,6 +41,7 @@ const useGetVisitors = () => {
                 [visitante.enterprice_id]
             ) as Empresa;
             visitante.empresa = empresa.name;
+            visitante.enterprice_cuit = empresa.cuit;
 
             // Places
             const places = await db.getAllAsync<Lugar>(

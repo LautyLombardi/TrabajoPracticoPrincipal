@@ -40,7 +40,10 @@ const RegistroCategoria = () => {
     if (insert === 0) {
       await insertLogAdmFail("ALTA","categoria")
       Alert.alert("Error al guardar categoria");
-    }else {
+    } else if(insert === -1){
+      await insertLogAdmFail("ALTA","categoria")
+      Alert.alert("La categoria ya existe");
+    } else {
       await insertLogAdm("ALTA","categoria")
       Alert.alert(
         "Categoria guardada",

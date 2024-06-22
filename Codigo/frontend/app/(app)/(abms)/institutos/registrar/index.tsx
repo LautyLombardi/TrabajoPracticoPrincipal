@@ -31,6 +31,9 @@ const RegistroInstituto = () => {
       if(response === 0){
         await insertLogAdmFail("ALTA","instituto") 
         Alert.alert("Error al guardar instituto");
+      } else if(response === -1){
+        await insertLogAdmFail("ALTA","instituto")
+        Alert.alert("El instituto ya existe");
       } else {
         await insertLogAdm("ALTA","instituto") 
 

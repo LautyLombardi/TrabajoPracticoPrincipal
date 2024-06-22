@@ -8,14 +8,13 @@ from .Enterprice import Enterprice
 from .Institute import Institute
 from .User_history import User_history
 from .Visitor_history import Visitor_history
-""" 
-from .PlaceException import PlaceException
-from .CategoryPlace import CategoryPlace
-from .CategoryInstitute import CategoryInstitute
-from .CategoryException import CategoryException
 from .CategoryVisitor import CategoryVisitor
 from .InstitutePlace import InstitutePlace
- """
+from .CategoryPlace import CategoryPlace
+from .CategoryInstitute import CategoryInstitute
+from .PlaceException import PlaceException
+from .CategoryException import CategoryException
+
 __all__ = [
     'User',
     'User_history', 

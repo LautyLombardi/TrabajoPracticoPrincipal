@@ -153,29 +153,3 @@ def sync_visitor_histories():
         return jsonify({'errores': errores}), 400
     else:
         return jsonify({'message': 'Sync visitor histories exitoso'}), 201
-    
-# ------------------------------ TODO -----------------------------------------------------
-
-@sync_bp.route('/categoryException',methods=['POST'])
-def create_category_exception():
-    pass
-
-@sync_bp.route('/categoryInstitute',methods=['POST'])
-def create_category_institute():
-    pass
-
-@sync_bp.route('/categoryPlace',methods=['POST'])
-def create_category_place():
-    pass
-
-@sync_bp.route('/categoryVisitor',methods=['POST'])
-def create_category_visitor():
-    pass
-
-@sync_bp.route('/institutePlace',methods=['POST'])
-def create_institute_place():
-    pass
-
-@sync_bp.route('/placeException',methods=['POST'])
-def create_place_exception():
-    pass
