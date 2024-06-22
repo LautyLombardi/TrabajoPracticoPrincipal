@@ -1,12 +1,12 @@
 import os, json
+import base64
 from flask import Flask,request, jsonify
 from flask_cors import CORS
 from db.db import init_db
 from controllers import *
-from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
-from db.Populate import populate_places, populate_institutes,populate_institute_places
 from mailjet_rest import Client
+from services.logService import obtener_logs, exportar_a_excel
 
 app = Flask(__name__)
 
@@ -26,24 +26,35 @@ DAY = ''
 HOUR = ''
 MINUTE=''
 
-def send_email_via_mailjet():
+def send_email_via_mailjet(file_path):
     mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3.1')
+
+    # Adjuntar el archivo Excel
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+
     data = {
         'Messages': [
             {
                 "From": {
                     "Email": "mss.sixsoftware@gmail.com",
-                    "Name": "Patricio"
+                    "Name": "MSS"
                 },
                 "To": [
                     {
                         "Email": MAIL,
-                        "Name": "MESSI"
+                        "Name": "Al que corresponda"
                     }
                 ],
-                "Subject": "Informe de duplicación",
-                "TextPart": "Prueba",
-                "CustomID": "AppGettingStartedTest"
+                "Subject": "Informe de Logs",
+                "TextPart": "Adjunto encontrarás el informe de logs.",
+                "Attachments": [
+                    {
+                        "ContentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Filename": "logs_data.xlsx",
+                        "Base64Content": base64.b64encode(file_content).decode('utf-8')
+                    }
+                ]
             }
         ]
     }
@@ -55,11 +66,20 @@ def send_email_via_mailjet():
 scheduler = BackgroundScheduler()
 
 def update_scheduler(day, hour, minute):
-    scheduler.remove_all_jobs()
-    scheduler.add_job(send_email_via_mailjet, 'cron', day_of_week=day, hour=hour, minute=minute)
-    scheduler.start()
+    with app.app_context():
+        scheduler.remove_all_jobs()
+        scheduler.add_job(send_logs_email_task, 'cron', day_of_week=day, hour=hour, minute=minute)
+        scheduler.start()
 
-
+def send_logs_email_task():
+    with app.app_context():
+        logs_data = obtener_logs()
+        if logs_data:
+            file_path = os.path.join(current_directory, 'logs_data.xlsx')
+            exportar_a_excel(logs_data, file_path)
+            send_email_via_mailjet(file_path)
+        else:
+            print('No se pudieron obtener los logs.')
 
 @app.route('/', methods=['GET'])
 def index():
