@@ -1,5 +1,5 @@
 import os, json
-from flask import Flask, jsonify
+from flask import Flask,request, jsonify
 from flask_cors import CORS
 from db.db import init_db
 from controllers import *
@@ -21,7 +21,10 @@ init_db(app)
 
 MAILJET_API_KEY = 'bfa74c164b8e20a2badb24a231aaf15e'
 MAILJET_API_SECRET = 'ccc1ff1f0c967eb2618f220b01dfd38e'
-MAIL= ''
+MAIL = ''
+DAY = ''
+HOUR = ''
+MINUTE=''
 
 def send_email_via_mailjet():
     mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3.1')
@@ -29,7 +32,7 @@ def send_email_via_mailjet():
         'Messages': [
             {
                 "From": {
-                    "Email": "patriciojcastillo@gmail.com",
+                    "Email": "mss.sixsoftware@gmail.com",
                     "Name": "Patricio"
                 },
                 "To": [
@@ -38,8 +41,8 @@ def send_email_via_mailjet():
                         "Name": "MESSI"
                     }
                 ],
-                "Subject": "Infrome de duplicacion"
-                "TextPart": "Prueba"
+                "Subject": "Informe de duplicación",
+                "TextPart": "Prueba",
                 "CustomID": "AppGettingStartedTest"
             }
         ]
@@ -50,14 +53,38 @@ def send_email_via_mailjet():
     print(result.json())
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(send_email_via_mailjet(), 'cron', hour=14)  # Configura la hora y minuto deseado
-scheduler.start()
+
+def update_scheduler(day, hour, minute):
+    scheduler.remove_all_jobs()
+    scheduler.add_job(send_email_via_mailjet, 'cron', day_of_week=day, hour=hour, minute=minute)
+    scheduler.start()
 
 
 
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({'message':'listening online...'}),200
+
+@app.route('/email', methods=['POST'])
+def set_email_schedule():
+    global MAIL, DAY, HOUR, MINUTE
+    data = request.get_json()
+
+    if not all(k in data for k in ("mail", "day", "hour")):
+        return jsonify({'message': 'Faltan parámetros en la solicitud.'}), 400
+
+    MAIL = data['mail']
+    DAY = data['day']
+    if ':' in data['hour']:
+        hour, minute = data['hour'].split(':')
+        HOUR = int(hour)
+        MINUTE = int(minute)
+    else:
+        return jsonify({'message': 'El formato de hora y minutos debe ser HH:MM.'}), 400
+
+    update_scheduler(DAY, HOUR, MINUTE)
+
+    return jsonify({'message': 'Parámetros establecidos correctamente.', 'mail': MAIL, 'day': DAY, 'hour': HOUR, 'minute': MINUTE}), 200
 
 
 
