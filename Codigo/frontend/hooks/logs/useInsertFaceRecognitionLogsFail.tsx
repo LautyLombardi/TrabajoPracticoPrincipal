@@ -37,7 +37,7 @@ const useInsertFaceRecognitionLogsFail = () => {
             return number;
         } catch (error) {
             await db.execAsync('ROLLBACK;');
-            console.error('Error inserting log image:', error);
+            console.error('Error inserting log fail image in user or visitor:', error);
             return 0;
         }
     }, [db]);

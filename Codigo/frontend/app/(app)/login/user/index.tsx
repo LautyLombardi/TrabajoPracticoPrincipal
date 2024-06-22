@@ -1,174 +1,124 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity, Modal } from 'react-native';
-import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { Ionicons } from '@expo/vector-icons';
-import LectorQr from "@/components/QRCodeScan";
-import { router } from "expo-router";
-import useLogin from "@/hooks/user/useLogin";
-import useInsertLoginLogFail from "@/hooks/logs/useInsertLoginLogFail";
-import useInsertLoginLog from "@/hooks/logs/useInsertLoginLog";
+import React, {useRef, useState } from "react";
+import { View, StyleSheet, Text, Alert, Pressable, ActivityIndicator } from "react-native";
+import { CameraView } from "expo-camera";
+import { CameraType } from "expo-camera/build/legacy/Camera.types";
+import { useRouter } from "expo-router";
+import { ONLINE } from "@/api/constantes";
+import { Usuario } from "@/api/model/interfaces";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AdmUserModal from "@/components/Modal/AdmUserModal";
 import { getAdmDni } from "@/api/services/storage";
+import useInsertFaceRecognitionLogs from "@/hooks/logs/useInsertFaceRecognitionLogs";
+import useInsertFaceRecognitionLogsFail from "@/hooks/logs/useInsertFaceRecognitionLogsFail";
+import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
 
-const LogueoUsuarioManual = () => {
-  const insertLoginLog=useInsertLoginLog();
-  const insertLoginLogFail= useInsertLoginLogFail();
-  const loginHook= useLogin();
 
-  const [dni, setDni] = useState<string>('');
-  const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-  const [isQrScannerVisible, setIsQrScannerVisible] = useState<boolean>(false);
-  const [status, setStatusBoton] = useState<boolean>(false);
+const UserFaceRecognition = () => {
+  const navigator = useRouter();
+  const getFaceRecognitionUser = useFaceRecognitionUser();
+  const cameraRef = useRef<any>();
+  const [imagen, setImagen] = useState<File | null>(null);
+  const [usuario, setUsuario] = useState<Usuario>();
+  const [showUser, setShowUser] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const insertFaceRecognitionLog = useInsertFaceRecognitionLogs()
+  const insertFaceRecognitionLogFail = useInsertFaceRecognitionLogsFail()
 
-  useEffect(()=> {
-    setDni("");
-    setPassword("");
-  },[])
-
-  const handleTerminar = async() => {
-    console.log('autenticando.....')
-    const admDni=await getAdmDni();
-    if(admDni){
-      if(dni && password){
-        const user=await loginHook(Number(dni),password);
-        console.log("user es ",user)
-        if (user === 1) {
-          insertLoginLog(admDni,Number(dni),"Usuario")
-          Alert.alert(
-            "Usuario autenticado",
-            "",
-            [
-              { text: "OK", onPress: () => router.navigate('/menu') }
-            ]
-          );
-          setStatusBoton(false);
-        } else if (user === 0) {
-          await insertLoginLogFail(admDni,Number(dni),"Usuario")
-          Alert.alert("Usuario no autenticado",
-            "DNI o contraseña incorrectos"
-          );
-          setStatusBoton(false);
-        }
-      } else {
-        await insertLoginLogFail(admDni,Number(dni),"Usuario")
-        Alert.alert("Error al cargar datos"
-        );
-        setStatusBoton(false);
-      }
-    }
-    else{
-      console.log("No se pudo fechear admDni")
-    }
+  const handleCloseUserModal = () => {
+    setShowUser(false);
+    navigator.navigate("/menu")
   };
 
-
-  const handleQRCodeScanned = (data: string) => {
-    if (dni == data && password != null) {
-      setDni(data)
-      setStatusBoton(true);
-    } else {
-      setStatusBoton(false);
+  const handleAutenticacion = async () => {
+    try {
+      const admDni=await getAdmDni();
+      const foto = await takePicture();
+      const formData = new FormData();
+      formData.append("image", {
+        uri: foto,
+        name: "photo.jpg",
+        type: "image/jpeg",
+      });
+      const respuesta = await fetch(`${ONLINE}/faceRecognition/user`, {
+        method: 'POST',
+        body: formData,
+      });
+      console.log("respuesta status", respuesta.status);
+      if(respuesta.status === 200) {
+        const data = await respuesta.json();
+        const user_data = [
+          {
+            user_dni: data.dni
+          },
+        ];                      
+        await AsyncStorage.setItem('user_data', JSON.stringify(user_data));
+        const user = await getFaceRecognitionUser(data.dni);
+        if(user && admDni){
+          setUsuario(user);
+          setLoading(false);
+          setShowUser(true);
+          insertFaceRecognitionLog(data.dni,admDni,'usuario')
+        }
+      } else {
+        if(admDni){
+          setLoading(false);
+          insertFaceRecognitionLogFail(admDni,'usuario')
+        }
+        Alert.alert("Falló la autenticación de la imagen del usuario");
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert("No se pudo sacar la foto");
     }
-    setIsQrScannerVisible(false); // Oculta el escáner QR
+  };
+  
+  const takePicture = async () => {
+    setLoading(true);
+    if (cameraRef.current) {
+      const options = { quality: 0.7, base64: false, exif: true, skipProcessing: true };
+      const photo = await cameraRef.current.takePictureAsync(options);
+      setImagen(photo.uri);
+      return photo.uri;
+    }
   };
 
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />
-
-      <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Dni:</Text>
-          <TextInput
-            placeholder='12345678'
-            placeholderTextColor={"gray"}
-            onChangeText={setDni}
-            keyboardType="numeric"
-            value={dni}
-            style={styles.input}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Contraseña:</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              placeholder='Password'
-              placeholderTextColor={"gray"}
-              onChangeText={setPassword}
-              value={password}
-              secureTextEntry={!isPasswordVisible}
-              style={styles.inputPassword}
-            />
-            <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-              <Ionicons name={isPasswordVisible ? 'eye-off' : 'eye'} size={22} style={styles.icon} color="gray" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <TouchableOpacity onPress={() => setIsQrScannerVisible(true)} style={styles.qrButton}>
-          <Ionicons name="qr-code" size={90} color="white" style={styles.scannerQR} />
-        </TouchableOpacity>
+      <CameraView style={styles.camera} mute={true} flash={'off'} animateShutter={false} facing={CameraType.front} ref={cameraRef}/>
+      
+      <View style={styles.buttonContainer}>
+        <Pressable disabled={loading} onPress={handleAutenticacion} style={[styles.button, loading && styles.buttonDisabled]}>
+          <Text style={styles.buttonText}>Autenticar</Text>
+        </Pressable>
       </View>
 
-     <Pressable disabled={!status} style={[styles.button, (!status) && styles.buttonMenuDisabled]} onPress={handleTerminar}> 
-        <Text style={styles.buttonText}>Autenticar</Text>
-      </Pressable>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
 
-      <Modal
-        visible={isQrScannerVisible}
-        animationType="slide"
-        onRequestClose={() => setIsQrScannerVisible(false)}
-      >
-        <LectorQr onQRCodeScanned={handleQRCodeScanned} />
-      </Modal>
-
-      
+      {showUser && usuario && <AdmUserModal user={usuario} handleCloseModal={handleCloseUserModal} />}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#00759c',
     flex: 1,
-    paddingVertical: 30,
-    alignItems: 'center',
   },
-  formContainer: {
+  camera: {
     flex: 1,
-    marginTop: 20,
-    width: '90%',
+    width: "100%",
   },
-  inputContainer: {
-    height: 70,
-    alignItems: "center",
-    flexDirection: "row",
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    flex: 1,
     marginBottom: 20,
-  },
-  labelText: {
-    color: "white",
-    fontSize: 16,
-    textAlign: "left",
-    width: "30%",
-  },
-  input: {
-    backgroundColor: "white",
-    padding: 10,
-    flex: 1,
-    borderRadius: 5,
-    color: 'black',
-  },
-  passwordContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 5,
-  },
-  inputPassword: {
-    flex: 1,
-    padding: 10,
-    color: 'black',
+    width: "100%",
+    alignSelf: "center",
+    alignItems: "center",
   },
   button: {
     backgroundColor: 'white',
@@ -181,20 +131,19 @@ const styles = StyleSheet.create({
     color: '#000051',
     fontSize: 16,
   },
-  icon: {
-    marginRight: 5
-  },
-  buttonMenuDisabled: {
+  buttonDisabled: {
     backgroundColor: '#a3a3a3',
   },
-  scannerQR: {
-    marginTop: '5%',
-    alignSelf: "center"
-  },
-  qrButton: {
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
-  }
+  },
 });
 
-export default LogueoUsuarioManual;
+export default UserFaceRecognition;
