@@ -34,7 +34,7 @@ const Manual = () => {
 
   const handleCloseUserModal = () => {
     setShowUser(false);
-    router.navigate("/menu")
+    router.navigate("/(app)")
   };
 
   const handleTerminar = async() => {

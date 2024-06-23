@@ -8,7 +8,7 @@ import useInsertImageVisitor from "@/hooks/logs/useInsertImageVisitor";
 import useInsertImageVisitorFail from "@/hooks/logs/useInsertImageVisitorFail";
 import { getAdmDni } from "@/api/services/storage";
 
-const UserImage = () => {
+const VisitorImage = () => {
   const navigator = useRouter();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
@@ -64,19 +64,19 @@ const UserImage = () => {
               ]
             );
           } else {
-            InsertImageVisitorFail(admDni,Number(dni))
+            InsertImageVisitorFail(Number(dni), admDni)
             setLoading(false);
             const errorData = await response.json();
             console.log("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
             Alert.alert("Fallo el registro de imagen de visitante")
           }
         } else {
-          InsertImageVisitorFail(admDni,Number(dni))
+          InsertImageVisitorFail(Number(dni), admDni)
           setLoading(false);
           Alert.alert("Error", "No se pudo tomar la foto");
         }
       } catch (error) {
-        InsertImageVisitorFail(admDni,Number(dni))
+        InsertImageVisitorFail(Number(dni), admDni)
         setLoading(false);
         Alert.alert("Error", "No se pudo registrar el visitante");
         console.error("Error:", error);
@@ -164,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserImage;
+export default VisitorImage;
