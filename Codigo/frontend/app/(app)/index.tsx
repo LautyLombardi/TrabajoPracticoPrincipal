@@ -6,13 +6,40 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import useInsertOpenCloseAutom from '@/hooks/logs/useInsertOpenCloseAutom';
 import useProcessEntryLogs from '@/hooks/logs/useAutomaticEgresos';
+import NetInfo from '@react-native-community/netinfo';
 
 LogBox.ignoreAllLogs(true);
 
 const Welcome = () => {
+    const [netConection, setNetConection] = useState<boolean>(true);
     const insertOpenCloseAutom = useInsertOpenCloseAutom()
     const [institutionalImage, setInstitutionalImage] = useState<string | null>(null);
     const automaticEgreso = useProcessEntryLogs()
+
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isConnected);
+            if(state.isConnected){
+                setNetConection(state.isConnected);
+            }else {
+                setNetConection(false);
+            }
+        });
+    
+        // Check the connection status initially
+        NetInfo.fetch().then(state => {
+            if(state.isConnected){
+                setNetConection(state.isConnected);
+            }else {
+                setNetConection(false);
+            }
+        });
+    
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     const loadInstitutionalImage = async () => {
         try {
@@ -110,13 +137,13 @@ const Welcome = () => {
             <Text style={styles.title}>MSS</Text>
             </View>
             <Link href={"/login/manual"} asChild>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text}>Iniciar Sesión Manual</Text>
+                <TouchableOpacity disabled={netConection} style={styles.button}>
+                    <Text style={[styles.text, netConection && styles.textDisabled]}>Iniciar Sesión Manual</Text>
                 </TouchableOpacity>
             </Link>
             <Link href={"/login"} asChild>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text}>Iniciar Sesión con Reconocimiento Facial</Text>
+                <TouchableOpacity disabled={!netConection} style={styles.button}>
+                    <Text style={[styles.text, !netConection && styles.textDisabled]}>Iniciar Sesión con Reconocimiento Facial</Text>
                 </TouchableOpacity>
             </Link>
         </View>
@@ -143,6 +170,9 @@ const styles = StyleSheet.create({
         color: "#fff",
         textAlign: "center",
         fontSize: 20,
+    },
+    textDisabled: {
+        color: '#a3a3a3',
     },
     titleContainer: {
         flex: 1,
