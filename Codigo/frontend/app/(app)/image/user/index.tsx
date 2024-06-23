@@ -8,7 +8,7 @@ import useInsertImageUser from "@/hooks/logs/useInsertImageUser";
 import { getAdmDni } from "@/api/services/storage";
 import useInsertImageUserFail from "@/hooks/logs/useInsertImageUserFail";
 
-const UserImage = async () => {
+const UserImage = () => {
   const navigator = useRouter();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
