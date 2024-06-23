@@ -8,13 +8,20 @@ import useLogin from "@/hooks/user/useLogin";
 import useInsertLoginLogFail from "@/hooks/logs/useInsertLoginLogFail";
 import useInsertLoginLog from "@/hooks/logs/useInsertLoginLog";
 import { getAdmDni } from "@/api/services/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
+import { Usuario } from "@/api/model/interfaces";
+import AdmUserModal from "@/components/Modal/AdmUserModal";
 
-const LogueoUsuarioManual = () => {
+const Manual = () => {
+  const getFaceRecognitionUser = useFaceRecognitionUser();
   const insertLoginLog=useInsertLoginLog();
   const insertLoginLogFail= useInsertLoginLogFail();
   const loginHook= useLogin();
 
   const [dni, setDni] = useState<string>('');
+  const [usuario, setUsuario] = useState<Usuario>();
+  const [showUser, setShowUser] = useState(false);
   const [password, setPassword] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isQrScannerVisible, setIsQrScannerVisible] = useState<boolean>(false);
@@ -25,39 +32,40 @@ const LogueoUsuarioManual = () => {
     setPassword("");
   },[])
 
+  const handleCloseUserModal = () => {
+    setShowUser(false);
+    router.navigate("/menu")
+  };
+
   const handleTerminar = async() => {
+    await AsyncStorage.removeItem('adm_data');
     console.log('autenticando.....')
-    const admDni=await getAdmDni();
-    if(admDni){
-      if(dni && password){
-        const user=await loginHook(Number(dni),password);
+    if(dni && password){
+      const user=await loginHook(Number(dni),password);
+      console.log("user es ",user)
+      if (user === 1) {
+        insertLoginLog(Number(dni),Number(dni),"Usuario")
+        const adm_data = [{ adm_dni: dni }];                      
+        await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+        const user = await getFaceRecognitionUser(parseInt(dni));
         console.log("user es ",user)
-        if (user === 1) {
-          insertLoginLog(admDni,Number(dni),"Usuario")
-          Alert.alert(
-            "Usuario autenticado",
-            "",
-            [
-              { text: "OK", onPress: () => router.navigate('/menu') }
-            ]
-          );
-          setStatusBoton(false);
-        } else if (user === 0) {
-          await insertLoginLogFail(admDni,Number(dni),"Usuario")
-          Alert.alert("Usuario no autenticado",
-            "DNI o contraseña incorrectos"
-          );
-          setStatusBoton(false);
+        if(user){
+          setUsuario(user);
+          setShowUser(true);
         }
-      } else {
-        await insertLoginLogFail(admDni,Number(dni),"Usuario")
-        Alert.alert("Error al cargar datos"
+        setStatusBoton(false);
+      } else if (user === 0) {
+        await insertLoginLogFail(Number(dni),Number(dni),"Usuario")
+        Alert.alert("Usuario no autenticado",
+          "DNI o contraseña incorrectos"
         );
         setStatusBoton(false);
       }
-    }
-    else{
-      console.log("No se pudo fechear admDni")
+    } else {
+      await insertLoginLogFail(Number(dni),Number(dni),"Usuario")
+      Alert.alert("Error al cargar datos"
+      );
+      setStatusBoton(false);
     }
   };
 
@@ -74,7 +82,7 @@ const LogueoUsuarioManual = () => {
 
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />
+      <HandleGoBackReg title='Autenticación Manual de Usuario' route='(app)' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -110,7 +118,7 @@ const LogueoUsuarioManual = () => {
         </TouchableOpacity>
       </View>
 
-     <Pressable disabled={!status} style={[styles.button, (!status) && styles.buttonMenuDisabled]} onPress={handleTerminar}> 
+      <Pressable disabled={!status} style={[styles.button, (!status) && styles.buttonMenuDisabled]} onPress={handleTerminar}> 
         <Text style={styles.buttonText}>Autenticar</Text>
       </Pressable>
 
@@ -122,7 +130,8 @@ const LogueoUsuarioManual = () => {
         <LectorQr onQRCodeScanned={handleQRCodeScanned} />
       </Modal>
 
-      
+      {showUser && usuario && <AdmUserModal user={usuario} handleCloseModal={handleCloseUserModal} />}
+
     </View>
   );
 };
@@ -197,4 +206,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LogueoUsuarioManual;
+export default Manual;

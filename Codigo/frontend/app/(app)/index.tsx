@@ -5,12 +5,14 @@ import { LogBox } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import useInsertOpenCloseAutom from '@/hooks/logs/useInsertOpenCloseAutom';
+import useProcessEntryLogs from '@/hooks/logs/useAutomaticEgresos';
 
 LogBox.ignoreAllLogs(true);
 
 const Welcome = () => {
     const insertOpenCloseAutom = useInsertOpenCloseAutom()
     const [institutionalImage, setInstitutionalImage] = useState<string | null>(null);
+    const automaticEgreso = useProcessEntryLogs()
 
     const loadInstitutionalImage = async () => {
         try {
@@ -66,6 +68,7 @@ const Welcome = () => {
                 if (!cierreRealizada) {
                     await insertOpenCloseAutom(openHour, closeHour, false);
                     await AsyncStorage.setItem('cierreRealizada', 'true');
+                    await automaticEgreso()
                 }
 
                 await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
@@ -106,12 +109,15 @@ const Welcome = () => {
             )}
             <Text style={styles.title}>MSS</Text>
             </View>
+            <Link href={"/login/manual"} asChild>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.text}>Iniciar Sesión Manual</Text>
+                </TouchableOpacity>
+            </Link>
             <Link href={"/login"} asChild>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.text}>
-                Iniciar Sesión
-                </Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.text}>Iniciar Sesión con Reconocimiento Facial</Text>
+                </TouchableOpacity>
             </Link>
         </View>
         </>
@@ -131,6 +137,7 @@ const styles = StyleSheet.create({
         width: "80%",
         padding: 20,
         borderRadius: 5,
+        marginBottom:10
     },
     text: {
         color: "#fff",

@@ -10,7 +10,7 @@ import ExceptionModal from '@/components/Modal/ExceptionModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useGetExceptions from '@/hooks/exception/useGetExceptions';
 import { getAdmDni } from '@/api/services/storage';
-import useGetUser from '@/hooks/user/useGetUserRole';
+
 import useGetRol from '@/hooks/roles/useGetRol';
 
 type PropsCol = {
@@ -114,24 +114,20 @@ const AdministracionExcepciones = () => {
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen)
   }
-  const exceptionsDB = useGetExceptions();
+  const {exceptions, refetch} = useGetExceptions();
   const [excepciones, setExcepciones] = useState<Excepcion[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const { exceptions } = exceptionsDB;
-      if (exceptions) {
-        setExcepciones(exceptions);
-      }
-    }, [exceptionsDB])
+      refetch();
+    }, [refetch])
   );
 
   useEffect(() => {
-    const { exceptions } = exceptionsDB;
-    if (exceptions) {
-      setExcepciones(exceptions);
-    }
-  }, [exceptionsDB]);
+    if(exceptions){
+      setExcepciones(exceptions);}
+  }, [exceptions]);
+
 
   useEffect(() => {
     handlerDay();

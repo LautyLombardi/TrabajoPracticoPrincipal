@@ -4,10 +4,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
 
 const InstitutionalImage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const insertLogAdm = useInsertLogAdm();
+  const insertLogAdmFail = useInsertLogAdmFail();
 
   const handleTerminar = async () => {
     setLoading(true);
@@ -17,7 +21,7 @@ const InstitutionalImage = () => {
     if (selectedImage) {
       await AsyncStorage.setItem('institutionalImage', selectedImage);
     }
-
+    await insertLogAdm("CONFIGURACION", "cambio imagen de Institucion")
     Alert.alert(
       "Se cambió la imagen institucional",
       "",
@@ -29,6 +33,7 @@ const InstitutionalImage = () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== 'granted') {
+      await insertLogAdmFail("CONFIGURACION", "cambio imagen de Institucion")  
       Alert.alert("Se requieren permisos para acceder a las imagenes");
       return;
     }
