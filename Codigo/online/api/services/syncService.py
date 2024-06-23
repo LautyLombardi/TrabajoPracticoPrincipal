@@ -1,5 +1,5 @@
 from db.db import db
-from models import User, Visitor, Place, Category, Enterprice, Institute, Logs, User_history, Visitor_history, CategoryVisitor, InstitutePlace, CategoryPlace, CategoryInstitute, CategoryException, PlaceException
+from models import User, Visitor, Place, Category, Enterprice, Institute, Logs, User_history, Visitor_history, CategoryVisitor, InstitutePlace, CategoryPlace, CategoryInstitute, CategoryException, PlaceException, Exceptions
 
 def syncLogs(log):
     try:
@@ -28,6 +28,10 @@ def syncLogs(log):
 
 def syncUser(user):
     try:
+        existing_user = db.session.query(User).filter_by(dni=user.get('dni')).first()
+        if existing_user:
+            return f"User with DNI {user.get('dni')} already exists."
+
         userSync = User(
             dni = user.get('dni'),
             role_id = user.get('role_id'),
@@ -56,22 +60,35 @@ def syncVisitors(visitor):
         if not category:
             return f"Category {category_name} does not exist."
 
-        enterprice_ciut = visitor.get('enterprice_cuit')
-        enterprice = db.session.query(Enterprice).filter_by(cuit=enterprice_ciut).first()
-        if not enterprice:
-            return f"Enterprice {enterprice_ciut} does not exist."
+        if category.isExtern == 1:
+            enterprice_ciut = visitor.get('enterprice_cuit')
+            enterprice = db.session.query(Enterprice).filter_by(cuit=enterprice_ciut).first()
+            if not enterprice :
+                return f"Enterprice {enterprice_ciut} does not exist."
 
-        visitorSync = Visitor(
-            dni=visitor.get('dni'),
-            enterprice_id=enterprice.id or None,
-            name=visitor.get('name'),
-            lastname=visitor.get('lastname'),
-            email=visitor.get('email'),
-            startDate=visitor.get('startDate'),
-            finishDate=visitor.get('finishDate'),
-            isActive=visitor.get('isActive'),
-            createDate=visitor.get('createDate'),
-        )
+            visitorSync = Visitor(
+                dni=visitor.get('dni'),
+                enterprice_id=visitor.get('enterprice_id'),
+                name=visitor.get('name'),
+                lastname=visitor.get('lastname'),
+                email=visitor.get('email'),
+                startDate=visitor.get('startDate'),
+                finishDate=visitor.get('finishDate'),
+                isActive=visitor.get('isActive'),
+                createDate=visitor.get('createDate'),
+            )
+        else:
+            visitorSync = Visitor(
+                dni=visitor.get('dni'),
+                name=visitor.get('name'),
+                lastname=visitor.get('lastname'),
+                email=visitor.get('email'),
+                startDate=visitor.get('startDate'),
+                finishDate=visitor.get('finishDate'),
+                isActive=visitor.get('isActive'),
+                createDate=visitor.get('createDate'),
+            )
+
         db.session.add(visitorSync)
         db.session.commit()
 
@@ -89,6 +106,10 @@ def syncVisitors(visitor):
     
 def syncPlaces(place):
     try:
+        existing_place = db.session.query(Place).filter_by(name=place.get('name')).first()
+        if existing_place:
+            return f"place with name {place.get('name')} already exists."
+
         placeSync = Place(
             name=place.get('name'),
             abbreviation=place.get('abbreviation'),
@@ -167,7 +188,7 @@ def syncCategories(category):
 
 def syncExceptions(exception):
     try:
-        existing_exception = db.session.query(Exception).filter_by(
+        existing_exception = db.session.query(Exceptions).filter_by(
             name=exception.get('name'),
             description=exception.get('description'),
             duration=exception.get('duration'),
@@ -177,7 +198,7 @@ def syncExceptions(exception):
         if existing_exception:
             return f"Exception {exception.get('name')} already exists."
 
-        exceptionSync = Exception(
+        exceptionSync = Exceptions(
             name=exception.get('name'),
             description=exception.get('description'),
             duration=exception.get('duration'),
@@ -241,8 +262,10 @@ def syncEnterprices(enterprice):
 
 def syncInstitutes(institute):
     try:
-        db.session.begin(subtransactions=True)
-
+        existing_institute = db.session.query(Institute).filter_by(name=institute.get('name')).first()
+        if existing_institute:
+            return f"institute with name {institute.get('name')} already exists."
+        
         instituteSync = Institute(
             name=institute.get('name'),
             isActive=institute.get('isActive'),
@@ -251,15 +274,17 @@ def syncInstitutes(institute):
         db.session.add(instituteSync)
         db.session.commit()
 
-        places = institute.get('places')
-        for plc in places:
-            place = db.session.query(Place).filter_by(name=plc).first()
-            if place:
-                place_institute = InstitutePlace(
-                    institute_id=instituteSync.id,
-                    place_id=place.id
-                )
-                db.session.add(place_institute)
+        places = institute.get('places', [])
+
+        if isinstance(places, list):
+            for plc in places:
+                place = db.session.query(Place).filter_by(name=plc).first()
+                if place:
+                    place_institute = InstitutePlace(
+                        institute_id=instituteSync.id,
+                        place_id=place.id
+                    )
+                    db.session.add(place_institute)
 
         db.session.commit()
         return True

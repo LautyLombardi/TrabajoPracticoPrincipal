@@ -1,7 +1,7 @@
 from db.db import db
 
 # Modelo para la tabla 'exception'
-class Exception(db.Model):
+class Exceptions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
     description = db.Column(db.Text)  

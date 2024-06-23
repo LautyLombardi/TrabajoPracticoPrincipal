@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
 db = SQLAlchemy()
 
 # Asocia la instancia de SQLAlchemy con Flask
@@ -10,3 +11,4 @@ def init_db(app):
         db.create_all()
 
 from models import *
+

@@ -3,7 +3,7 @@ from .Visitor import Visitor
 from .Logs import Logs
 from .Place import Place
 from .Category import Category
-from .Exception import Exception
+from .Exceptions import Exceptions
 from .Enterprice import Enterprice
 from .Institute import Institute
 from .User_history import User_history
@@ -14,6 +14,7 @@ from .CategoryPlace import CategoryPlace
 from .CategoryInstitute import CategoryInstitute
 from .PlaceException import PlaceException
 from .CategoryException import CategoryException
+from .Role import Role
 
 __all__ = [
     'User',
@@ -23,7 +24,7 @@ __all__ = [
     'Image', 
     'Place', 
     'Category', 
-    'Exception',  
+    'Exceptions',  
     'Enterprice', 
     'Institute', 
     'PlaceException', 
