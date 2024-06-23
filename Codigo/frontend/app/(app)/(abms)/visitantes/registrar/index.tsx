@@ -164,7 +164,16 @@ const RegistroVisitante = () => {
             values={categoriasName}
           />
         </View>
-        {isExtern === 1 ? (
+        {isExtern === 0 ? (
+          <View style={styles.inputContainer}>
+          <SelectItem
+            fieldName="Institutos"
+            value={institutoSeleccionadoName}
+            onValueChange={setInstitutoSeleccionadoName}
+            values={institutosName}
+          />
+        </View>          
+        ) : (
           <View style={styles.inputContainer}>
             <SelectItem
               fieldName="Empresa"
@@ -172,16 +181,8 @@ const RegistroVisitante = () => {
               onValueChange={setEmpresaSeleccionadaName}
               values={empresasName}
             />
-          </View>          
-        ) : (
-          <View style={styles.inputContainer}>
-            <SelectItem
-              fieldName="Institutos"
-              value={institutoSeleccionadoName}
-              onValueChange={setInstitutoSeleccionadoName}
-              values={institutosName}
-            />
-          </View>
+          </View> 
+          
         )}
 
         <View style={styles.inputContainer}>

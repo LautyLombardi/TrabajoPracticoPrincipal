@@ -40,9 +40,11 @@ const RegistrarLugar = () => {
     if (insert === 0) {
       await insertLogAdmFail("ALTA","lugar")
       Alert.alert("Error al guardar lugar");
-      
-
-    }else {
+    } else if(insert === -1){
+      await insertLogAdmFail("ALTA","lugar")
+      Alert.alert("El lugar ya existe");
+    } 
+    else {
       await insertLogAdm("ALTA","lugar")
       Alert.alert(
         "Lugar guardado",
@@ -50,8 +52,7 @@ const RegistrarLugar = () => {
         [
           { text: "OK", onPress: () => router.navigate("/lugares") }
         ]
-      );
-      
+      ); 
     }
   };
 

@@ -8,8 +8,6 @@ import { Visitante } from '@/api/model/interfaces';
 import VisitorModal from '@/components/Modal/VisitorModal';
 import useGetVisitors from '@/hooks/visitor/useGetVisitors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useDeactivateVisitor from '@/hooks/visitor/useDeactivateVisitor';
-import useActivateVisitor from '@/hooks/visitor/useActivateVisitor';
 import useActivateDesactiveDNI from '@/hooks/useActiveDesactiveDni';
 
 type PropsCol = {

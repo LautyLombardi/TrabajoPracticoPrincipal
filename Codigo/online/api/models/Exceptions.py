@@ -1,8 +1,9 @@
 from db.db import db
 
-# Modelo para la tabla 'Institute'
-class Institute(db.Model):
+# Modelo para la tabla 'exception'
+class Exceptions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
-    isActive = db.Column(db.Integer)
+    description = db.Column(db.Text)  
+    duration = db.Column(db.Text)
     createDate = db.Column(db.Text)

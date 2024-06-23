@@ -117,8 +117,7 @@ def download_db():
 #--------------------------------------------------------------------------------------------
 # Controllers blueprints
 #--------------------------------------------------------------------------------------------
-app.register_blueprint(user_bp, url_prefix='/user')
-app.register_blueprint(visitor_bp, url_prefix='/visitor')
+app.register_blueprint(sync_bp,url_prefix='/sync')
 app.register_blueprint(faceRecognition_bp, url_prefix='/faceRecognition')
 app.register_blueprint(image_bp, url_prefix='/image')
 
