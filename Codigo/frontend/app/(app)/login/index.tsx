@@ -75,9 +75,9 @@ const Login = () => {
         console.log("user es ",user)
         if(user){
           setUsuario(user);
+          useFaceRecognitionLogs(null, data.dni ,'usuario')
           setLoading(false);
           setShowUser(true);
-          useFaceRecognitionLogs(null,data.dni,'usuario')
         }
         //------------------------------------           
       }else{
