@@ -54,6 +54,7 @@ const FRVisitorModel: React.FC<ModalProps> = ({ visitor, handleCloseModal }) => 
                         color={"white"}
                         />
                     </View>
+                    <Text style={{textAlign:'center', color:'white', fontSize:22, paddingBottom:'5%'}}>¡Bienvenido!</Text>
                     {renderFields()}
                 </ScrollView>
             </View>

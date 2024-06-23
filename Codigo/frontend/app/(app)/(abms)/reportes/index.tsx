@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
+import { Rol } from '@/api/model/interfaces';
+import useGetRolByDni from '@/hooks/roles/useGetRolByDni';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const Reportes = () => {
+  const [permition, setPermition] = useState<Rol>();
+  const {role} = useGetRolByDni();
+
+  const fetchRol = useCallback(async () => {
+    if (role) {
+      setPermition(role);
+      await AsyncStorage.setItem('rol_data', JSON.stringify(role));
+    }
+  }, [role]);
+
+  useEffect(() => {
+    fetchRol();
+  }, [fetchRol]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -15,37 +31,57 @@ export const Reportes = () => {
       <View style={styles.mainMenu}>
         <View style={styles.mainMenuItem}>
           <Pressable
-            style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorDia")}>
+            disabled={permition ? permition?.systemReports === 0 : true}
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/visitantesPorDia")}>
             <Text style={styles.textBtnMenu}>Visitantes Por Dia</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitantesPorUsuario")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true} 
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/visitantesPorUsuario")}>
               <Text style={styles.textBtnMenu}>Visitantes Por Usuario</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true} 
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/visitanteshistorico")}>
               <Text style={styles.textBtnMenu}>Visitantes Historico</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true} 
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
               <Text style={styles.textBtnMenu}>Visitantes historicos Por Usuario</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/duplicacion")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true} 
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/duplicacion")}>
               <Text style={styles.textBtnMenu}>Duplicacíon de Visitantes y Usuarios</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/syncError")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true} 
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/syncError")}>
               <Text style={styles.textBtnMenu}>Detalles de Errores de Sincronización</Text>
           </Pressable>
         </View>      
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable style={styles.buttonMenu} onPress={() => router.navigate("/reportes/erroresPorHora")}>
+          <Pressable 
+            disabled={permition ? permition?.systemReports === 0 : true} 
+            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            onPress={() => router.navigate("/reportes/erroresPorHora")}>
               <Text style={styles.textBtnMenu}>Errores de Sincronización por Hora</Text>
           </Pressable>
         </View>    
@@ -94,6 +130,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     fontWeight: "bold",
+  },
+  buttonMenuDisabled: {
+    backgroundColor: '#a3a3a3',
   },
 });
 

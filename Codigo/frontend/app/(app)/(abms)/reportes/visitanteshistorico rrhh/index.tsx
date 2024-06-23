@@ -5,13 +5,16 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { StackedBarChart } from 'react-native-chart-kit';
 import useGetLogsForReport from '@/hooks/logs/useGetLogsForReport';
 import { Logs } from '@/api/model/interfaces';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import Papa from 'papaparse';
 
 interface vxd {
   [key: string]: {
     ingresos: number;
     egresos: number;
   };
-} 
+}
 // Reporte Getion 1: cantidad de visitantes AUTENTICADOS por el usuario logueado
 // (ya sea ingreso o egreso) historico separando ingresos de egresos, con el agregado 
 // de que se tenga un checkbox el cual si se lo tilda mostrará la información de
@@ -30,53 +33,57 @@ const ReportesHistoricos = () => {
 
   useEffect(() => {
     const fetchLogs = async () => {
-        const { logs } = await getLogsForReport();
-        if (logs) {
-          setLogsInfo(logs);
-          setLogsTable(logs)
-          const visitantesPorDia: vxd = {};
-          logs.forEach(log => {
-            const fecha = log.createDate.split(' ')[0];
-            if (log.visitorId != null) {
-              if (!visitantesPorDia[fecha]) {
-                visitantesPorDia[fecha] = { ingresos: 0, egresos: 0 };
-              }
-              if (log.hasAccess === 1 && log.isEnter === 1) {
-                visitantesPorDia[fecha].ingresos++;
-              } else if (log.hasAccess === 1 && log.isEnter === 0) {
-                visitantesPorDia[fecha].egresos++;
-              }
+      const { logs } = await getLogsForReport();
+      if (logs) {
+        setLogsInfo(logs);
+        setLogsTable(logs);
+        const visitantesPorDia: vxd = {};
+        logs.forEach((log) => {
+          const fecha = log.createDate.split(' ')[0];
+          if (log.visitorId != null) {
+            if (!visitantesPorDia[fecha]) {
+              visitantesPorDia[fecha] = { ingresos: 0, egresos: 0 };
             }
-          });
+            if (log.hasAccess === 1 && log.isEnter === 1) {
+              visitantesPorDia[fecha].ingresos++;
+            } else if (log.hasAccess === 1 && log.isEnter === 0) {
+              visitantesPorDia[fecha].egresos++;
+            }
+          }
+        });
 
-          const fechasArray = Object.keys(visitantesPorDia).sort((a, b) => {
-            const dateA = new Date(a);
-            const dateB = new Date(b);
-            return dateA.getTime() - dateB.getTime();
-          });
+        const fechasArray = Object.keys(visitantesPorDia).sort((a, b) => {
+          const dateA = new Date(a);
+          const dateB = new Date(b);
+          return dateA.getTime() - dateB.getTime();
+        });
 
-          const ingresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].ingresos);
-          const egresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].egresos);
-        
-          setFechas(fechasArray);
-          setIngresos(ingresosArray);
-          setEgresos(egresosArray);
-        }
-    }
-    fetchLogs()
-  }, [getLogsForReport])
+        const ingresosArray = fechasArray.map(
+          (fecha) => visitantesPorDia[fecha].ingresos
+        );
+        const egresosArray = fechasArray.map(
+          (fecha) => visitantesPorDia[fecha].egresos
+        );
+
+        setFechas(fechasArray);
+        setIngresos(ingresosArray);
+        setEgresos(egresosArray);
+      }
+    };
+    fetchLogs();
+  }, [getLogsForReport]);
 
   const handleFiltrar = () => {
     if (logsInfo && logsInfo.length > 0) {
       const visitantesPorDia: vxd = {};
-      
-      const filteredLogs = logsInfo.filter(log => {
+
+      const filteredLogs = logsInfo.filter((log) => {
         return log.visitorId != null && (dni === log.admDni || dni === null);
-      });    
-      console.log('filteredLogs',filteredLogs)
+      });
+      console.log('filteredLogs', filteredLogs);
       setLogsTable(filteredLogs);
 
-      logsInfo.forEach(log => {
+      logsInfo.forEach((log) => {
         const fecha = log.createDate.split(' ')[0];
         if (log.visitorId != null && (dni === log.admDni || dni === null)) {
           if (!visitantesPorDia[fecha]) {
@@ -96,13 +103,35 @@ const ReportesHistoricos = () => {
         return dateA.getTime() - dateB.getTime();
       });
 
-      const ingresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].ingresos);
-      const egresosArray = fechasArray.map(fecha => visitantesPorDia[fecha].egresos);
+      const ingresosArray = fechasArray.map(
+        (fecha) => visitantesPorDia[fecha].ingresos
+      );
+      const egresosArray = fechasArray.map(
+        (fecha) => visitantesPorDia[fecha].egresos
+      );
 
       setFechas(fechasArray);
       setIngresos(ingresosArray);
       setEgresos(egresosArray);
     }
+  };
+
+  const handleExportCSV = async () => {
+    const csvData = Papa.unparse(
+      logsTable.map((log) => ({
+        ID: log.id,
+        'ADM DNI': log.admDni,
+        'Visitor DNI': log.visitorId,
+        'Ingreso/Egreso': log.isEnter === 1 ? 'Ingreso' : 'Egreso',
+      }))
+    );
+
+    const fileUri = `${FileSystem.documentDirectory}logs.csv`;
+    await FileSystem.writeAsStringAsync(fileUri, csvData, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+    await Sharing.shareAsync(fileUri);
   };
 
   const renderTableRows = () => {
@@ -111,12 +140,15 @@ const ReportesHistoricos = () => {
         <Text style={styles.tableCell}>{log.id}</Text>
         <Text style={styles.tableCell}>{log.admDni}</Text>
         <Text style={styles.tableCell}>{log.visitorId}</Text>
-        <Text style={styles.tableCell}>{log.isEnter === 1 ? 'Ingreso' : 'Egreso'}</Text>
+        <Text style={styles.tableCell}>
+          {log.isEnter === 1 ? 'Ingreso' : 'Egreso'}
+        </Text>
       </View>
     ));
   };
 
-  const validData = fechas.length > 0 && ingresos.length > 0 && egresos.length > 0;
+  const validData =
+    fechas.length > 0 && ingresos.length > 0 && egresos.length > 0;
 
   return (
     <View style={styles.container}>
@@ -127,7 +159,7 @@ const ReportesHistoricos = () => {
           <TextInput
             style={styles.input}
             placeholder='00000000'
-            placeholderTextColor="gray"
+            placeholderTextColor='gray'
             value={dni ? dni.toString() : ''}
             onChangeText={(text) => {
               const parsedDni = parseInt(text, 10);
@@ -137,7 +169,7 @@ const ReportesHistoricos = () => {
                 setDni(null);
               }
             }}
-            keyboardType="numeric"
+            keyboardType='numeric'
           />
         </View>
         <Pressable onPress={handleFiltrar} style={styles.button}>
@@ -145,19 +177,24 @@ const ReportesHistoricos = () => {
         </Pressable>
       </View>
       <View style={styles.chartContainer}>
-        <Text style={styles.title}>Cantidad de usuarios AUTENTICADOS por el usuario logueado</Text>
+        <Text style={styles.title}>
+          Cantidad de usuarios AUTENTICADOS por el usuario logueado
+        </Text>
         {validData ? (
           <StackedBarChart
             style={styles.chart}
             data={{
               labels: fechas,
               legend: ['Ingresos', 'Egresos'],
-              data: fechas.map((_, index) => [ingresos[index], egresos[index]]),
+              data: fechas.map((_, index) => [
+                ingresos[index],
+                egresos[index],
+              ]),
               barColors: ['#00FF00', '#0000FF'],
             }}
             width={300}
             height={200}
-            yAxisLabel="Cantidad"
+            yAxisLabel='Cantidad'
             yLabelsOffset={5}
             hideLegend={false}
             chartConfig={{
@@ -180,7 +217,7 @@ const ReportesHistoricos = () => {
           <Text style={styles.title}>No hay datos disponibles</Text>
         )}
       </View>
-      
+
       <View style={styles.checkboxContainer}>
         <Checkbox
           value={mostrarDetalle}
@@ -188,7 +225,7 @@ const ReportesHistoricos = () => {
         />
         <Text style={styles.checkboxLabel}>Mostrar detalle</Text>
       </View>
-      {mostrarDetalle && 
+      {mostrarDetalle && (
         <ScrollView style={styles.tableContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderCell}>ID</Text>
@@ -198,7 +235,10 @@ const ReportesHistoricos = () => {
           </View>
           {renderTableRows()}
         </ScrollView>
-      }  
+      )}
+      <Pressable onPress={handleExportCSV} style={styles.button}>
+        <Text style={styles.buttonText}>Exportar a CSV</Text>
+      </Pressable>
     </View>
   );
 };
@@ -221,6 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     width: '90%',
+    marginTop: 20,
   },
   buttonText: {
     color: '#000051',
@@ -228,19 +269,19 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     height: 70,
-    alignItems: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    flexDirection: 'row',
     marginBottom: 20,
   },
   labelText: {
-    color: "white",
+    color: 'white',
     fontSize: 15,
-    textAlign: "left",
-    width: "30%",
+    textAlign: 'left',
+    width: '30%',
     marginRight: 20,
   },
   input: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 10,
     flex: 1,
     borderRadius: 5,
@@ -249,8 +290,8 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chart: {
     marginVertical: 10,
@@ -262,14 +303,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     width: '48%',
     marginBottom: 10,
   },
   checkboxLabel: {
     marginLeft: '2%',
-    color: "white",
+    color: 'white',
   },
   tableContainer: {
     width: '90%',

@@ -1,6 +1,7 @@
-import os, json
+import os
+import json
 import base64
-from flask import Flask,request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from db.db import init_db
 from controllers import *
@@ -106,7 +107,12 @@ def set_email_schedule():
 
     return jsonify({'message': 'Parámetros establecidos correctamente.', 'mail': MAIL, 'day': DAY, 'hour': HOUR, 'minute': MINUTE}), 200
 
-
+@app.route('/download_db', methods=['GET'])
+def download_db():
+    try:
+        return send_file(os.path.join(current_directory, 'db', 'dataBase.db'), as_attachment=True)
+    except Exception as e:
+        return str(e), 500
 
 #--------------------------------------------------------------------------------------------
 # Controllers blueprints
@@ -124,5 +130,3 @@ def load_config(env):
 if __name__ == '__main__':
     config = load_config('development')  # Carga los valores de 'development' 
     app.run(host="0.0.0.0", port=5001, debug=True)
-
-

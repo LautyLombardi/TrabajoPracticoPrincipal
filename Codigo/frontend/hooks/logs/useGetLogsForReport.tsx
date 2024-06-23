@@ -1,13 +1,12 @@
 import { useCallback } from 'react';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { Logs } from '@/api/model/interfaces';
-import { getAdmDni } from '@/api/services/storage';
 
 const useGetLogsForReport = () => {
     const db = useSQLiteContext();
     const getLogsForReport = useCallback(async () => {
         try {
-            const logsData = await db.getAllAsync<Logs>('SELECT * FROM logs WHERE visitorId');
+            const logsData = await db.getAllAsync<Logs>('SELECT * FROM logs WHERE visitorId AND isEnter = 1 OR isEnter = 0 ORDER BY createDate DESC');
             
             console.log('logs data by visitorDNI: ', logsData);
             if(logsData){
