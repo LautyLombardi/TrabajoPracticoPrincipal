@@ -34,44 +34,38 @@ const Manual = () => {
 
   const handleCloseUserModal = () => {
     setShowUser(false);
-    router.navigate("/(app)")
+    router.navigate("/menu")
   };
 
   const handleTerminar = async() => {
     await AsyncStorage.removeItem('adm_data');
     console.log('autenticando.....')
-    const admDni=await getAdmDni();
-    if(admDni){
-      if(dni && password){
-        const user=await loginHook(Number(dni),password);
+    if(dni && password){
+      const user=await loginHook(Number(dni),password);
+      console.log("user es ",user)
+      if (user === 1) {
+        insertLoginLog(Number(dni),Number(dni),"Usuario")
+        const adm_data = [{ adm_dni: dni }];                      
+        await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
+        const user = await getFaceRecognitionUser(parseInt(dni));
         console.log("user es ",user)
-        if (user === 1) {
-          insertLoginLog(admDni,Number(dni),"Usuario")
-          const adm_data = [{ adm_dni: dni }];                      
-          await AsyncStorage.setItem('adm_data', JSON.stringify(adm_data));
-          const user = await getFaceRecognitionUser(parseInt(dni));
-          console.log("user es ",user)
-          if(user){
-            setUsuario(user);
-            setShowUser(true);
-          }
-          setStatusBoton(false);
-        } else if (user === 0) {
-          await insertLoginLogFail(admDni,Number(dni),"Usuario")
-          Alert.alert("Usuario no autenticado",
-            "DNI o contraseña incorrectos"
-          );
-          setStatusBoton(false);
+        if(user){
+          setUsuario(user);
+          setShowUser(true);
         }
-      } else {
-        await insertLoginLogFail(admDni,Number(dni),"Usuario")
-        Alert.alert("Error al cargar datos"
+        setStatusBoton(false);
+      } else if (user === 0) {
+        await insertLoginLogFail(Number(dni),Number(dni),"Usuario")
+        Alert.alert("Usuario no autenticado",
+          "DNI o contraseña incorrectos"
         );
         setStatusBoton(false);
       }
-    }
-    else{
-      console.log("No se pudo fechear admDni")
+    } else {
+      await insertLoginLogFail(Number(dni),Number(dni),"Usuario")
+      Alert.alert("Error al cargar datos"
+      );
+      setStatusBoton(false);
     }
   };
 
@@ -88,7 +82,7 @@ const Manual = () => {
 
   return (
     <View style={styles.container}>
-      <HandleGoBackReg title='Autenticación Manual de Usuario' route='menu' />
+      <HandleGoBackReg title='Autenticación Manual de Usuario' route='(app)' />
 
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
