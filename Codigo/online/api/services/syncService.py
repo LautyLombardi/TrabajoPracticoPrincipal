@@ -247,6 +247,10 @@ def syncExceptions(exception):
 
 def syncEnterprices(enterprice):
     try:
+        existing_enterprice = db.session.query(Enterprice).filter_by(cuit=enterprice.get('cuit')).first()
+        if existing_enterprice:
+            return f"Enterprice with cuit {enterprice.get('cuit')} already exists."
+
         enterpriceSync = Enterprice(
             name=enterprice.get('name'),
             cuit=enterprice.get('cuit'),

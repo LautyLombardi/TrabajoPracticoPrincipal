@@ -12,7 +12,7 @@ const useInsertInstitute = () => {
         try {
             await db.execAsync('BEGIN TRANSACTION;');
 
-            const isExist = await db.runAsync(`SELECT * FROM institute WHERE name = ?;`, [name]);
+            const isExist = await db.getFirstAsync(`SELECT * FROM institute WHERE name = ?;`, [name]);
 
             if (isExist) {
                 await db.execAsync('ROLLBACK;');

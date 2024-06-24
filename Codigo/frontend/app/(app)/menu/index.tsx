@@ -10,13 +10,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { Rol } from '@/api/model/interfaces';
 import useGetRolByDni from '@/hooks/roles/useGetRolByDni';
+import useSync from  '@/hooks/useSync';
 
 const Menu = () => {
   const [permition, setPermition] = useState<Rol>();
   const {role} = useGetRolByDni();
+  const sync = useSync();
 
   const fetchRol = useCallback(async () => {
     if (role) {
+      await sync()
       setPermition(role);
       await AsyncStorage.setItem('rol_data', JSON.stringify(role));
     }

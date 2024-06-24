@@ -13,9 +13,10 @@ const useInsertPlace = () => {
         try {
             await db.execAsync('BEGIN TRANSACTION;');
 
-            const isExist = await db.runAsync(`SELECT * FROM place WHERE name = ?;`, [name]);
+            const isExist = await db.getFirstAsync(`SELECT * FROM place WHERE name = ?;`, [name]);
 
             if (isExist) {
+                console.log("existe?",isExist)
                 await db.execAsync('ROLLBACK;');
                 console.log('Place already exist');
                 return -1;

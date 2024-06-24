@@ -12,7 +12,7 @@ const useInsertCategory = () => {
         try {
             await db.execAsync('BEGIN TRANSACTION;');
             
-            const isExist = await db.runAsync(`SELECT * FROM category WHERE name = ?;`, [name]);
+            const isExist = await db.getFirstAsync(`SELECT * FROM category WHERE name = ?;`, [name]);
 
             if (isExist) {
                 await db.execAsync('ROLLBACK;');
