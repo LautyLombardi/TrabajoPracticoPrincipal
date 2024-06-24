@@ -1,6 +1,24 @@
 from db.db import db
 from models import User, Visitor, Place, Category, Enterprice, Institute, Logs, User_history, Visitor_history, CategoryVisitor, InstitutePlace, CategoryPlace, CategoryInstitute, CategoryException, PlaceException, Exceptions
 
+def countTables():
+    try:
+        counts = {
+            "User": db.session.query(User).count(),
+            "Visitor": db.session.query(Visitor).count(),
+            "Place": db.session.query(Place).count(),
+            "Category": db.session.query(Category).count(),
+            "Enterprice": db.session.query(Enterprice).count(),
+            "Institute": db.session.query(Institute).count(),
+            "Logs": db.session.query(Logs).count(),
+            "User_history": db.session.query(User_history).count(),
+            "Visitor_history": db.session.query(Visitor_history).count(),
+            "Exceptions": db.session.query(Exceptions).count(),
+        }
+        return counts
+    except Exception as e:
+        return str(e)
+
 def syncLogs(log):
     try:
         logSync = Logs(
