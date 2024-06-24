@@ -97,6 +97,46 @@ const useSync = () => {
             [categoryId || 0]
         );
         if (categoriesDB && categoriesDB.length > 0) {
+            console.log("PREFETCH")
+            for (const category of categoriesDB){
+                const placeCategory = await db.getAllAsync<{ place_id: number }>(
+                    `SELECT place_id FROM category_place WHERE category_id = ?`,
+                    [category.id]
+                ) as { place_id: number }[];
+        
+                const placeIds = placeCategory.map(place => place.place_id);
+                
+                const placeNames = await db.getAllAsync<{ name: string }>(
+                    `SELECT name FROM place WHERE id IN (${placeIds.join(',')})`
+                ) as { name: string }[];
+        
+                const placesName = placeNames.map(place => place.name);
+        
+                if(category.isExtern === 0){
+                    const categoryInstitute = await db.getAllAsync<{ institute_id: number }>(
+                        `SELECT institute_id FROM category_institute WHERE category_id = ?`,
+                        [category.id]
+                    ) as { institute_id: number }[];
+                    
+                    const instituteIds = categoryInstitute.map(institute => institute.institute_id);
+        
+                    const instituteNames = await db.getAllAsync<{ name: string }>(
+                        `SELECT name FROM institute WHERE id IN (${instituteIds.join(',')})`
+                    ) as { name: string }[];
+        
+                    const institutesName = instituteNames.map(institute => institute.name);
+                    console.log("nombre de los lugares" , placesName)
+        
+                    category.places = placesName
+                    category.institutes= institutesName
+                }else {
+                    category.places=placesName
+                    category.institutes=[]
+                }    
+
+            }
+            console.log("POSTFETCH")
+            console.log("data extraida de categoria", categoriesDB)
             const {status,data} =  await syncCategories(categoriesDB)
             if(status === 201){
                 // TODO LOGS
@@ -109,7 +149,7 @@ const useSync = () => {
             }  
         }  
 
-        await AsyncStorage.removeItem('visitorSync');
+
         await AsyncStorage.removeItem('visitorSync');
         const visitorId = await AsyncStorage.getItem('visitorSync');
         const visitorsDB: Visitante[] = await db.getAllAsync(
