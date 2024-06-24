@@ -47,40 +47,40 @@ export const Reportes = () => {
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.systemReports === 0 : true} 
-            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            disabled={permition ? permition?.name !== "RRHH" : true} 
+            style={[styles.buttonMenu, (permition ? permition?.name !== "RRHH" : true) && styles.buttonMenuDisabled]}
             onPress={() => router.navigate("/reportes/visitanteshistorico")}>
               <Text style={styles.textBtnMenu}>Visitantes Historico</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.systemReports === 0 : true} 
-            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            disabled={permition ? permition?.name !== "RRHH" : true} 
+            style={[styles.buttonMenu, (permition ? permition?.name !== "RRHH" : true) && styles.buttonMenuDisabled]}
             onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
               <Text style={styles.textBtnMenu}>Visitantes historicos Por Usuario</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.systemReports === 0 : true} 
-            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            disabled={permition ? permition?.name !== "Personal jerarquico" : true} 
+            style={[styles.buttonMenu, (permition ? permition?.name !== "Personal jerarquico" : true) && styles.buttonMenuDisabled]}
             onPress={() => router.navigate("/reportes/duplicacion")}>
               <Text style={styles.textBtnMenu}>Duplicacíon de Visitantes y Usuarios</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.systemReports === 0 : true} 
-            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            disabled={permition ? permition?.name !== "Personal jerarquico" : true} 
+            style={[styles.buttonMenu, (permition ? permition?.name !== "Personal jerarquico" : true) && styles.buttonMenuDisabled]}
             onPress={() => router.navigate("/reportes/syncError")}>
               <Text style={styles.textBtnMenu}>Detalles de Errores de Sincronización</Text>
           </Pressable>
         </View>      
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.systemReports === 0 : true} 
-            style={[styles.buttonMenu, (permition ? permition.systemReports === 0 : true) && styles.buttonMenuDisabled]}
+            disabled={permition ? permition?.name !== "Personal jerarquico" : true} 
+            style={[styles.buttonMenu, (permition ? permition?.name !== "Personal jerarquico" : true) && styles.buttonMenuDisabled]}
             onPress={() => router.navigate("/reportes/erroresPorHora")}>
               <Text style={styles.textBtnMenu}>Errores de Sincronización por Hora</Text>
           </Pressable>

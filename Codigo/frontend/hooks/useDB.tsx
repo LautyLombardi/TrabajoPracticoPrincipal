@@ -6,13 +6,13 @@ import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ONLINE } from '@/api/constantes';
-
+import { encode as btoa } from 'base-64';
 
 const localDatabase = require('@/assets/db/dataBase.db');
 const DB_NAME = 'dataBase.db';
 
 // Función para convertir ArrayBuffer a Base64
-const arrayBufferToBase64 = (buffer: any) => {
+const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
     let binary = '';
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
@@ -43,6 +43,7 @@ function useDb() {
             const now = new Date();
             const oneHourAgo = new Date(now.getTime() - 3600 * 1000);
 
+            console.log(`Init DataBase`);
             if (state.isConnected && (!lastSync || new Date(lastSync) < oneHourAgo)) {
                 // Descargar y copiar la base de datos
                 const response = await axios.get(`${ONLINE}/download_db`, { 
@@ -64,10 +65,11 @@ function useDb() {
                         to: dbFileUri
                     });
 
-                    console.log(`Database copied to: ${dbFileUri}`);
+                    console.log(`Database copied offline to: ${dbFileUri}`);
                 }
             }
 
+            console.log(`Database copied to: ${dbFileUri}`);
             // Abre la base de datos
             const db = await openDatabaseAsync(DB_NAME);
             return db;
@@ -77,43 +79,7 @@ function useDb() {
             setLoading(false);
         }
     };
-   /*
-     const createDB = async (): Promise<SQLiteDatabase | undefined> => {
-        setLoading(true);
-        try {
-            const dbDirectory = `${FileSystem.documentDirectory}SQLite`;
 
-            // Elimina el directorio SQLite si existe
-            const dirInfo = await FileSystem.getInfoAsync(dbDirectory);
-            if (dirInfo.exists) {
-                await FileSystem.deleteAsync(dbDirectory, { idempotent: true });
-                console.log(`Deleted existing database directory: ${dbDirectory}`);
-            }
-
-            // Crea el directorio SQLite
-            await FileSystem.makeDirectoryAsync(dbDirectory);
-            console.log(`Created database directory: ${dbDirectory}`);
-
-            // Ruta del archivo de la base de datos
-            const dbFileUri = `${dbDirectory}/${DB_NAME}`;
-
-            // Cargar el recurso local de la base de datos
-            const [asset] = await Asset.loadAsync(localDatabase);
-
-            // Descargar el archivo de la base de datos al directorio SQLite
-            await FileSystem.downloadAsync(asset.uri, dbFileUri);
-            console.log(`Database downloaded to: ${dbFileUri}`);
-
-            // Abre la base de datos
-            const db = await openDatabaseAsync(DB_NAME);
-            return db;
-        } catch (error) {
-            console.error('Error creating database', error);
-        } finally {
-            setLoading(false);
-        }
-    }; 
-    */
     return { createDB, loading };
 }
 
