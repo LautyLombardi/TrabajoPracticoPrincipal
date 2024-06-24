@@ -38,7 +38,9 @@ const RegistroVisitante = () => {
       const empresa = empresas.find(empresa => empresa.name.trim().toLowerCase() === empresaSeleccionadaName.trim().toLowerCase());
       const categoria = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase());
       const instituto = institutos.find(instituto => instituto.name.trim().toLowerCase() === institutoSeleccionadoName.trim().toLowerCase());
-
+      
+      const emailRegex = /.+@.+/;
+      
       if(categoria && nombre && apellido && dni && email && dateIngreso ){
         const insert = await insertVisitor(nombre, apellido, parseInt(dni), email, dateIngreso.toISOString(), categoria, empresa?.id || 0, instituto?.id || 0)
         if (insert === 0) {
@@ -55,12 +57,16 @@ const RegistroVisitante = () => {
           );
         }
       }
+      
       else if (!apellido) {
         await insertLogAdmFail("ALTA", "visitante");
         Alert.alert("Error al crear visitante","Se debe ingresar un apellido para el usuario")
       } else if (!email) {
         await insertLogAdmFail("ALTA", "visitante");
         Alert.alert("Error al crear visitante","Se debe ingresar un email para el usuario");
+      }else if(!emailRegex.test(email)){
+        await insertLogAdmFail("ALTA", "visitante");
+        Alert.alert("Error al crear visitante","Se debe ingresar un email valido para el usuario");
       } else if (!nombre) {
         await insertLogAdmFail("ALTA", "visitante");
         Alert.alert("Error al crear visitante","Se debe ingresar un nombre para el usuario");

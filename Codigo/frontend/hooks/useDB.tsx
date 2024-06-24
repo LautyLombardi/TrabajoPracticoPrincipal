@@ -24,7 +24,7 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
 
 function useDb() {
     const [loading, setLoading] = useState(false);
-
+    
     const createDB = async (): Promise<SQLiteDatabase | undefined> => {
         setLoading(true);
         try {

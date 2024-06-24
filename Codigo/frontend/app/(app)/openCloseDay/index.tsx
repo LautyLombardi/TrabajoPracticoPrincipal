@@ -5,10 +5,12 @@ import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useInsertAperturaManual from '@/hooks/logs/useInsertAperturaManual';
 import useInsertCierreManual from '@/hooks/logs/useInsertCierreManual';
+import useProcessEntryLogs from '@/hooks/logs/useAutomaticEgresos';
 
 const OpenCloseDay = () => { 
 const insertApertura= useInsertAperturaManual()
 const insertCierre=useInsertCierreManual()
+const automaticEgreso = useProcessEntryLogs()
 
   const handleOpenDay = async () => {
     try {
@@ -49,6 +51,7 @@ const insertCierre=useInsertCierreManual()
         await AsyncStorage.setItem('dayStatus', JSON.stringify(false));
         console.log('status del dia seteado en close day', await AsyncStorage.getItem('dayStatus'));
         await insertCierre()
+        await automaticEgreso()
         Alert.alert(
           "Día Cerrado",
           "",
