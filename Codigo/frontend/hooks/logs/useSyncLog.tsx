@@ -11,7 +11,7 @@ const useSyncLog = () => {
         try {
             await db.execAsync('BEGIN TRANSACTION;');
             if(isError === 1){
-                const setEntity = entity + " error de syncronización "
+                const setEntity = entity + " error de syncronización"
                 const result = await db.runAsync(
                     `INSERT INTO logs (abm, description, createDate, isAutomatic, isError) VALUES ("sync",?, ?, 1, 1);`,
                     [setEntity, createDate]
@@ -19,10 +19,9 @@ const useSyncLog = () => {
                 await db.execAsync('COMMIT;');
                 console.log('Logs sync error inserted with ID:', result.lastInsertRowId);
             } else {
-                const setEntity = entity + " syncronización exitosa "
                 const result = await db.runAsync(
-                    `INSERT INTO logs (abm, description, createDate, isAutomatic, isError) VALUES ("sync", ?, ?, 1, 0);`,
-                    [setEntity, createDate]
+                    `INSERT INTO logs (abm, description, createDate, isAutomatic, isError) VALUES ("sync", "syncronización exitosa", ?, 1, 0);`,
+                    [createDate]
                 );
                 await db.execAsync('COMMIT;');
                 console.log('Logs sync inserted with ID:', result.lastInsertRowId);
