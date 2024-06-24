@@ -127,7 +127,6 @@ def syncVisitors(visitor):
         db.session.rollback()
         return str(e)
     
-# TODO quedé aca: nota para fran del futuro, que pasa si cambian algun dato
 def syncPlaces(place):
     try:
         existing_place = db.session.query(Place).filter_by(

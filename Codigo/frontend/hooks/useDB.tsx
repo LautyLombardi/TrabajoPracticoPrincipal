@@ -7,6 +7,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ONLINE } from '@/api/constantes';
 import { encode as btoa } from 'base-64';
+import useSync from './useSync';
 
 const localDatabase = require('@/assets/db/dataBase.db');
 const DB_NAME = 'dataBase.db';
@@ -24,7 +25,7 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
 
 function useDb() {
     const [loading, setLoading] = useState(false);
-
+    const sync = useSync();
     const createDB = async (): Promise<SQLiteDatabase | undefined> => {
         setLoading(true);
         try {
@@ -45,16 +46,34 @@ function useDb() {
 
             console.log(`Init DataBase`);
             if (state.isConnected && (!lastSync || new Date(lastSync) < oneHourAgo)) {
-                // Descargar y copiar la base de datos
-                const response = await axios.get(`${ONLINE}/download_db`, { 
-                    responseType: 'arraybuffer' 
-                });
-                const buffer = response.data;
-                const base64 = arrayBufferToBase64(buffer);
+                const isFirstTime = await AsyncStorage.getItem('isFirstTime');
+                if(isFirstTime === 'false'){
+                    await sync()
+                    // Descargar y copiar la base de datos
+                    const response = await axios.get(`${ONLINE}/download_db`, { 
+                        responseType: 'arraybuffer' 
+                    });
+                    const buffer = response.data;
+                    const base64 = arrayBufferToBase64(buffer);
 
-                await FileSystem.writeAsStringAsync(dbFileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
-                await AsyncStorage.setItem('lastSync', now.toISOString());
-                console.log(`Database downloaded and copied to: ${dbFileUri}`);
+                    await FileSystem.writeAsStringAsync(dbFileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
+                    await AsyncStorage.setItem('lastSync', now.toISOString());
+                    console.log(`Database downloaded and copied to: ${dbFileUri}`);
+                } else {
+                    // Descargar y copiar la base de datos
+                    const response = await axios.get(`${ONLINE}/download_db`, { 
+                        responseType: 'arraybuffer' 
+                    });
+                    const buffer = response.data;
+                    const base64 = arrayBufferToBase64(buffer);
+    
+                    await FileSystem.writeAsStringAsync(dbFileUri, base64, { encoding: FileSystem.EncodingType.Base64 });
+                    await AsyncStorage.setItem('lastSync', now.toISOString());
+                    console.log(`Database downloaded and copied to: ${dbFileUri}`);
+                    await AsyncStorage.setItem('isFirstTime', 'false');
+                }
+                
+                
             } else {
                 const fileInfo = await FileSystem.getInfoAsync(dbFileUri);
                 if (!fileInfo.exists) {

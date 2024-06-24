@@ -17,11 +17,9 @@ const Menu = () => {
   const [netConection, setNetConection] = useState<boolean>(true);
   const [permition, setPermition] = useState<Rol>();
   const {role} = useGetRolByDni();
-  const sync = useSync();
 
   const fetchRol = useCallback(async () => {
     if (role) {
-      await sync()
       setPermition(role);
       await AsyncStorage.setItem('rol_data', JSON.stringify(role));
     }
