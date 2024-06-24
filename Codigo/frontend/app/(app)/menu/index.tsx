@@ -11,11 +11,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { Rol } from '@/api/model/interfaces';
 import useGetRolByDni from '@/hooks/roles/useGetRolByDni';
+import useSync from  '@/hooks/useSync';
 
 const Menu = () => {
   const [netConection, setNetConection] = useState<boolean>(true);
   const [permition, setPermition] = useState<Rol>();
   const {role} = useGetRolByDni();
+  const sync = useSync();  
 
   const fetchRol = useCallback(async () => {
     if (role) {
@@ -87,6 +89,14 @@ const Menu = () => {
 
   const handlerDay = useCallback(async () => {
     try {
+      console.log('handlerDay');
+      const isSync = await AsyncStorage.getItem('isSync');
+      if (isSync === 'false' && netConection) {
+        console.log('isSync');
+        await sync();
+        await AsyncStorage.setItem('isSync', 'true');
+      }
+
       const dayStatus = await AsyncStorage.getItem('dayStatus');
       const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
       setStatusDay(isDayOpen);

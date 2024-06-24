@@ -12,7 +12,7 @@ from services.logService import obtener_logs, exportar_a_excel
 app = Flask(__name__)
 
 # Configurar CORS
-CORS(app)
+CORS(app, resourses={r"/*": {"origins": "*"}})
 
 # Configurar e inicializar la base de datos
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -70,7 +70,8 @@ def update_scheduler(day, hour, minute):
     with app.app_context():
         scheduler.remove_all_jobs()
         scheduler.add_job(send_logs_email_task, 'cron', day_of_week=day, hour=hour, minute=minute)
-        scheduler.start()
+        if not scheduler.running:
+            scheduler.start()
 
 def send_logs_email_task():
     with app.app_context():
@@ -127,5 +128,5 @@ def load_config(env):
         return config.get(env, {})
 
 if __name__ == '__main__':
-    config = load_config('development')  # Carga los valores de 'development' 
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    config = load_config('production')  # Carga los valores de 'development' 
+    app.run(host=config.get('host'), port=config.get('port'), debug=True)
