@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { Rol } from '@/api/model/interfaces';
 import useGetRolByDni from '@/hooks/roles/useGetRolByDni';
-import useSync from  '@/hooks/useSync';
 
 const Menu = () => {
   const [netConection, setNetConection] = useState<boolean>(true);
