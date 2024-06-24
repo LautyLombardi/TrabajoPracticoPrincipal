@@ -1,10 +1,7 @@
-import axios from 'axios';
 import { ONLINE } from '@/api/constantes';
 import { Categoria, Empresa, Excepcion, Instituto, Logs, Lugar, Usuario, Visitante } from '../model/interfaces';
 
 const BASE_URL = `${ONLINE}/sync`;
-
-
 
 export const syncUser = async (user: Usuario[]) => {
     const response = await fetch(`${BASE_URL}/users`, {
@@ -87,21 +84,16 @@ export const syncVisitors = async (visitors: Visitante[]) => {
 };
 
 export const syncExceptions = async (excepciones: Excepcion[]) => {
-    try {
-        const response = await axios.post(`${BASE_URL}/exceptions`, {
-            excepciones
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.status;
-    } catch (error) {
-        console.error('Error al sincronizar excepciones :', error);
-        return 400;
-    }
+    const response = await fetch(`${BASE_URL}/exceptions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(excepciones)
+    });
+    const data = await response.json();       
+    return {status:response.status,data:data};
 };
-
 
 export const syncLogs = async (logs: Logs[]) => {
     const response = await fetch(`${BASE_URL}/logs`, {
@@ -113,6 +105,29 @@ export const syncLogs = async (logs: Logs[]) => {
     });
     const data = await response.json();       
     return {status:response.status,data:data};
+};
 
+export const syncVisitor_history = async (visitor_history: any[]) => {
+    const response = await fetch(`${BASE_URL}/visitor-histories`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(visitor_history)
+    });
+    const data = await response.json();       
+    return {status:response.status,data:data};
+};
+
+export const syncUser_history = async (user_history: any[]) => {
+    const response = await fetch(`${BASE_URL}/user-histories`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user_history)
+    });
+    const data = await response.json();       
+    return {status:response.status,data:data};
 };
 
