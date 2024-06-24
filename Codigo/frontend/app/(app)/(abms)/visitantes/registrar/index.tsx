@@ -99,6 +99,7 @@ const RegistroVisitante = () => {
       setEmpresas(enterprices);
       const nombresEmpresas = enterprices.map(empresa => empresa.name);
       setEmpresasName(nombresEmpresas);
+      setEmpresaSeleccionadaName(nombresEmpresas[0])
     }
   }, [visitorRigisterDataDB, categorias, institutos, empresas]);
 
@@ -106,6 +107,7 @@ const RegistroVisitante = () => {
     const selectedCategory = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName);
     if (selectedCategory) {
       setIsExtern(selectedCategory.isExtern);
+
     } 
   }, [categoriaSeleccionadaName, categorias , isExtern]);
   
