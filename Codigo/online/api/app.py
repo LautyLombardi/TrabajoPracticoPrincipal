@@ -8,7 +8,6 @@ from controllers import *
 from apscheduler.schedulers.background import BackgroundScheduler
 from mailjet_rest import Client
 from services.logService import obtener_logs, exportar_a_excel
-from services.syncService import countTables
 
 app = Flask(__name__)
 
@@ -115,14 +114,6 @@ def download_db():
         return send_file(os.path.join(current_directory, 'db', 'dataBase.db'), as_attachment=True)
     except Exception as e:
         return str(e), 500
-
-@app.route('/counts', methods=['GET'])
-def get_table_counts():
-    try:
-        counts = countTables()
-        return jsonify(counts), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 #--------------------------------------------------------------------------------------------
 # Controllers blueprints
