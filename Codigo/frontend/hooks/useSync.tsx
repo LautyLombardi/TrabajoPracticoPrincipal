@@ -10,19 +10,17 @@ const useSync = () => {
 
     const sync = useCallback(async () => {
         console.log('realizando sincronizacion');
-
+        await syncLog(null, '');
+        
         // User
         const userDB: Usuario[] = await db.getAllAsync('SELECT * FROM user');
         if (userDB && userDB.length > 0) {
             console.log("User fetch")
             const {status,data} =  await syncUser(userDB)
-            if(status === 201){
-                console.log("User fetch 201")
-                await syncLog(null, 'usuarios');
-            }else{
+            if(status !== 201){
                 console.log("Usuario data error extraida" ,data)
                 await syncLog(1, 'usuarios');
-            }  
+            } 
         }
 
         // Enterprice
@@ -30,13 +28,10 @@ const useSync = () => {
         if (entepriceDB && entepriceDB.length > 0) {
             console.log("Enterprice fetch")
             const {status,data} =  await syncEnterprice(entepriceDB)
-            if(status === 201){
-                console.log("Enterprice fetch 201")
-                await syncLog(null, 'empresas');
-            }else{
+            if(status !== 201){
                 console.log("Empresa data error extraida" ,data)
-                await syncLog(1, 'empresas');
-            }  
+                await syncLog(1, 'empresas');                
+            } 
         }   
         
         // Place
@@ -44,13 +39,10 @@ const useSync = () => {
         if (placeDB && placeDB.length > 0) {
             console.log("Place fetch")
             const {status,data} =  await syncPlace(placeDB)
-            if(status === 201){
-                console.log("Place fetch 201")
-                await syncLog(null, 'lugares');
-            }else{
+            if(status !== 201){
                 console.log("Lugar data error extraida" ,data)
                 await syncLog(1, 'lugares');
-            }  
+            } 
         } 
 
         // Institute
@@ -58,13 +50,10 @@ const useSync = () => {
         if (instituteDB && instituteDB.length > 0) {
             console.log("Institute fetch")
             const {status,data} =  await syncInstitute(instituteDB)
-            if(status === 201){
-                console.log("Institute fetch 201")
-                await syncLog(null, 'institutos');
-            }else{
+            if(status !== 201){
                 console.log("Instituto data error extraida" ,data)
-                await syncLog(1, 'institutos');    
-            }  
+                await syncLog(1, 'institutos'); 
+            }
         }   
         
         // Category
@@ -108,13 +97,9 @@ const useSync = () => {
             }            
             console.log("data extraida de categoria", categoriesDB)
             const {status,data} =  await syncCategories(categoriesDB)
-            if(status === 201){
-                console.log("Category fetch 201")
-                await syncLog(null, 'categorias');
-            }else{
+            if(status !== 201){
                 console.log("Categoria data error extraida" ,data)
                 await syncLog(1, 'categorias');
-
             }  
         }  
 
@@ -200,25 +185,17 @@ const useSync = () => {
             console.log("visitor db",visitorsDB);
 
             const { status, data } = await syncVisitors(visitorsDB);
-
-            if (status === 201) {
-                console.log("Visitor fetch 201")
-                await syncLog(null, 'visitantes');
-            } else {
+            if(status !== 201){
                 console.log("Visitante data error extraida" ,data)
-                if (data.errores && Array.isArray(data.errores)) {
-                    for (const error of data.errores) {
-                        await syncLog(1, 'visitantes');
-                    }
-                }
-            }
+                await syncLog(1, 'visitantes');
+            } 
         }
 
         const visitor_historyDB = await db.getAllAsync('SELECT * FROM visitor_history');
         if (visitor_historyDB && visitor_historyDB.length > 0) {
             console.log("Visitor_history fetch")
             const {status,data} =  await syncVisitor_history(visitor_historyDB)
-            if(status === 201){
+            if(status !== 201){
                 console.log("Visitor_history fetch 201")
                 await syncLog(null, 'visitor_history');
             }else{
@@ -231,13 +208,10 @@ const useSync = () => {
         if (user_historyDB && user_historyDB.length > 0) {
             console.log("User_history fetch")
             const {status,data} =  await syncVisitor_history(user_historyDB)
-            if(status === 201){
-                console.log("User_history fetch 201")
-                await syncLog(null, 'user_history');
-            }else{
+            if(status !== 201){
                 console.log("User history data error extraida" ,data)
                 await syncLog(1, 'user_history');
-            }  
+            }
         }   
 
         const exceptionDB: Excepcion[] = await db.getAllAsync('SELECT * FROM exception');
@@ -275,13 +249,10 @@ const useSync = () => {
             console.log("exception db",exceptionDB);
 
             const {status,data} =  await syncExceptions(exceptionDB)
-            if(status === 201){
-                console.log("Exception fetch 201")
-                await syncLog(null, 'exception');
-            }else{
+            if(status !== 201){
                 console.log("Exception data error extraida" ,data)
                 await syncLog(1, 'exception');
-            }  
+            } 
         }   
 
         // Logs
@@ -289,7 +260,7 @@ const useSync = () => {
         if (logsDB && logsDB.length > 0) {
             console.log("Logs fetch")
             await syncLogs(logsDB)
-        }        
+        }
     }, [db]);
 
     return sync;
