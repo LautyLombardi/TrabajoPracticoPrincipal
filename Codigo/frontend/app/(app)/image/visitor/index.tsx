@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, TextInput, Alert, Pressable, Text } from "react-native";
+import React, { useRef, useState } from "react";
+import { View, StyleSheet, TextInput, Alert, Pressable, Text, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
 import { useRouter } from "expo-router";
@@ -8,17 +8,17 @@ import useInsertImageVisitor from "@/hooks/logs/useInsertImageVisitor";
 import useInsertImageVisitorFail from "@/hooks/logs/useInsertImageVisitorFail";
 import { getAdmDni } from "@/api/services/storage";
 
-const UserImage = () => {
+const VisitorImage = () => {
   const navigator = useRouter();
-  const [cameraPermission, setCameraPermission] = useCameraPermissions();
-  const [microfonoPermiso, setMicrofonoPermiso] = useMicrophonePermissions();
   const cameraRef = useRef<any>();
   const [imagen, setImagen] = useState<File | null>(null);
   const [dni, setDni] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const InsertImageVisitor = useInsertImageVisitor();
   const InsertImageVisitorFail = useInsertImageVisitorFail();
 
   const takePicture = async () => {
+    setLoading(true);
     if (cameraRef.current) {
       const options = { quality: 1, base64: false, exif: true, skipProcessing: false };
       const photo = await cameraRef.current.takePictureAsync(options);
@@ -30,6 +30,7 @@ const UserImage = () => {
 
   const handleRegistrar = async () => {
     if (!dni) {
+      setLoading(false);
       Alert.alert("Error", "Por favor, ingrese el DNI del visitante");
       return;
     }
@@ -54,6 +55,7 @@ const UserImage = () => {
 
           if (response.status === 200) {
             InsertImageVisitor(admDni,Number(dni))
+            setLoading(false);
             Alert.alert(
               "Registro de imagen de visitante exitoso",
               "",
@@ -62,21 +64,25 @@ const UserImage = () => {
               ]
             );
           } else {
-            InsertImageVisitorFail(admDni,Number(dni))
+            InsertImageVisitorFail(Number(dni), admDni)
+            setLoading(false);
             const errorData = await response.json();
             console.log("Error", `Fallo el registro de imagen de visitante: ${errorData.message}`);
             Alert.alert("Fallo el registro de imagen de visitante")
           }
         } else {
-          InsertImageVisitorFail(admDni,Number(dni))
+          InsertImageVisitorFail(Number(dni), admDni)
+          setLoading(false);
           Alert.alert("Error", "No se pudo tomar la foto");
         }
       } catch (error) {
-        InsertImageVisitorFail(admDni,Number(dni))
+        InsertImageVisitorFail(Number(dni), admDni)
+        setLoading(false);
         Alert.alert("Error", "No se pudo registrar el visitante");
         console.error("Error:", error);
       }
     } else {
+      setLoading(false);
       console.log("no se pudo fetchear admDni")
     }
   };
@@ -91,9 +97,16 @@ const UserImage = () => {
         onChangeText={setDni}
         keyboardType="numeric"
       />
-      <Pressable onPress={handleRegistrar} style={styles.button}>
-        <Text style={styles.buttonText}>Registrar visitante</Text>
-      </Pressable>
+      <View style={styles.buttonContainer}>
+        <Pressable disabled={loading} onPress={handleRegistrar} style={[styles.button, loading && styles.buttonDisabled]}>
+          <Text style={styles.buttonText}>Registrar visitante</Text>
+        </Pressable>
+      </View>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -136,6 +149,19 @@ const styles = StyleSheet.create({
     color: '#000051',
     fontSize: 16,
   },
+  buttonDisabled: {
+    backgroundColor: '#a3a3a3',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
-export default UserImage;
+export default VisitorImage;

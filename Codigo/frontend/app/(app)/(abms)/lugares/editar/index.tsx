@@ -55,7 +55,7 @@ const EditPlace = () => {
             const response = await editPlace(Number(id), name, abbreviation, description, openTime, closeTime);
             if (response !== 0) {
                 await insertLogAdm("MODIFICACION","lugares")
-                Alert.alert("Place modificado", "", [
+                Alert.alert("Lugar modificado", "", [
                     { text: "OK", onPress: () => router.navigate("/lugares") }
                 ]);
             } else {
@@ -84,7 +84,7 @@ const EditPlace = () => {
 
     return (
         <View style={styles.container}>
-            <HandleGoBackReg title="Editar Visitante" route="lugares" />
+            <HandleGoBackReg title="Editar lugar" route="lugares" />
 
             <View style={styles.formContainer}>
                 <View style={styles.inputContainer}>

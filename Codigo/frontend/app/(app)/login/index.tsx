@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Pressable, Text, Alert, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import { CameraType } from "expo-camera/build/legacy/Camera.types";
@@ -24,6 +24,16 @@ const Login = () => {
   const useFaceRecognitionLogs = useInsertFaceRecognitionLogs()
   const useFaceRecognitionLogsFail = useInsertFaceRecognitionLogsFail()
   
+  useEffect(() => {
+    (async () => {
+      const cameraStatus = await setCameraPermission();
+      const microphoneStatus = await setMicrofonoPermiso();
+      if (cameraStatus.status !== 'granted' || microphoneStatus.status !== 'granted') {
+        Alert.alert("Se requieren permisos para utilizar la cámara y el micrófono.");
+      }
+    })();
+  }, []);
+
   const takePicture = async () => {
     setLoading(true);
     if (cameraRef.current) {
@@ -65,9 +75,9 @@ const Login = () => {
         console.log("user es ",user)
         if(user){
           setUsuario(user);
+          useFaceRecognitionLogs(null, data.dni ,'usuario')
           setLoading(false);
           setShowUser(true);
-          useFaceRecognitionLogs(null,data.dni,'usuario')
         }
         //------------------------------------           
       }else{

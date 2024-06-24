@@ -35,23 +35,35 @@ const RegistroCategoria = () => {
 
   // Comportamiento Terminar
   const handleTerminar = async () => {
-    
-    const insert = await insertCategory(nombre, descripcion, isExtern, lugaresSeleccionados);
-    if (insert === 0) {
+    if(nombre && descripcion && lugaresSeleccionados.length > 0){
+      const insert = await insertCategory(nombre, descripcion, isExtern, lugaresSeleccionados);
+      if (insert === 0) {
+        await insertLogAdmFail("ALTA","categoria")
+        Alert.alert("Error al guardar categoria");
+      } else if(insert === -1){
       await insertLogAdmFail("ALTA","categoria")
-      Alert.alert("Error al guardar categoria");
-    }else {
-      await insertLogAdm("ALTA","categoria")
-      Alert.alert(
-        "Categoria guardada",
-        "",
-        [
-          { text: "OK", onPress: () => router.navigate("/categorias") }
-        ]
-      );      
+      Alert.alert("La categoria ya existe");
+    } else {
+        await insertLogAdm("ALTA","categoria")
+        Alert.alert(
+          "Categoria guardada",
+          "",
+          [
+            { text: "OK", onPress: () => router.navigate("/categorias") }
+          ]
+        );      
+      }
+    } else if (!nombre) {
+      await insertLogAdmFail("ALTA", "categoria");
+      Alert.alert("Error al crear categoria","Se debe ingresar un nombre para el categoria");
+    }else if (!descripcion) {
+      await insertLogAdmFail("ALTA", "categoria");
+      Alert.alert("Error al crear categoria","Se debe ingresar un descripcion para el categoria");
+    }else if (lugaresSeleccionados.length === 0) {
+      await insertLogAdmFail("ALTA", "categoria");
+      Alert.alert("Error al crear categoria","Se debe de seleccionar algun lugar");
     }
-  };
-
+  }
   const handleLugarSeleccionado = (id: number) => {
     setLugaresSeleccionados((prevSeleccionados) =>
       prevSeleccionados.includes(id)

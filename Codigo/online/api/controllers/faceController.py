@@ -3,7 +3,7 @@ from services.faceService import validUser, validVisitor
 from flask_cors import CORS
 
 faceRecognition_bp = Blueprint('faceRecognition', __name__)
-CORS(faceRecognition_bp)
+CORS(faceRecognition_bp, resourses={r"/*": {"origins": "*"}})
 
 @faceRecognition_bp.route('/user', methods=['POST'])
 def faceRecognitionUser():

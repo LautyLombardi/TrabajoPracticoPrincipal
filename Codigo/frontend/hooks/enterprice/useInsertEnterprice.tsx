@@ -10,10 +10,21 @@ const useInsertEnterprice = () => {
         console.log('data a cargar', name, cuit);
 
         try {
+            // Verificar si el CUIT ya existe en la base de datos
+            const existingEnterprice = await db.getFirstAsync(
+                `SELECT id FROM enterprice WHERE cuit = ?;`,
+                [cuit]
+            );
+
+            if (existingEnterprice) {
+                console.log('CUIT already exists:', existingEnterprice);
+                return -1;
+            }
+
             await db.execAsync('BEGIN TRANSACTION;');
             // Insert query
             const result = await db.runAsync(
-                `INSERT INTO enterprice (name, cuit,isActive, createDate) VALUES (?, ?, 1, ?);`,
+                `INSERT INTO enterprice (name, cuit, isActive, createDate) VALUES (?, ?, 1, ?);`,
                 [name, cuit, createDate]
             );
 
@@ -34,4 +45,4 @@ const useInsertEnterprice = () => {
     return insertEnterprice;
 };
 
-export default useInsertEnterprice; 
+export default useInsertEnterprice;

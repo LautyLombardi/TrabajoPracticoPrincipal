@@ -1,8 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from '@/context/SQLiteContext';
 import { getCurrentCreateDate } from '@/util/getCreateDate';
 import { useCallback } from 'react';
 import { getAdmDni } from '@/api/services/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const useInsertLogAdm = () => {
     const db = useSQLiteContext();
@@ -15,7 +15,7 @@ const useInsertLogAdm = () => {
         var number =0
         try {
             if(type_adm !== "desactivacion"){
-                 
+
                 const abm = type_adm + " de " + table_adm 
                 const description = "Se realiza " + type_adm +  " de "  + table_adm
                 const result = await db.runAsync(
@@ -24,10 +24,8 @@ const useInsertLogAdm = () => {
                 );
 
                 number = result.lastInsertRowId
-
             }
             else{
-
                 const abm = type_adm + " de " + table_adm 
                 const description = "Se desactiva "  + table_adm
                 const result = await db.runAsync(
@@ -36,12 +34,12 @@ const useInsertLogAdm = () => {
                 );
                 number = result.lastInsertRowId
 
-
             }
-
             await db.execAsync('COMMIT;');
 
             console.log('Logs inserted with ID:', number);
+            console.log('isNotSync');
+            await AsyncStorage.setItem('isSync', 'false');
             return number;
         } catch (error) {
             await db.execAsync('ROLLBACK;');

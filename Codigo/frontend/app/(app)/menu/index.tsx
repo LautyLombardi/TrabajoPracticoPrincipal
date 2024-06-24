@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Pressable, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
+import NetInfo from '@react-native-community/netinfo';
 // Icons
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -10,10 +11,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAdmDni } from '@/api/services/storage';
 import { Rol } from '@/api/model/interfaces';
 import useGetRolByDni from '@/hooks/roles/useGetRolByDni';
+import useSync from  '@/hooks/useSync';
 
 const Menu = () => {
+  const [netConection, setNetConection] = useState<boolean>(true);
   const [permition, setPermition] = useState<Rol>();
   const {role} = useGetRolByDni();
+  const sync = useSync();  
 
   const fetchRol = useCallback(async () => {
     if (role) {
@@ -25,6 +29,31 @@ const Menu = () => {
   useEffect(() => {
     fetchRol();
   }, [fetchRol]);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      console.log('Connection type', state.type);
+      console.log('Is connected?', state.isConnected);
+      if(state.isConnected){
+        setNetConection(state.isConnected);
+      }else {
+        setNetConection(false);
+      }
+    });
+
+    // Check the connection status initially
+    NetInfo.fetch().then(state => {
+      if(state.isConnected){
+        setNetConection(state.isConnected);
+      }else {
+        setNetConection(false);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handlerLogout = async () => {
     try {
@@ -60,6 +89,14 @@ const Menu = () => {
 
   const handlerDay = useCallback(async () => {
     try {
+      console.log('handlerDay');
+      const isSync = await AsyncStorage.getItem('isSync');
+      if (isSync === 'false' && netConection) {
+        console.log('isSync');
+        await sync();
+        await AsyncStorage.setItem('isSync', 'true');
+      }
+
       const dayStatus = await AsyncStorage.getItem('dayStatus');
       const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
       setStatusDay(isDayOpen);
@@ -137,8 +174,8 @@ const Menu = () => {
       <View style={styles.mainMenu}>
         <View style={styles.mainMenuItem}>
           <Pressable
-            disabled={!status || (permition ? permition?.onlineLogin === 0 : true)}
-            style={[styles.buttonMenu, (!status || (permition ? permition.onlineLogin === 0 : true)) && styles.buttonMenuDisabled]}
+            disabled={!status || (permition ? permition?.onlineLogin === 0 : true) || !netConection}
+            style={[styles.buttonMenu, (!status || (permition ? permition.onlineLogin === 0 : true) || !netConection) && styles.buttonMenuDisabled]}
             onPress={() => toggleMenu('auth')}>
             <MaterialCommunityIcons name="face-recognition" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autorizar</Text>
@@ -165,8 +202,8 @@ const Menu = () => {
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable
-            disabled={!status || (permition ? permition?.offlineLogin === 0 : true)}
-            style={[styles.buttonMenu, (!status || (permition ? permition.offlineLogin === 0 : true)) && styles.buttonMenuDisabled]}
+            disabled={!status || (permition ? permition?.offlineLogin === 0 : true) || netConection}
+            style={[styles.buttonMenu, (!status || (permition ? permition.offlineLogin === 0 : true) || netConection) && styles.buttonMenuDisabled]}
             onPress={() => toggleMenu('login')}>
             <MaterialCommunityIcons name="login" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Autenticación Manual</Text>
@@ -189,7 +226,8 @@ const Menu = () => {
           </>
         )}
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
-          <Pressable disabled={!status} style={[styles.buttonMenu, !status && styles.buttonMenuDisabled]} onPress={() => toggleMenu('image')}>
+          <Pressable disabled={!status || !netConection} 
+            style={[styles.buttonMenu, (!status || !netConection) && styles.buttonMenuDisabled]} onPress={() => toggleMenu('image')}>
             <Entypo name="camera" size={24} color="black" />
             <Text style={styles.textBtnMenu}>Registrar Imagen</Text>
           </Pressable>

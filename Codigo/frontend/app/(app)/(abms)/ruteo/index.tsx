@@ -2,18 +2,25 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert, Image, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
+import useInsertLogAdm from "@/hooks/logs/userInsertLogAdm";
+import useInsertLogAdmFail from "@/hooks/logs/userInsertLogAdmFail";
+
 
 const Ruteo = () => {
   const [ip, setIp] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const insertLogAdm = useInsertLogAdm();
+  const insertLogAdmFail = useInsertLogAdmFail();
 
   const handleTerminar = async () => {
     if (selectedImage === null) {
+      await insertLogAdmFail("CONFIGURACION", "ruteo")
       Alert.alert("Seleccione un servidor.");
       return;
     }
     if (!isValidIP(ip)) {
+      await insertLogAdmFail("CONFIGURACION", "ruteo")
       Alert.alert("Ingrese una IP valida.");
       return;
     }
@@ -26,7 +33,7 @@ const Ruteo = () => {
 
     // Hide the spinner
     setLoading(false);
-
+    await insertLogAdm("CONFIGURACION", "ruteo")
     Alert.alert(
       "Ruteo Realizado",
       "",

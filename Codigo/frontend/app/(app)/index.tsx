@@ -5,12 +5,43 @@ import { LogBox } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import useInsertOpenCloseAutom from '@/hooks/logs/useInsertOpenCloseAutom';
+import useProcessEntryLogs from '@/hooks/logs/useAutomaticEgresos';
+import NetInfo from '@react-native-community/netinfo';
 
 LogBox.ignoreAllLogs(true);
 
 const Welcome = () => {
+    const [netConection, setNetConection] = useState<boolean>(true);
     const insertOpenCloseAutom = useInsertOpenCloseAutom()
     const [institutionalImage, setInstitutionalImage] = useState<string | null>(null);
+    const automaticEgreso = useProcessEntryLogs()
+
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setDayStatus();
+            loadInstitutionalImage();
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isConnected);
+            if(state.isConnected){
+                setNetConection(state.isConnected);
+            }else {
+                setNetConection(false);
+            }
+        });
+    
+        // Check the connection status initially
+        NetInfo.fetch().then(state => {
+            if(state.isConnected){
+                setNetConection(state.isConnected);
+            }else {
+                setNetConection(false);
+            }
+        });
+    
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     const loadInstitutionalImage = async () => {
         try {
@@ -22,6 +53,7 @@ const Welcome = () => {
     };
 
     const setDayStatus = async () => {
+        console.log('setDayStatus');
         try {
             const openHour = await AsyncStorage.getItem('openHour');
             const closeHour = await AsyncStorage.getItem('closeHour');
@@ -66,10 +98,12 @@ const Welcome = () => {
                 if (!cierreRealizada) {
                     await insertOpenCloseAutom(openHour, closeHour, false);
                     await AsyncStorage.setItem('cierreRealizada', 'true');
+                    await automaticEgreso()
                 }
 
                 await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
             } else {
+                console.log('status Open for else')
                 await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
             }
         } catch (error) {
@@ -83,11 +117,6 @@ const Welcome = () => {
         loadInstitutionalImage();
         }, [])
     );
-
-    useEffect(() => {
-        setDayStatus();
-        loadInstitutionalImage();
-    }, []);
 
     return (
         <>
@@ -106,12 +135,15 @@ const Welcome = () => {
             )}
             <Text style={styles.title}>MSS</Text>
             </View>
+            <Link href={"/login/manual"} asChild>
+                <TouchableOpacity disabled={netConection} style={styles.button}>
+                    <Text style={[styles.text, netConection && styles.textDisabled]}>Iniciar Sesión Manual</Text>
+                </TouchableOpacity>
+            </Link>
             <Link href={"/login"} asChild>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.text}>
-                Iniciar Sesión
-                </Text>
-            </TouchableOpacity>
+                <TouchableOpacity disabled={!netConection} style={styles.button}>
+                    <Text style={[styles.text, !netConection && styles.textDisabled]}>Iniciar Sesión con Reconocimiento Facial</Text>
+                </TouchableOpacity>
             </Link>
         </View>
         </>
@@ -131,11 +163,15 @@ const styles = StyleSheet.create({
         width: "80%",
         padding: 20,
         borderRadius: 5,
+        marginBottom:10
     },
     text: {
         color: "#fff",
         textAlign: "center",
         fontSize: 20,
+    },
+    textDisabled: {
+        color: '#a3a3a3',
     },
     titleContainer: {
         flex: 1,

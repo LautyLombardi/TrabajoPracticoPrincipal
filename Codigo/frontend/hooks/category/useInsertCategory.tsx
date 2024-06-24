@@ -11,7 +11,16 @@ const useInsertCategory = () => {
 
         try {
             await db.execAsync('BEGIN TRANSACTION;');
-            // Insert query
+            
+            const isExist = await db.getFirstAsync(`SELECT * FROM category WHERE name = ?;`, [name]);
+
+            if (isExist) {
+                await db.execAsync('ROLLBACK;');
+                console.log('Category already exist');
+                return -1;
+            } 
+
+             // Insert query
             const result = await db.runAsync(
                 `INSERT INTO category (name, description,isExtern,isActive, createDate) VALUES (?, ?, ?, 1, ?);`,
                 [name, description, isExtern, createDate]

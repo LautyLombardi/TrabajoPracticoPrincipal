@@ -11,6 +11,15 @@ const useInsertInstitute = () => {
         
         try {
             await db.execAsync('BEGIN TRANSACTION;');
+
+            const isExist = await db.getFirstAsync(`SELECT * FROM institute WHERE name = ?;`, [name]);
+
+            if (isExist) {
+                await db.execAsync('ROLLBACK;');
+                console.log('Institute already exist');
+                return -1;
+            } 
+
             // Insert query
             const result = await db.runAsync(
                 `INSERT INTO institute (name, isActive, createDate) VALUES (?, 1, ?);`,
