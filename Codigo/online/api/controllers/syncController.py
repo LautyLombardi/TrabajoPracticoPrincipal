@@ -3,7 +3,7 @@ from flask_cors import CORS
 from services.syncService import *
 
 sync_bp = Blueprint("sync", __name__)
-CORS(sync_bp)
+CORS(sync_bp, resourses={r"/*": {"origins": "*"}})
 
 @sync_bp.route('/logs', methods=['POST'])
 def sync_logs():
