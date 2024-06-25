@@ -70,7 +70,7 @@ const EditarCategoria = () => {
   }, [places])
 
   const handleTerminar = async () => {
-    if(nombre){
+    if(nombre && descripcion && lugaresSeleccionados.length > 0){
       const edit = await editCategory(Number(id), nombre, descripcion,lugaresSeleccionados);
       if(edit === 0){
         await insertLogAdmFail("MODIFICACIÓN","Categoria") 
@@ -86,6 +86,15 @@ const EditarCategoria = () => {
           ]
         );
       }
+    } else if (!nombre) {
+      await insertLogAdmFail("MODIFICACION", "categoria");
+      Alert.alert("Error al modificar categoria","Se debe ingresar un nombre para el categoria");
+    }else if (!descripcion) {
+      await insertLogAdmFail("MODIFICACION", "categoria");
+      Alert.alert("Error al modificar categoria","Se debe ingresar un descripcion para el categoria");
+    }else if (lugaresSeleccionados.length === 0) {
+      await insertLogAdmFail("MODIFICACION", "categoria");
+      Alert.alert("Error al modificar categoria","Se debe de seleccionar algun lugar");
     }    
   }
   
