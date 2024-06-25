@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import useLogin from "@/hooks/visitor/useLogin";
 import { getAdmDni } from "@/api/services/storage";
@@ -15,13 +15,15 @@ const LogueoVisitanteManual = () => {
   const insertLoginLog=useInsertLoginLog();
   const insertLoginLogFail= useInsertLoginLogFail();
   const loginHook= useLogin();
-
-  useEffect(()=> {
-    setDni("");
+  
+  useFocusEffect(
+    useCallback(() => {
+      setDni("");
     setNombre("");
     setApellido("");
     setEmail("");
-  },[])
+    }, [])
+  );
 
   const handleTerminar = async () => {
     console.log('autenticando.....')
