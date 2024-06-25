@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable } from "react-native";
+import { Text, View, TextInput, StyleSheet, Alert, Pressable } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import SelectItem from "@/components/seleccionar/SelectItem";
-import { Ionicons } from "@expo/vector-icons";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
-import { Categoria, Rol, Visitante } from "@/api/model/interfaces";
+import { Visitante } from "@/api/model/interfaces";
 import useEditLogUserVisitorFail from "@/hooks/logs/useInsertEditLogAdmUserVisitoFail";
 import useInsertEditUserVisitor from "@/hooks/logs/useInsertEditLogAdmUserVisitor";
 import useGetCategories from "@/hooks/category/useGetCategories";
 import useGetVisitor from "@/hooks/visitor/useGetVisitor";
 import useEditVisitor from "@/hooks/visitor/useEditVisitor";
-import CampoFecha from "@/components/CampoFecha/CampoFecha";
-
 
 const EditarVisitante = () => {
     const { dni } = useLocalSearchParams();
     const getVisitor = useGetVisitor();
     const [visitorByid , setVisitorByid] =  useState<Visitante>();
-  
   
     useEffect(() => {
       const fetchVisitor = async () => {
@@ -36,8 +31,6 @@ const EditarVisitante = () => {
         fetchVisitor();
       }, [dni, getVisitor]);
 
-
-  
     const categoryDB = useGetCategories();
     const editVisitor = useEditVisitor();
     const insertLogEditVisitor = useInsertEditUserVisitor();
@@ -46,10 +39,9 @@ const EditarVisitante = () => {
     const [apellidoN, setApellidoN] = useState("");
     const [dniN, setDniN] = useState("");
     const [emailN, setEmailN] = useState("");
-    const [dateActive, setDateActive] = useState(new Date());
-    const [categoria, setCategory] = useState<Categoria[]>([]);
+   /*  const [categoria, setCategory] = useState<Categoria[]>([]);
     const [categoryName, setCategoryName] = useState<string[]>([]);
-    const [CategorySeleccionadoName, setCategorySeleccionadoName] = useState<string>("");
+    const [CategorySeleccionadoName, setCategorySeleccionadoName] = useState<string>(""); */
   
   
     const handleTerminar = async () => {
@@ -81,7 +73,6 @@ const EditarVisitante = () => {
         await insertLogAdmEditVisitorFail( "visitante", parseInt(dniN));
         Alert.alert("Error al guardar visitante");
       }
-  
     };
 /*
     useEffect(() => {
@@ -139,12 +130,6 @@ const EditarVisitante = () => {
             onChangeText={setEmailN}
             value={emailN}
           />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.labelText}>Fecha de Activacion:</Text>
-          <View style={{ flex: 1 }}>
-            <CampoFecha date={dateActive} setDate={setDateActive} />
-          </View>
         </View>
       </View>
 
