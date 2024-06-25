@@ -8,19 +8,19 @@ const useGetVisitorRigisterData = () => {
     const categoriesQuery = useQuery<Categoria[]>({
         queryKey: ['categories'],
         queryFn: async (): Promise<Categoria[]> => {
-            return db.getAllAsync('SELECT * FROM category ORDER BY createDate');
+            return db.getAllAsync('SELECT * FROM category WHERE isActive = 1 ORDER BY createDate');
         },
     });
     const institutesQuery = useQuery<Instituto[]>({
         queryKey: ['institutes'],
         queryFn: async (): Promise<Instituto[]> => {
-            return db.getAllAsync('SELECT * FROM institute ORDER BY createDate');
+            return db.getAllAsync('SELECT * FROM institute WHERE isActive = 1 ORDER BY createDate');
         },
     });
     const enterpricesQuery = useQuery<Empresa[]>({
         queryKey: ['enterprices'],
         queryFn: async (): Promise<Empresa[]> => {
-            return db.getAllAsync('SELECT * FROM enterprice ORDER BY createDate');
+            return db.getAllAsync('SELECT * FROM enterprice WHERE isActive = 1 ORDER BY createDate');
         },
     });
 

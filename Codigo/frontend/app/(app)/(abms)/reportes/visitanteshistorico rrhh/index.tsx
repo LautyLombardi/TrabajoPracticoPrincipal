@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, Dimensions } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
 import { StackedBarChart } from 'react-native-chart-kit';
@@ -192,9 +192,10 @@ const ReportesHistoricos = () => {
               ]),
               barColors: ['#00FF00', '#0000FF'],
             }}
-            width={300}
-            height={200}
-            yAxisLabel='Cantidad'
+            width={Dimensions.get('window').width - 30}
+            height={300}
+            yAxisLabel=''
+            yAxisSuffix=''
             yLabelsOffset={5}
             hideLegend={false}
             chartConfig={{
@@ -206,7 +207,6 @@ const ReportesHistoricos = () => {
               propsForBackgroundLines: {
                 strokeDasharray: '', // solid background lines with no dashes
               },
-              barPercentage: 0.5,
               useShadowColorFromDataset: false,
               style: {
                 borderRadius: 16,
