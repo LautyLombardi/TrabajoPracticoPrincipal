@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { router, useFocusEffect } from "expo-router";
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";

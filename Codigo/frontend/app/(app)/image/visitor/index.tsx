@@ -7,6 +7,7 @@ import { ONLINE } from '@/api/constantes'
 import useInsertImageVisitor from "@/hooks/logs/useInsertImageVisitor";
 import useInsertImageVisitorFail from "@/hooks/logs/useInsertImageVisitorFail";
 import { getAdmDni } from "@/api/services/storage";
+import useCheckDNI from "@/hooks/useCheckDNI";
 
 const VisitorImage = () => {
   const navigator = useRouter();
@@ -16,6 +17,7 @@ const VisitorImage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const InsertImageVisitor = useInsertImageVisitor();
   const InsertImageVisitorFail = useInsertImageVisitorFail();
+  const checkDNI = useCheckDNI()
 
   const takePicture = async () => {
     setLoading(true);
@@ -37,6 +39,19 @@ const VisitorImage = () => {
     const admDni = await getAdmDni()
     if (admDni) {
       try {
+        const result = await checkDNI(dni, 'visitor')
+        if (result === 0){
+          InsertImageVisitorFail(Number(dni), admDni)
+          Alert.alert(
+            "Fallo el registro de imagen de visitante",
+            "El visitante no existe",
+            [
+              { text: "OK", onPress: () => setDni('') }
+            ]
+          );
+          setLoading(false);
+          return
+        }
         const photoUri = await takePicture();
         if (photoUri) {
           const formData = new FormData();
