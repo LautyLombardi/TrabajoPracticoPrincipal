@@ -47,24 +47,33 @@ export const Reportes = () => {
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.name !== "RRHH" : true} 
-            style={[styles.buttonMenu, (permition ? permition?.name !== "RRHH" : true) && styles.buttonMenuDisabled]}
+            disabled={!(permition?.name === "RRHH" || permition?.name === "Personal jerarquico")} 
+            style={[
+              styles.buttonMenu, 
+              !(permition?.name === "RRHH" || permition?.name === "Personal jerarquico") && styles.buttonMenuDisabled
+            ]}
             onPress={() => router.navigate("/reportes/visitanteshistorico")}>
               <Text style={styles.textBtnMenu}>Visitantes Historico</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.name !== "RRHH" : true} 
-            style={[styles.buttonMenu, (permition ? permition?.name !== "RRHH" : true) && styles.buttonMenuDisabled]}
+            disabled={!(permition?.name === "RRHH" || permition?.name === "Personal jerarquico")} 
+            style={[
+              styles.buttonMenu, 
+              !(permition?.name === "RRHH" || permition?.name === "Personal jerarquico") && styles.buttonMenuDisabled
+            ]}
             onPress={() => router.navigate("/reportes/visitanteshistorico rrhh")}>
               <Text style={styles.textBtnMenu}>Visitantes historicos Por Usuario</Text>
           </Pressable>
         </View>
         <View style={[styles.mainMenuItem, { marginTop: 3 }]}>
           <Pressable 
-            disabled={permition ? permition?.name !== "Personal jerarquico" : true} 
-            style={[styles.buttonMenu, (permition ? permition?.name !== "Personal jerarquico" : true) && styles.buttonMenuDisabled]}
+            disabled={permition?.name !== "Personal jerarquico"} 
+            style={[
+              styles.buttonMenu, 
+              permition?.name !== "Personal jerarquico" && styles.buttonMenuDisabled
+            ]}
             onPress={() => router.navigate("/reportes/duplicacion")}>
               <Text style={styles.textBtnMenu}>Duplicacíon de Visitantes y Usuarios</Text>
           </Pressable>
@@ -137,5 +146,3 @@ const styles = StyleSheet.create({
 });
 
 export default Reportes;
-
-

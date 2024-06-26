@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet , Dimensions } from 'react-native';
 import { StackedBarChart } from 'react-native-chart-kit';
 import useGetLogsForAdmDni from '@/hooks/logs/useGetLogsForAdmDni';
 import HandleGoBackReg from '@/components/handleGoBack/HandleGoBackReg';
@@ -72,8 +72,8 @@ const VisitantesPorUsuario = () => {
               data: fechas.map((_, index) => [ingresos[index], egresos[index]]),
               barColors: ['#00FF00', '#0000FF'],
             }}
-            width={300}
-            height={200}
+            width={Dimensions.get('window').width - 16}
+            height={300}
             yAxisLabel=""
             yLabelsOffset={5}
             hideLegend={false}

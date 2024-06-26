@@ -41,7 +41,7 @@ const useProcessEntryLogs = () => {
                         const createDate = getCurrentCreateDate();
                         const newExitLogResult = await db.runAsync(
                             `INSERT INTO logs (${entityType === 'user' ? 'userId' : 'visitorId'}, admDni, hasAccess, isFaceRecognition, description, createDate, isEnter) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-                            [entityId, log.admDni, log.hasAccess, log.isFaceRecognition, `Nuevo log de salida creado automáticamente para ${entityType}`, createDate, 0]
+                            [entityId, log.admDni, log.hasAccess, log.isFaceRecognition, `Egreso automatico por parte de un  ${entityType}`, createDate, 0]
                         );
 
                         console.log(`Created new exit log for ${entityType} with ID: ${newExitLogResult.lastInsertRowId}`);

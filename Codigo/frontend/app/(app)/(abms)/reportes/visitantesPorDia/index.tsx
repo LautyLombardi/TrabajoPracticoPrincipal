@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable , Dimensions } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { StackedBarChart } from 'react-native-chart-kit';
 import useGetLogsForAdmDni from '@/hooks/logs/useGetLogsForAdmDni';
@@ -140,7 +140,7 @@ const ReporteVisitantesPorDia = () => {
               data: filteredDates.map((_, index) => [filteredIngresos[index], filteredEgresos[index]]),
               barColors: ['#00FF00', '#0000FF'],
             }}
-            width={300}
+            width={Dimensions.get('window').width - 16}
             height={200}
             yAxisLabel=""
             yLabelsOffset={5}

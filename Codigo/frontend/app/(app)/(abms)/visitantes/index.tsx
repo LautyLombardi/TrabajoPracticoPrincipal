@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 import HandleGoBack from '@/components/handleGoBack/HandleGoBack';
-import { Visitante } from '@/api/model/interfaces';
+import { Rol, Visitante } from '@/api/model/interfaces';
 import VisitorModal from '@/components/Modal/VisitorModal';
 import useGetVisitors from '@/hooks/visitor/useGetVisitors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -127,6 +127,7 @@ const TablaVisitantes: React.FC<PropsTable> = ({ viewState, editState, deleteSta
 
 const AdministracionVisitantes = () => {
   const [status, setStatusDay] = useState<boolean>(true);
+  const [permition, setPermition] = useState<Rol>();
   const [view, setView] = useState(true);
   const [edit, setEdit] = useState(false);
   const [trash, setTrash] = useState(false);
@@ -181,6 +182,10 @@ const AdministracionVisitantes = () => {
   };
 
   const handlerDay = async () => {
+    const permisos = await AsyncStorage.getItem('rol_data');
+    if (permisos) {
+      setPermition(JSON.parse(permisos));
+    }
     const dayStatus = await AsyncStorage.getItem('dayStatus');
     const isDayOpen = dayStatus ? JSON.parse(dayStatus) : false;
     setStatusDay(isDayOpen);
@@ -201,7 +206,11 @@ const AdministracionVisitantes = () => {
     console.log("visitor en la pantalla" , visitors)
     if(visitors){
       setVisitantes(visitors);}
-    }, [visitors]);;
+    }, [visitors]);
+
+    useEffect(() => {
+      handlerDay();
+    }, []);  
 
   return (
     <View style={styles.container}>
@@ -210,16 +219,16 @@ const AdministracionVisitantes = () => {
 
       {/** Botones CRUD */}
       <View style={styles.crudBtn}>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
+        <Pressable disabled={!status || (permition ? permition?.entityABMs === 0 : true)} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("ver")}>
           <Ionicons name='eye-outline' size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
+        <Pressable disabled={!status || (permition ? permition?.entityABMs === 0 : true)} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("delete")}>
           <FontAwesome6 name="trash" size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
+        <Pressable disabled={!status || (permition ? permition?.entityABMs === 0 : true)} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => handleToggleIco("edit")}>
           <FontAwesome6 name="pen-clip" size={20} color="black" />
         </Pressable>
-        <Pressable disabled={!status} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/visitantes/registrar")}>
+        <Pressable disabled={!status || (permition ? permition?.entityABMs === 0 : true)} style={[styles.crudItem, !status && styles.crudItemDisabled]} onPress={() => router.navigate("/visitantes/registrar")}>
           <FontAwesome6 name="plus" size={20} color="black" />
         </Pressable>
       </View>
