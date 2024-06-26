@@ -8,12 +8,23 @@ function useFaceRecognition() {
     
     const getFaceRecognitionVisitor = useCallback(async (visitorDni: number) => {
         try {
-            const visitor = await db.getFirstAsync<Visitante>(
+            let visitor = await db.getFirstAsync<Visitante>(
                 'SELECT * FROM visitor WHERE dni = ?',
                 [visitorDni]
             );
             if (!visitor) {
-                throw new Error('Visitor not found');
+                const visitorH = await db.getFirstAsync<number>(
+                    'SELECT dniN FROM visitor_history WHERE dniO = ?',
+                    [visitorDni]
+                );
+                visitor = await db.getFirstAsync<Visitante>(
+                    'SELECT * FROM visitor WHERE dni = ?',
+                    [visitorH]
+                );
+                if (!visitor) {
+                    throw new Error('Visitor not found');
+                }
+    
             }
 
             const { category_id } = await db.getFirstAsync<{ category_id: number}>(
