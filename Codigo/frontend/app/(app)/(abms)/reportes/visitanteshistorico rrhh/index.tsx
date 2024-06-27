@@ -193,7 +193,7 @@ const ReportesHistoricos = () => {
               barColors: ['#00FF00', '#0000FF'],
             }}
             width={Dimensions.get('window').width - 30}
-            height={300}
+            height={400}
             yAxisLabel=''
             yAxisSuffix=''
             yLabelsOffset={5}

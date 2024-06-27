@@ -98,7 +98,7 @@ const ReportesHistoricos: React.FC = () => {
               ],
             }}
             width={Dimensions.get('window').width - 16}
-            height={300}
+            height={400}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={{

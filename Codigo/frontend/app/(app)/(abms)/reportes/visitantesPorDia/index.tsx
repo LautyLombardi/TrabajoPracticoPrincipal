@@ -141,7 +141,7 @@ const ReporteVisitantesPorDia = () => {
               barColors: ['#00FF00', '#0000FF'],
             }}
             width={Dimensions.get('window').width - 16}
-            height={200}
+            height={400}
             yAxisLabel=""
             yLabelsOffset={5}
             hideLegend={false}
