@@ -192,9 +192,10 @@ const ReportesHistoricos = () => {
               ]),
               barColors: ['#00FF00', '#0000FF'],
             }}
-            width={Dimensions.get('window').width - 16}
+            width={Dimensions.get('window').width - 30}
             height={300}
-            yAxisLabel='Cantidad'
+            yAxisLabel=''
+            yAxisSuffix=''
             yLabelsOffset={5}
             hideLegend={false}
             chartConfig={{
@@ -206,7 +207,6 @@ const ReportesHistoricos = () => {
               propsForBackgroundLines: {
                 strokeDasharray: '', // solid background lines with no dashes
               },
-              barPercentage: 0.5,
               useShadowColorFromDataset: false,
               style: {
                 borderRadius: 16,

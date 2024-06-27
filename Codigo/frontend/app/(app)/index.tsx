@@ -18,6 +18,8 @@ const Welcome = () => {
 
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
+            setDayStatus();
+            loadInstitutionalImage();
             console.log('Connection type', state.type);
             console.log('Is connected?', state.isConnected);
             if(state.isConnected){
@@ -51,6 +53,7 @@ const Welcome = () => {
     };
 
     const setDayStatus = async () => {
+        console.log('setDayStatus');
         try {
             const openHour = await AsyncStorage.getItem('openHour');
             const closeHour = await AsyncStorage.getItem('closeHour');
@@ -100,8 +103,13 @@ const Welcome = () => {
 
                 await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
             } else {
-                await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+                const dayStatus = await AsyncStorage.getItem('dayStatus');
+                if(dayStatus === null) {
+                    console.log('status Day default')
+                    await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+                }
             }
+            console.log('status Day is previous')
         } catch (error) {
             console.error('Error al establecer el estado del día:', error);
         }
@@ -113,11 +121,6 @@ const Welcome = () => {
         loadInstitutionalImage();
         }, [])
     );
-
-    useEffect(() => {
-        setDayStatus();
-        loadInstitutionalImage();
-    }, []);
 
     return (
         <>

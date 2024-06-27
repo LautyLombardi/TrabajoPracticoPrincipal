@@ -3,34 +3,56 @@ from models import User, Visitor, Place, Category, Enterprice, Institute, Logs, 
 
 def syncLogs(log):
     try:
+        existing_log =  db.session.query(Logs).filter_by(
+            admDni=log.get('admDni'),
+            userId=log.get('userId'),
+            exceptionId=log.get('exceptionId'),
+            visitorId=log.get('visitorId'),
+            hasAccess=log.get('hasAccess'),
+            isFaceRecognition=log.get('isFaceRecognition'),
+            abm=log.get('abm'),
+            abmType=log.get('abmType'),
+            description=log.get('description'),
+            aperturaCierre=log.get('aperturaCierre'),
+            createDate=log.get('createDate'),
+            isEnter=log.get('isEnter'),
+            isAutomatic=log.get('isAutomatic'),
+            isError=log.get('isError')
+        ).first()
+
+        if existing_log:
+            db.session.delete(existing_log)
+            db.session.commit()
+
         logSync = Logs(
-            admDni = log.get('admDni'),
-            userId = log.get('userId'),
-            exceptionId = log.get('exceptionId'),
-            visitorId = log.get('visitorId'),
-            hasAccess = log.get('hasAccess'),
-            isFaceRecognition = log.get('isFaceRecognition'),
-            abm = log.get('abm'),
-            abmType = log.get('abmType'),
-            description = log.get('description'),
-            aperturaCierre = log.get('aperturaCierre'),
-            createDate = log.get('createDate'),
-            isEnter = log.get('isEnter'),
-            isAutomatic = log.get('isAutomatic'),
-            isError = log.get('isError')
+            admDni=log.get('admDni'),
+            userId=log.get('userId'),
+            exceptionId=log.get('exceptionId'),
+            visitorId=log.get('visitorId'),
+            hasAccess=log.get('hasAccess'),
+            isFaceRecognition=log.get('isFaceRecognition'),
+            abm=log.get('abm'),
+            abmType=log.get('abmType'),
+            description=log.get('description'),
+            aperturaCierre=log.get('aperturaCierre'),
+            createDate=log.get('createDate'),
+            isEnter=log.get('isEnter'),
+            isAutomatic=log.get('isAutomatic'),
+            isError=log.get('isError')
         )
         db.session.add(logSync)
         db.session.commit()
         return True
     except Exception as e:
-        db.session.rollback()  # En caso de error, hacer rollback de la sesión
+        db.session.rollback()
         return str(e)
 
 def syncUser(user):
     try:
         existing_user = db.session.query(User).filter_by(dni=user.get('dni')).first()
         if existing_user:
-            return f"User with DNI {user.get('dni')} already exists."
+            db.session.delete(existing_user)
+            db.session.commit()
 
         userSync = User(
             dni = user.get('dni'),
@@ -53,7 +75,8 @@ def syncVisitors(visitor):
     try:
         existing_visitor = db.session.query(Visitor).filter_by(dni=visitor.get('dni')).first()
         if existing_visitor:
-            return f"Visitor with DNI {visitor.get('dni')} already exists."
+            db.session.delete(existing_visitor)
+            db.session.commit()
 
         category_name = visitor.get('category')
         category = db.session.query(Category).filter_by(name=category_name).first()
@@ -106,9 +129,12 @@ def syncVisitors(visitor):
     
 def syncPlaces(place):
     try:
-        existing_place = db.session.query(Place).filter_by(name=place.get('name')).first()
+        existing_place = db.session.query(Place).filter_by(
+            createDate=place.get('createDate')
+        ).first()
         if existing_place:
-            return f"place with name {place.get('name')} already exists."
+            db.session.delete(existing_place)
+            db.session.commit()
 
         placeSync = Place(
             name=place.get('name'),
@@ -125,18 +151,15 @@ def syncPlaces(place):
     except Exception as e:
         db.session.rollback()
         return str(e)
-
 def syncCategories(category):
     try:
         existing_category = db.session.query(Category).filter_by(
-            name=category.get('name'),
-            description=category.get('description'),
             isExtern=category.get('isExtern'),
-            isActive=category.get('isActive')
-        ).first()
-        
+            createDate=category.get('createDate')
+        ).first()        
         if existing_category:
-            return f"Category {category.get('name')} already exists."
+            db.session.delete(existing_category)
+            db.session.commit()
 
         categorySync = Category(
             name=category.get('name'),
@@ -196,7 +219,8 @@ def syncExceptions(exception):
         ).first()
         
         if existing_exception:
-            return f"Exception {exception.get('name')} already exists."
+            db.session.delete(existing_exception)
+            db.session.commit()
 
         exceptionSync = Exceptions(
             name=exception.get('name'),
@@ -207,7 +231,7 @@ def syncExceptions(exception):
         db.session.add(exceptionSync)
         db.session.commit()
 
-        place_names = exception.get('place_names', [])
+        place_names = exception.get('place_names')
         for plc_name in place_names:
             place = db.session.query(Place).filter_by(name=plc_name).first()
             if place:
@@ -247,6 +271,11 @@ def syncExceptions(exception):
 
 def syncEnterprices(enterprice):
     try:
+        existing_enterprice = db.session.query(Enterprice).filter_by(cuit=enterprice.get('cuit')).first()
+        if existing_enterprice:
+            db.session.delete(existing_enterprice)
+            db.session.commit()
+
         enterpriceSync = Enterprice(
             name=enterprice.get('name'),
             cuit=enterprice.get('cuit'),
@@ -262,9 +291,10 @@ def syncEnterprices(enterprice):
 
 def syncInstitutes(institute):
     try:
-        existing_institute = db.session.query(Institute).filter_by(name=institute.get('name')).first()
+        existing_institute = db.session.query(Institute).filter_by( createDate=institute.get('createDate')).first()
         if existing_institute:
-            return f"institute with name {institute.get('name')} already exists."
+            db.session.delete(existing_institute)
+            db.session.commit()
         
         instituteSync = Institute(
             name=institute.get('name'),
@@ -294,6 +324,31 @@ def syncInstitutes(institute):
 
 def syncUserHistories(user_history):
     try:
+        existing_user_history = db.session.query(User_history).filter_by(
+            dniO=user_history.get('dniO'),
+            dniN=user_history.get('dniN'),
+            role_idO=user_history.get('role_idO'),
+            role_idN=user_history.get('role_idN'),
+            nameO=user_history.get('nameO'),
+            nameN=user_history.get('nameN'),
+            lastnameO=user_history.get('lastnameO'),
+            lastnameN=user_history.get('lastnameN'),
+            passwordO=user_history.get('passwordO'),
+            passwordN=user_history.get('passwordN'),
+            isActiveO=user_history.get('isActiveO'),
+            isActiveN=user_history.get('isActiveN'),
+            motiveO=user_history.get('motiveO'),
+            motiveN=user_history.get('motiveN'),
+            activeDateO=user_history.get('activeDateO'),
+            activeDateN=user_history.get('activeDateN'),
+            createDateO=user_history.get('createDateO'),
+            createDateN=user_history.get('createDateN')
+        ).first()
+
+        if existing_user_history:
+            db.session.delete(existing_user_history)
+            db.session.commit()
+
         userHistorySync = User_history(
             dniO=user_history.get('dniO'),
             dniN=user_history.get('dniN'),
@@ -322,6 +377,31 @@ def syncUserHistories(user_history):
     
 def syncVisitorHistories(visitor_history):
     try:
+        existing_visitor_history = db.session.query(Visitor_history).filter_by(
+            dniO=visitor_history.get('dniO'),
+            dniN=visitor_history.get('dniN'),
+            enterprice_idO=visitor_history.get('enterprice_idO'),
+            enterprice_idN=visitor_history.get('enterprice_idN'),
+            nameO=visitor_history.get('nameO'),
+            nameN=visitor_history.get('nameN'),
+            lastnameO=visitor_history.get('lastnameO'),
+            lastnameN=visitor_history.get('lastnameN'),
+            emailO=visitor_history.get('emailO'),
+            emailN=visitor_history.get('emailN'),
+            startDateO=visitor_history.get('startDateO'),
+            startDateN=visitor_history.get('startDateN'),
+            finishDateO=visitor_history.get('finishDateO'),
+            finishDateN=visitor_history.get('finishDateN'),
+            isActiveO=visitor_history.get('isActiveO'),
+            isActiveN=visitor_history.get('isActiveN'),
+            createDateO=visitor_history.get('createDateO'),
+            createDateN=visitor_history.get('createDateN')
+        ).first()
+
+        if existing_visitor_history:
+            db.session.delete(existing_visitor_history)
+            db.session.commit()
+            
         visitorHistorySync = Visitor_history(
             dniO=visitor_history.get('dniO'),
             dniN=visitor_history.get('dniN'),

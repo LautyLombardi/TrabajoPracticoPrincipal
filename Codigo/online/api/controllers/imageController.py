@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 
 image_bp = Blueprint('image', __name__)
-CORS(image_bp)
+CORS(image_bp, resourses={r"/*": {"origins": "*"}})
 
 @image_bp.route('/user', methods=['POST'])
 def insert_user():

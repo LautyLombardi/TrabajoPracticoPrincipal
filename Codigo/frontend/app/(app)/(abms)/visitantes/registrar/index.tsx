@@ -16,7 +16,6 @@ const RegistroVisitante = () => {
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()
 
-
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
@@ -38,7 +37,9 @@ const RegistroVisitante = () => {
       const empresa = empresas.find(empresa => empresa.name.trim().toLowerCase() === empresaSeleccionadaName.trim().toLowerCase());
       const categoria = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName.trim().toLowerCase());
       const instituto = institutos.find(instituto => instituto.name.trim().toLowerCase() === institutoSeleccionadoName.trim().toLowerCase());
-
+      
+      const emailRegex = /.+@.+/;
+      
       if(categoria && nombre && apellido && dni && email && dateIngreso ){
         const insert = await insertVisitor(nombre, apellido, parseInt(dni), email, dateIngreso.toISOString(), categoria, empresa?.id || 0, instituto?.id || 0)
         if (insert === 0) {
@@ -55,12 +56,16 @@ const RegistroVisitante = () => {
           );
         }
       }
+      
       else if (!apellido) {
         await insertLogAdmFail("ALTA", "visitante");
         Alert.alert("Error al crear visitante","Se debe ingresar un apellido para el usuario")
       } else if (!email) {
         await insertLogAdmFail("ALTA", "visitante");
         Alert.alert("Error al crear visitante","Se debe ingresar un email para el usuario");
+      }else if(!emailRegex.test(email)){
+        await insertLogAdmFail("ALTA", "visitante");
+        Alert.alert("Error al crear visitante","Se debe ingresar un email valido para el usuario");
       } else if (!nombre) {
         await insertLogAdmFail("ALTA", "visitante");
         Alert.alert("Error al crear visitante","Se debe ingresar un nombre para el usuario");
@@ -87,28 +92,33 @@ const RegistroVisitante = () => {
       setCategorias(categories);
       const nombresCategorias = categories.map(categoria => categoria.name);
       setCategoriasName(nombresCategorias);
-    }
+      setCategoriaSeleccionadaName(nombresCategorias[0])
+      setIsExtern(categories[0].isExtern);   
 
+    }
     if (institutes && institutes !== institutos) {
       setInstitutos(institutes);
       const nombresInstitutos = institutes.map(instituto => instituto.name);
       setInstitutosName(nombresInstitutos);
+      setInstitutoSeleccionadoName(nombresInstitutos[0])
     }
 
     if (enterprices && enterprices !== empresas) {
       setEmpresas(enterprices);
       const nombresEmpresas = enterprices.map(empresa => empresa.name);
       setEmpresasName(nombresEmpresas);
+      setEmpresaSeleccionadaName(nombresEmpresas[0])
+
     }
-  }, [visitorRigisterDataDB, categorias, institutos, empresas]);
+  }, [visitorRigisterDataDB, categorias, institutos, empresas,empresaSeleccionadaName , categoriaSeleccionadaName , isExtern]);
 
   useEffect(() => {
     const selectedCategory = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName);
     if (selectedCategory) {
-      setIsExtern(selectedCategory.isExtern);
+      setIsExtern(selectedCategory.isExtern);      
     } 
-  }, [categoriaSeleccionadaName, categorias , isExtern]);
-  
+  }, [categoriaSeleccionadaName, isExtern,categoriasName]);
+
   return (
     <View style={styles.container}>
       {<HandleGoBackReg title='Registro Visitante' route='visitantes' />}
