@@ -31,12 +31,11 @@ const useInsertLoginLog = () => {
                 const currentDate = new Date(createDate).toDateString();
                 
                 if (latestLogDate === currentDate && latestLog.isEnter === 1) {
-                    isEnter = 0;
                 }
             }
 
             const result = await db.runAsync(
-                `INSERT INTO logs (admDni, ${tableId}Id, description, createDate, isEnter) VALUES (?, ?, ?, ?, ?);`,
+                `INSERT INTO logs (admDni, ${tableId}Id, description, hasAccess,createDate, isEnter) VALUES (?, ?, ?, 1 , ?, ?);`,
                 [admDni, dniCliente, description, createDate, isEnter]
             );
 

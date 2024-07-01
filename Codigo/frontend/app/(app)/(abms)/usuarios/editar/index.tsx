@@ -27,7 +27,6 @@ const EditarUsuario = () => {
       setNombreN(user.name);
       setApellidoN(user.lastname);
       setDniN(user.dni.toString());
-      setRolSeleccionadoName(user.rolName);
     }
   }, [user]);
 
@@ -50,7 +49,6 @@ const EditarUsuario = () => {
   const handleTerminar = async () => {
     var roleID : number | undefined = 0;
     if(rolSeleccionadoName !==undefined){
-      console.log('handler rol')
       const rol = role.find((rol: { name: string }) =>
         rol.name.trim().toLowerCase() === rolSeleccionadoName.trim().toLowerCase()
       );
@@ -58,7 +56,7 @@ const EditarUsuario = () => {
     }
 
     if (user) {
-      const response = await editUser(user, parseInt(dniN), nombreN, apellidoN, roleID, password, dateActive.toISOString(), motivo);
+      const response = await editUser(user, parseInt(dniN), nombreN, apellidoN, roleID, password, dateActive.toISOString());
       if (response !== 0) {
         await insertLogEditUser( "usuario", parseInt(dniN));
         Alert.alert(
@@ -85,8 +83,10 @@ const EditarUsuario = () => {
       setRol(roles);
       const nombresRoles = roles.map(role => role.name);
       setRolesName(nombresRoles);
+      setRolSeleccionadoName(roles[0].name)
+      
     }
-  }, [rolesDB, role]);
+  }, [rolesDB, role,rolSeleccionadoName]);
 
   return (
     <View style={styles.container}>

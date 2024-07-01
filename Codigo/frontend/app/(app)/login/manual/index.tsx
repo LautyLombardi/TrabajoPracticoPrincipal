@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Text, View, TextInput, StyleSheet, Pressable, Alert, TouchableOpacity, Modal } from 'react-native';
 import HandleGoBackReg from "@/components/handleGoBack/HandleGoBackReg";
 import { Ionicons } from '@expo/vector-icons';
 import LectorQr from "@/components/QRCodeScan";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import useLogin from "@/hooks/user/useLogin";
 import useInsertLoginLogFail from "@/hooks/logs/useInsertLoginLogFail";
 import useInsertLoginLog from "@/hooks/logs/useInsertLoginLog";
-import { getAdmDni } from "@/api/services/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useFaceRecognitionUser from "@/hooks/user/useFaceRecognitionUser";
 import { Usuario } from "@/api/model/interfaces";
@@ -27,10 +26,12 @@ const Manual = () => {
   const [isQrScannerVisible, setIsQrScannerVisible] = useState<boolean>(false);
   const [status, setStatusBoton] = useState<boolean>(false);
 
-  useEffect(()=> {
-    setDni("");
-    setPassword("");
-  },[])
+  useFocusEffect(
+    useCallback(() => {
+      setDni("");
+      setPassword("");
+    }, [])
+  );
 
   const handleCloseUserModal = () => {
     setShowUser(false);

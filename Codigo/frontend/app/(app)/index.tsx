@@ -103,9 +103,13 @@ const Welcome = () => {
 
                 await AsyncStorage.setItem('dayStatus', JSON.stringify(isOpen));
             } else {
-                console.log('status Open for else')
-                await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+                const dayStatus = await AsyncStorage.getItem('dayStatus');
+                if(dayStatus === null) {
+                    console.log('status Day default')
+                    await AsyncStorage.setItem('dayStatus', JSON.stringify(true));
+                }
             }
+            console.log('status Day is previous')
         } catch (error) {
             console.error('Error al establecer el estado del día:', error);
         }

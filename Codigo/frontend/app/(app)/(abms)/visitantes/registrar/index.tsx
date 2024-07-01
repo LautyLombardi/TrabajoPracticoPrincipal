@@ -16,7 +16,6 @@ const RegistroVisitante = () => {
   const insertLogAdm= useInsertLogAdm()
   const insertLogAdmFail= useInsertLogAdmFail()
 
-
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [dni, setDni] = useState("");
@@ -93,28 +92,33 @@ const RegistroVisitante = () => {
       setCategorias(categories);
       const nombresCategorias = categories.map(categoria => categoria.name);
       setCategoriasName(nombresCategorias);
-    }
+      setCategoriaSeleccionadaName(nombresCategorias[0])
+      setIsExtern(categories[0].isExtern);   
 
+    }
     if (institutes && institutes !== institutos) {
       setInstitutos(institutes);
       const nombresInstitutos = institutes.map(instituto => instituto.name);
       setInstitutosName(nombresInstitutos);
+      setInstitutoSeleccionadoName(nombresInstitutos[0])
     }
 
     if (enterprices && enterprices !== empresas) {
       setEmpresas(enterprices);
       const nombresEmpresas = enterprices.map(empresa => empresa.name);
       setEmpresasName(nombresEmpresas);
+      setEmpresaSeleccionadaName(nombresEmpresas[0])
+
     }
-  }, [visitorRigisterDataDB, categorias, institutos, empresas]);
+  }, [visitorRigisterDataDB, categorias, institutos, empresas,empresaSeleccionadaName , categoriaSeleccionadaName , isExtern]);
 
   useEffect(() => {
     const selectedCategory = categorias.find(categoria => categoria.name.trim().toLowerCase() === categoriaSeleccionadaName);
     if (selectedCategory) {
-      setIsExtern(selectedCategory.isExtern);
+      setIsExtern(selectedCategory.isExtern);      
     } 
-  }, [categoriaSeleccionadaName, categorias , isExtern]);
-  
+  }, [categoriaSeleccionadaName, isExtern,categoriasName]);
+
   return (
     <View style={styles.container}>
       {<HandleGoBackReg title='Registro Visitante' route='visitantes' />}
